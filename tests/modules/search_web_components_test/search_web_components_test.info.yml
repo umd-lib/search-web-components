@@ -1,0 +1,16 @@
+name: Search Web Components Test
+description: Test companion module for Search Web Components.
+type: module
+package: Search
+core_version_requirement: ^10 || ^11
+hidden: true
+dependencies:
+  - drupal:entity_test
+  - search_web_components:search_web_components
+  - search_api:search_api_db
+  - search_api:search_api_test_example_content
+
+# Information added by Drupal.org packaging script on 2024-10-28
+version: '1.0.0-alpha6'
+project: 'search_web_components'
+datestamp: 1730123767

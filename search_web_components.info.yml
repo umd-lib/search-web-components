@@ -1,0 +1,12 @@
+name: 'Search Web Components'
+type: module
+description: 'A library of Lit web components to use with the search_api_decoupled and placeable as blocks.'
+package: Search
+core_version_requirement: ^10 || ^11
+dependencies:
+  - search_api_decoupled:search_api_decoupled
+
+# Information added by Drupal.org packaging script on 2024-10-28
+version: '1.0.0-alpha6'
+project: 'search_web_components'
+datestamp: 1730123767

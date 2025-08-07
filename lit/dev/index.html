@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo</title>
+    <script type="module" src="../dist/index.js"></script>
+  </head>
+  <body>
+    <search-box url="http://localhost:8000/dev/index.html"></search-box>
+    <search-root
+      url="https://umami.ddev.site/en/api/search/content"
+      additionalParams=""
+      defaultPerPage="10"
+      dialogBreakpoint="600"
+    >
+      <div style="display: flex; flex-direction: column">
+        <div style="display: flex; flex-direction: row">
+          <div style="width: 25%">
+            <search-dialog-toggle
+              aboveBreakpointText="Kyle"
+              dialogOpenText="Filters"
+              dialogCloseText="Close"
+            ></search-dialog-toggle>
+            <search-dialog-pane closePosition="both"
+              ><h1>Some text</h1></search-dialog-pane
+            >
+            <facet-checkbox
+              useRadios
+              showCount
+              showLabel
+              key="recipe_category"
+              showReset
+              collapsible
+            ></facet-checkbox>
+            <facet-button key="author" showReset></facet-button>
+            <facet-dropdown
+              key="recipe_category"
+              preferAttributes
+            ></facet-dropdown>
+            <facet-dropdown-html
+              showCount
+              multipleSelect
+              showLabel
+              key="tags"
+              selectLabel="Select tags"
+              showReset
+              collapsible
+            ></facet-dropdown-html>
+            <facet-checkbox
+              key="cooking_time"
+              style="display: block"
+              class="cooking_time"
+            >
+            </facet-checkbox>
+          </div>
+          <div style="width: 75%">
+            <div style="width: 100%">
+              <div>
+                <search-input
+                  labelText="Search"
+                  placeHolderText="Search"
+                ></search-input>
+              </div>
+              <div style="display: flex; flex-direction: row">
+                <search-result-summary
+                  summaryText="@start-@end of @total"
+                ></search-result-summary>
+                <search-sort type="list"></search-sort>
+                <search-sort type="select"></search-sort>
+                <search-results-per-page
+                  type="select"
+                ></search-results-per-page>
+                <search-results-per-page
+                  htmlSelectLabel="sort test"
+                  type="html"
+                ></search-results-per-page>
+                <search-results-switcher></search-results-switcher>
+              </div>
+              <div>
+                <search-applied-facets
+                  showReset
+                  showIndividual
+                ></search-applied-facets>
+              </div>
+            </div>
+            <search-results></search-results>
+            <search-no-results-message style="display: none">
+              <div>There are no results.</div>
+            </search-no-results-message>
+            <search-simple-pager
+              prevLabel="<"
+              nextLabel=">"
+              pagesToDisplay="2"
+              showNextPrev
+              showFirstLast
+            ></search-simple-pager>
+          </div>
+        </div>
+      </div>
+    </search-root>
+  </body>
+</html>

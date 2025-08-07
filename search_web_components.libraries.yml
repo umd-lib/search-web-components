@@ -1,0 +1,3 @@
+components:
+  js:
+    lit/search-web-components.min.js: { attributes: { type: module }, minified: true, preprocess: false }

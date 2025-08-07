@@ -1,0 +1,67 @@
+search_api_decoupled.search_api_endpoint.*.third_party.search_web_components:
+  type: mapping
+  label: 'Search Web Components'
+  mapping:
+    sorts:
+      type: sequence
+      label: Sorts
+      sequence:
+        type: mapping
+        mapping:
+          label:
+            type: label
+            label: Sort option label
+          key:
+            type: string
+            label: Sort option field machine name
+          order:
+            type: string
+            label: Sort option sort order(asc or desc)
+    page_sizes:
+      type: sequence
+      label: Page Sizes
+      sequence:
+        type: mapping
+        mapping:
+          label:
+            type: label
+            label: Page size option label
+          key:
+            type: string
+            label: Page size option size
+    displays:
+      type: sequence
+      label: Displays
+      sequence:
+        type: mapping
+        mapping:
+          label:
+            type: label
+            label: Display option label
+          key:
+            type: string
+            label: Display option key
+    results:
+      type: mapping
+      label: Result elements
+      mapping:
+        field:
+          type: string
+          label: Result field to use for mapping
+        mappings:
+          type: sequence
+          label: Element mappings
+          sequence:
+            type: mapping
+            mapping:
+              element:
+                type: string
+                label: Element to map to
+              keys:
+                type: sequence
+                label: Result keys to map
+                sequence:
+                  type: string
+              settings:
+                type: ignore
+                label: Settings for this mapping

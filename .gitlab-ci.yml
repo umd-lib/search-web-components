@@ -1,0 +1,133 @@
+include:
+  ################
+  # DrupalCI includes:
+  # As long as you include this, any future includes added by the Drupal Association will be accessible to your pipelines automatically.
+  # View these include files at https://git.drupalcode.org/project/gitlab_templates/
+  ################
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+################
+# Pipeline configuration variables
+#
+# These are the variables provided to the Run Pipeline form that a user may want to override.
+#
+# Docs at https://git.drupalcode.org/project/gitlab_templates/-/blob/1.0.x/includes/include.drupalci.variables.yml
+################
+variables:
+  SKIP_ESLINT: '1'
+  RELEASE_TYPE:
+    value: "alpha"
+    options:
+      - "alpha"
+      - "beta"
+      - "patch"
+      - "minor"
+      - "major"
+    description: "Create new release"
+  _CSPELL_IGNORE_PATHS: 'lit/wiremock/*, lit/custom-elements.json, lit/src/MockData.ts, lit/wdio.conf.ts, lit/web-dev-server.config.js, lit/web-test-runner.config.js'
+
+cache:
+  paths:
+    - lit/node_modules/
+
+stages:
+  - build
+  - validate
+  - test
+  - "dev build"
+  - publish
+
+.nvm-npm-install: &nvm-npm-install
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  - export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" --no-use
+  - eval "[ -f .nvmrc ] && nvm install || nvm install ${NODE_VERSION}"
+  - node --version
+  - npm --version
+  - ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/node" "/usr/local/bin/node"
+  - ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/npm" "/usr/local/bin/npm"
+  - nvm install
+  - nvm use
+  - cd lit
+  - npm install
+  - cd ..
+
+pages:
+  stage: publish
+  script:
+    - *nvm-npm-install
+    - cd lit
+    - npm run storybook:build
+    - mv storybook-static ../public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+
+build_js_dev:
+  stage: "dev build"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "1.0.x"
+      changes:
+        - lit/**/*
+  script:
+    - *nvm-npm-install
+    - cd lit
+    - npm run bundle
+    - git config user.email "kyle@truesummit.dev"
+    - git config user.name "ci-bot"
+    - git checkout $CI_COMMIT_BRANCH
+    - git remote set-url origin https://oauth2:$GITLAB_TOKEN@git.drupalcode.org/project/search_web_components.git
+    - git add .
+    - git status
+    - npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+    - npm run release:dev
+
+wdio:
+  stage: test
+  coverage: '/All files\s+\|\s+\d+\.?\d*\s+\|\s+\d+\.?\d*\s+\|\s+\d+\.?\d*\s+\|\s+(\d+\.?\d*)/'
+  before_script:
+    - apt-get update && apt-get install -y wget gnupg2
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+    - apt-get update && apt-get install -y google-chrome-stable
+    - apt-get update && apt-get install -y default-jre
+    - java -version
+  script:
+    - *nvm-npm-install
+    - cd lit
+    - npm run wdio
+  artifacts:
+    expose_as: wdio
+    when: always
+    paths:
+      - lit/coverage
+      - lit/junit
+    expire_in: 1 month
+    reports:
+      junit: lit/junit/*.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: lit/coverage/cobertura-coverage.xml
+
+release:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "1.0.x" && $CI_PIPELINE_SOURCE == "web"
+      when: always
+    - when: never
+  stage: publish
+  script:
+    - *nvm-npm-install
+    - cd lit
+    - npm run bundle
+    - git config user.email "kyle@truesummit.dev"
+    - git config user.name "ci-bot"
+    - git remote set-url origin https://oauth2:$GITLAB_TOKEN@git.drupalcode.org/project/search_web_components.git
+    - git checkout $CI_COMMIT_BRANCH
+    - npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+    - npm run release:$RELEASE_TYPE

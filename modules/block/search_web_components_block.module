@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for search_web_components_block module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function search_web_components_block_theme() {
+  $default = [
+    'variables' => [
+      'search_attributes' => NULL,
+    ],
+  ];
+
+  return [
+    'swc_facet_button' => $default,
+    'swc_facet_checkbox' => $default,
+    'swc_facet_dropdown' => $default,
+    'swc_facet_dropdown_html' => $default,
+    'swc_search_applied_facets' => $default,
+    'swc_search_box' => $default,
+    'swc_search_dialog_toggle' => $default,
+    'swc_search_input' => $default,
+    'swc_search_no_results_message' => [
+      'variables' => [
+        'search_attributes' => NULL,
+        'noResultsContent' => NULL,
+      ],
+    ],
+    'swc_search_result_summary' => $default,
+    'swc_search_results' => $default,
+    'swc_search_results_per_page' => $default,
+    'swc_search_results_switcher' => $default,
+    'swc_search_simple_pager' => $default,
+    'swc_search_sort' => $default,
+  ];
+}

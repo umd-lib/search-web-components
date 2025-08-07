@@ -1,0 +1,6 @@
+services:
+  search_api_web_components.endpoint_subscriber:
+    class: Drupal\search_web_components\EventSubscriber\EndpointEventSubscriber
+    arguments: []
+    tags:
+      - { name: event_subscriber }

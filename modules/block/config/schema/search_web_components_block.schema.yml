@@ -1,0 +1,341 @@
+block.settings.swc_facet_button:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    endpoint:
+      type: string
+      label: Endpoint
+    facet:
+      type: string
+      label: Facet
+    key:
+      type: string
+      label: Key
+    overrideLabel:
+      type: string
+      label: 'Override label'
+    showLabel:
+      type: boolean
+      label: 'Show Label'
+    showCount:
+      type: boolean
+      label: 'Show count'
+    showReset:
+      type: boolean
+      label: 'Show reset'
+    resetText:
+      type: string
+      label: 'Reset text'
+    collapsible:
+      type: boolean
+      label: 'Collapsible'
+    closed:
+      type: boolean
+      label: 'Closed'
+    showCountInCollapseLabel:
+      type: boolean
+      label: 'Show count in collapsible label'
+    preferAttributes:
+      type: boolean
+      label: 'Prefer attributes'
+
+block.settings.swc_facet_checkbox:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    endpoint:
+      type: string
+      label: Endpoint
+    facet:
+      type: string
+      label: Facet
+    key:
+      type: string
+      label: Key
+    overrideLabel:
+      type: string
+      label: 'Override label'
+    showLabel:
+      type: boolean
+      label: 'Show Label'
+    showCount:
+      type: boolean
+      label: 'Show count'
+    showReset:
+      type: boolean
+      label: 'Show reset'
+    resetText:
+      type: string
+      label: 'Reset text'
+    collapsible:
+      type: boolean
+      label: 'Collapsible'
+    closed:
+      type: boolean
+      label: 'Closed'
+    showCountInCollapseLabel:
+      type: boolean
+      label: 'Show count in collapsible label'
+    preferAttributes:
+      type: boolean
+      label: 'Prefer attributes'
+    useRadios:
+      type: boolean
+      label: 'Use radios'
+
+block.settings.swc_facet_dropdown:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    endpoint:
+      type: string
+      label: Endpoint
+    facet:
+      type: string
+      label: Facet
+    key:
+      type: string
+      label: Key
+    overrideLabel:
+      type: string
+      label: 'Override label'
+    showLabel:
+      type: boolean
+      label: 'Show Label'
+    showCount:
+      type: boolean
+      label: 'Show count'
+    showReset:
+      type: boolean
+      label: 'Show reset'
+    resetText:
+      type: string
+      label: 'Reset text'
+    collapsible:
+      type: boolean
+      label: 'Collapsible'
+    closed:
+      type: boolean
+      label: 'Closed'
+    showCountInCollapseLabel:
+      type: boolean
+      label: 'Show count in collapsible label'
+    preferAttributes:
+      type: boolean
+      label: 'Prefer attributes'
+    selectLabel:
+      type: string
+      label: 'Select label'
+
+block.settings.swc_facet_dropdown_html:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    endpoint:
+      type: string
+      label: Endpoint
+    facet:
+      type: string
+      label: Facet
+    key:
+      type: string
+      label: Key
+    overrideLabel:
+      type: string
+      label: 'Override label'
+    showLabel:
+      type: boolean
+      label: 'Show Label'
+    showCount:
+      type: boolean
+      label: 'Show count'
+    showReset:
+      type: boolean
+      label: 'Show reset'
+    resetText:
+      type: string
+      label: 'Reset text'
+    collapsible:
+      type: boolean
+      label: 'Collapsible'
+    closed:
+      type: boolean
+      label: 'Closed'
+    showCountInCollapseLabel:
+      type: boolean
+      label: 'Show count in collapsible label'
+    preferAttributes:
+      type: boolean
+      label: 'Prefer attributes'
+    required:
+      type: boolean
+      label: 'Required'
+    htmlSelectLabel:
+      type: string
+      label: 'HTML select label'
+    multipleSelect:
+      type: boolean
+      label: 'Multiple select'
+
+block.settings.swc_search_applied_facets:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    removeText:
+      type: string
+      label: 'Remove text'
+    resetText:
+      type: string
+      label: 'Reset text'
+    showReset:
+      type: boolean
+      label: 'Show count in collapsible label'
+    showIndividual:
+      type: boolean
+      label: 'Prefer attributes'
+
+block.settings.swc_search_box:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    url:
+      type: string
+      label: 'URL'
+    submitText:
+      type: string
+      label: 'Submit text'
+    ariaLabelText:
+      type: string
+      label: 'Aria label text'
+    placeHolderText:
+      type: string
+      label: 'Placeholder text'
+
+block.settings.swc_search_dialog_toggle:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    aboveBreakpointText:
+      type: string
+      label: 'Above breakpoint text'
+    dialogOpenText:
+      type: string
+      label: 'Dialog open text'
+    dialogCloseText:
+      type: string
+      label: 'Dialog close text'
+    showAppliedCount:
+      type: boolean
+      label: 'Show applied count'
+
+block.settings.swc_search_input:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    labelText:
+      type: string
+      label: 'Label text'
+    placeHolderText:
+      type: string
+      label: 'Placeholder text'
+    clearText:
+      type: string
+      label: 'Clear text'
+
+block.settings.swc_search_no_results_message:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    noResultsContent:
+      type: text_format
+      label: 'No results content'
+
+block.settings.swc_search_results:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    resultField:
+      type: string
+      label: 'Result field'
+    mappings:
+      type: string
+      label: 'Mappings'
+
+block.settings.swc_search_results_per_page:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    type:
+      type: string
+      label: 'Type'
+    labelText:
+      type: string
+      label: 'Label text'
+    options:
+      type: string
+      label: 'Options'
+    htmlSelectLabel:
+      type: string
+      label: 'HTML select label'
+
+block.settings.swc_search_results_switcher:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    options:
+      type: string
+      label: 'Options'
+
+block.settings.swc_search_result_summary:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    summaryText:
+      type: string
+      label: 'Summary text'
+
+block.settings.swc_search_simple_pager:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    prevLabel:
+      type: string
+      label: 'Previous label'
+    nextLabel:
+      type: string
+      label: 'Next label'
+    firstLabel:
+      type: string
+      label: 'First label'
+    lastLabel:
+      type: string
+      label: 'Last label'
+    showNextPrev:
+      type: boolean
+      label: 'Show next/previous'
+    showFirstLast:
+      type: boolean
+      label: 'Show first/last'
+    pagesToDisplay:
+      type: integer
+      label: 'Pages to display'
+    firstLastPagesToDisplay:
+      type: integer
+      label: 'First last pages to display'
+
+block.settings.swc_search_sort:
+  type: block_settings
+  label: 'Settings'
+  mapping:
+    type:
+      type: string
+      label: 'Type'
+    labelText:
+      type: string
+      label: 'Label text'
+    sorts:
+      type: string
+      label: 'Sorts'
+    htmlSelectLabel:
+      type: string
+      label: 'HTML select label'

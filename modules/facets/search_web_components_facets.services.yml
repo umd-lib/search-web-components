@@ -1,0 +1,6 @@
+services:
+  search_api_web_components_facets.endpoint_subscriber:
+    class: Drupal\search_web_components_facets\EventSubscriber\EndpointEventSubscriber
+    arguments: [ '@facets.manager', '@plugin.manager.facets.query_type' ]
+    tags:
+      - { name: event_subscriber }

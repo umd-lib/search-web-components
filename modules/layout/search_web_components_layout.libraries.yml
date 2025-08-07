@@ -1,0 +1,13 @@
+onecol:
+  css:
+    component:
+      layouts/onecol/styles.css: {}
+  dependencies:
+    - search_web_components/components
+
+twocol:
+  css:
+    component:
+      layouts/twocol/styles.css: {}
+  dependencies:
+    - search_web_components/components

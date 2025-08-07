@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/search/mock-index",
+    "queryParameters": {
+      "page": {
+        "equalTo": "1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "page-1.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

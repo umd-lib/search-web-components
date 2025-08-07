@@ -1,0 +1,64 @@
+search_web_components_onecol:
+  label: 'Search Components: One Column'
+  category: 'Search'
+  class: '\Drupal\search_web_components_layout\Plugin\Layout\OneColumn'
+  template: layouts/onecol/search-web-components--layout--onecol
+  library: search_web_components_layout/onecol
+  regions:
+    main:
+      label: Main content
+  icon_map:
+    - [main]
+
+search_web_components_twocol:
+  label: 'Search Components: Two Column'
+  category: 'Search'
+  class: '\Drupal\search_web_components_layout\Plugin\Layout\TwoColumn'
+  template: layouts/twocol/search-web-components--layout--twocol
+  library: search_web_components_layout/twocol
+  default_region: top
+  icon_map:
+    - [topFirst]
+    - [topSecond]
+    - [topThird]
+    - [firstFirst, secondFirst]
+    - [firstSecond, secondSecond]
+    - [firstThird, secondThird]
+    - [firstFourth, secondFourth]
+    - [firstFifth, secondFifth]
+    - [bottomFirst]
+    - [bottomSecond]
+    - [bottomThird]
+  regions:
+    topFirst:
+      label: Top First
+    topSecond:
+      label: Top Second
+    topThird:
+      label: Top Third
+    bottomFirst:
+      label: Bottom First
+    bottomSecond:
+      label: Bottom Second
+    bottomThird:
+      label: Bottom Third
+    firstFirst:
+      label: Left First
+    firstSecond:
+      label: Left Second
+    firstThird:
+      label: Left Third(Dialog controlled)
+    firstFourth:
+      label: Left Fourth
+    firstFifth:
+      label: Left Fifth
+    secondFirst:
+      label: Right First
+    secondSecond:
+      label: Right Second
+    secondThird:
+      label: Right Third
+    secondFourth:
+      label: Right Fourth
+    secondFifth:
+      label: Right Fifth

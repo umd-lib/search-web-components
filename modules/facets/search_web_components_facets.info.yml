@@ -1,0 +1,14 @@
+name: 'Search Web Components: Facets'
+type: module
+description: 'Additional facet customizations to better support search web components'
+package: Search
+core_version_requirement: ^10 || ^11
+dependencies:
+  - search_web_components:search_web_components
+  - facets:facets
+  - search_api_decoupled:search_api_decoupled_facets
+
+# Information added by Drupal.org packaging script on 2024-10-28
+version: '1.0.0-alpha6'
+project: 'search_web_components'
+datestamp: 1730123767

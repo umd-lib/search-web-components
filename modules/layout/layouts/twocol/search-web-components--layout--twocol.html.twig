@@ -1,0 +1,120 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a two-column layout.
+ *
+ * Available variables:
+ * - in_preview: Whether the plugin is being rendered in preview mode.
+ * - content: The content for this layout.
+ * - attributes: HTML attributes for the layout <div>.
+ *
+ * @ingroup themeable
+ */
+#}
+{% if content %}
+  <div{{ attributes }}>
+    <search-root{{ settings.search_root_attributes }}>
+      {% if content.topFirst %}
+        <div {{ region_attributes.topFirst.addClass('layout__region', 'layout__region--top-first') }}>
+          {{ content.topFirst }}
+        </div>
+      {% endif %}
+      {% if content.topSecond %}
+        <div {{ region_attributes.topSecond.addClass('layout__region', 'layout__region--top-second') }}>
+          {{ content.topSecond }}
+        </div>
+      {% endif %}
+      {% if content.topThird %}
+        <div {{ region_attributes.topThird.addClass('layout__region', 'layout__region--top-third') }}>
+          {{ content.topThird }}
+        </div>
+      {% endif %}
+
+      <div class="layout__region--middle">
+        {% if content.firstFirst or content.firstSecond or content.firstThird or content.firstFourth or content.firstFifth %}
+          <div class="layout__region layout__region--first">
+            {% if content.firstFirst %}
+              <div {{ region_attributes.firstFirst.addClass('layout__region', 'layout__region--first-first') }}>
+                {{ content.firstFirst }}
+              </div>
+            {% endif %}
+            {% if content.firstSecond %}
+              <div {{ region_attributes.firstSecond.addClass('layout__region', 'layout__region--first-second') }}>
+                {{ content.firstSecond }}
+              </div>
+            {% endif %}
+            {% if content.firstThird %}
+              <div {{ region_attributes.firstThird.addClass('layout__region', 'layout__region--first-third') }}>
+                {% if settings.use_dialog and not in_preview %}
+                  <search-dialog-pane {{ settings.search_dialog }}>
+                {% endif %}
+
+                {{ content.firstThird }}
+
+                {% if settings.use_dialog and not in_preview %}
+                  </search-dialog-pane>
+                {% endif %}
+              </div>
+            {% endif %}
+            {% if content.firstFourth %}
+              <div {{ region_attributes.firstFourth.addClass('layout__region', 'layout__region--first-fourth') }}>
+                {{ content.firstFourth }}
+              </div>
+            {% endif %}
+            {% if content.firstFifth %}
+              <div {{ region_attributes.firstFifth.addClass('layout__region', 'layout__region--first-fifth') }}>
+                {{ content.firstFifth }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if content.secondFirst or content.secondSecond or content.secondThird or content.secondFourth or content.secondFifth %}
+          <div class="layout__region layout__region--second">
+            {% if content.secondFirst %}
+              <div {{ region_attributes.secondFirst.addClass('layout__region', 'layout__region--second-first') }}>
+                {{ content.secondFirst }}
+              </div>
+            {% endif %}
+            {% if content.secondSecond %}
+              <div {{ region_attributes.secondSecond.addClass('layout__region', 'layout__region--second-second') }}>
+                {{ content.secondSecond }}
+              </div>
+            {% endif %}
+            {% if content.secondThird %}
+              <div {{ region_attributes.secondThird.addClass('layout__region', 'layout__region--second-third') }}>
+                {{ content.secondThird }}
+              </div>
+            {% endif %}
+            {% if content.secondFourth %}
+              <div {{ region_attributes.secondFourth.addClass('layout__region', 'layout__region--second-fourth') }}>
+                {{ content.secondFourth }}
+              </div>
+            {% endif %}
+            {% if content.secondFifth %}
+              <div {{ region_attributes.secondFifth.addClass('layout__region', 'layout__region--second-fifth') }}>
+                {{ content.secondFifth }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if content.bottomFirst %}
+        <div {{ region_attributes.bottomFirst.addClass('layout__region', 'layout__region--bottom-first') }}>
+          {{ content.bottomFirst }}
+        </div>
+      {% endif %}
+      {% if content.bottomSecond %}
+        <div {{ region_attributes.bottomSecond.addClass('layout__region', 'layout__region--bottom-second') }}>
+          {{ content.bottomSecond }}
+        </div>
+      {% endif %}
+      {% if content.bottomThird %}
+        <div {{ region_attributes.bottomThird.addClass('layout__region', 'layout__region--bottom-third') }}>
+          {{ content.bottomThird }}
+        </div>
+      {% endif %}
+    </search-root>
+  </div>
+{% endif %}

@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for search_web_components_facets module.
+ */
+
+use Drupal\search_web_components_facets\Form\FacetForm;
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function search_web_components_facets_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['facets_facet'])) {
+    $entity_types['facets_facet']->setFormClass('edit', FacetForm::class);
+  }
+}

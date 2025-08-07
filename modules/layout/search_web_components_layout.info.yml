@@ -1,0 +1,13 @@
+name: 'Search Web Components: Layouts'
+type: module
+description: 'Search Layouts to place search web components in'
+package: Search
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:layout_builder
+  - search_web_components:search_web_components
+
+# Information added by Drupal.org packaging script on 2024-10-28
+version: '1.0.0-alpha6'
+project: 'search_web_components'
+datestamp: 1730123767

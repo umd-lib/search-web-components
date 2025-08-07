@@ -1,0 +1,7 @@
+/dist/
+/node_modules/
+/lib/
+/test/
+/storybook-static/
+/coverage/
+/junit/

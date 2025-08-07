@@ -1,0 +1,23 @@
+{
+    "name": "drupal/search_web_components",
+    "type": "drupal-module",
+    "description": "A library of Lit web components to use with Drupal' search_api_decoupled module.",
+    "homepage": "https://www.drupal.org/project/search_web_components",
+    "license": "GPL-2.0+",
+    "keywords": [
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/search_web_components",
+        "source": "https://git.drupalcode.org/project/search_web_components"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "drupal/search_api_decoupled": "^1.0@alpha"
+    },
+    "require-dev": {
+        "drupal/facets": "*"
+    },
+    "suggest": {
+        "drupal/facets": "Required to use facets."
+    }
+}

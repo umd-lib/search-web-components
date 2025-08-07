@@ -1,0 +1,22 @@
+search_web_components.results_mapping.mapping_form:
+  path: '/admin/config/search/search-api/endpoints/{endpoint}/edit/mapping/{index}'
+  defaults:
+    _form: '\Drupal\search_web_components\Form\ResultMappingForm'
+    _title: 'Edit mapping'
+  requirements:
+    _permission: 'administer search_api_endpoint'
+  options:
+    parameters:
+      endpoint:
+        type: entity:search_api_endpoint
+search_web_components.results_mapping.mapping_delete_form:
+  path: '/admin/config/search/search-api/endpoints/{endpoint}/delete/mapping/{index}'
+  defaults:
+    _form: '\Drupal\search_web_components\Form\ResultMappingDeleteForm'
+    _title: 'Delete mapping'
+  requirements:
+    _permission: 'administer search_api_endpoint'
+  options:
+    parameters:
+      endpoint:
+        type: entity:search_api_endpoint

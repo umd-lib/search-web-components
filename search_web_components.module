@@ -1,0 +1,305 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for search_web_components module.
+ *
+ * @phpcs:disable Drupal.Semantics.FunctionT.NotLiteralString
+ */
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\facets\Plugin\facets\widget\CheckboxWidget;
+use Drupal\facets\Plugin\facets\widget\LinksWidget;
+use Drupal\search_api_decoupled\SearchApiEndpointInterface;
+
+/**
+ * Implements hook_widget_plugin_info_alter().
+ */
+function search_web_components_widget_plugin_info_alter(&$definitions) {
+  // Reset the classes for the default link and checkbox facet widgets to avoid
+  // confusion.
+  if (!\Drupal::moduleHandler()->moduleExists('search_api_decoupled_ui')) {
+    \Drupal::logger('test')->info('here');
+    $definitions['links']['class'] = LinksWidget::class;
+    $definitions['checkbox']['class'] = CheckboxWidget::class;
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function search_web_components_search_api_endpoint_presave(SearchApiEndpointInterface $search_api_endpoint) {
+  $settings = $search_api_endpoint->getThirdPartySettings('search_web_components');
+
+  $swc_page_options = array_map(function ($opt) {
+    return $opt['key'];
+  }, $settings['page_sizes'] ?? []);
+
+  $items_per_page_options = $search_api_endpoint->getItemsPerPage();
+  foreach ($swc_page_options as $option) {
+    if (!in_array($option, $items_per_page_options)) {
+      $items_per_page_options[] = $option;
+    }
+  }
+  $search_api_endpoint->set('items_per_page_options', $items_per_page_options);
+
+  if (!$search_api_endpoint->isNew()) {
+    // Ensure that mapping indexes are numeric so json serialization creates an
+    // array of objects instead of an object of objects.
+    $results = $search_api_endpoint->getThirdPartySetting('search_web_components', 'results');
+    $results['mappings'] = array_values($results['mappings']);
+    $search_api_endpoint->setThirdPartySetting('search_web_components', 'results', $results);
+
+    return;
+  }
+
+  // Set some sensible defaults when new endpoints are created.
+  if (empty($settings['sorts'])) {
+    $search_api_endpoint->setThirdPartySetting('search_web_components', 'sorts', [
+      [
+        'key' => 'search_api_relevance',
+        'order' => 'desc',
+        'label' => 'Relevance',
+      ],
+    ]);
+  }
+  if (empty($settings['page_sizes'])) {
+    $search_api_endpoint->setThirdPartySetting('search_web_components', 'page_sizes', [
+      [
+        'key' => '10',
+        'label' => '10',
+      ],
+    ]);
+  }
+  if (empty($settings['displays'])) {
+    $search_api_endpoint->setThirdPartySetting('search_web_components', 'displays', [
+      [
+        'key' => 'list',
+        'label' => 'List',
+      ],
+    ]);
+  }
+  if (empty($settings['results']['mappings'])) {
+    $search_api_endpoint->setThirdPartySetting('search_web_components', 'results', [
+      'field' => $settings['results']['field'] ?? '',
+      'mappings' => [
+        [
+          'keys' => ['default'],
+          'element' => 'search-result-element-default',
+          'settings' => '',
+        ],
+      ],
+    ]);
+  }
+}
+
+/**
+ * Add additional SWC fields to the search_api_endpoint config object form.
+ */
+function search_web_components_form_search_api_endpoint_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\search_api_decoupled\SearchApiEndpointInterface $config */
+  $config = $form_state->getFormObject()->getEntity();
+
+  $form['swc'] = [
+    '#type' => 'fieldset',
+    '#title' => 'Search Web Components',
+  ];
+
+  $sorts = $config->getThirdPartySetting('search_web_components', 'sorts') ?? [];
+  $sorts = array_map(function ($opt) {
+    return $opt['key'] . '|' . $opt['order'] . '|' . $opt['label'];
+  }, $sorts);
+
+  $page_sizes = $config->getThirdPartySetting('search_web_components', 'page_sizes') ?? [];
+  $page_sizes = array_map(function ($opt) {
+    return $opt['key'] . '|' . $opt['label'];
+  }, $page_sizes);
+
+  $displays = $config->getThirdPartySetting('search_web_components', 'displays') ?? [];
+  $displays = array_map(function ($opt) {
+    return $opt['key'] . '|' . $opt['label'];
+  }, $displays);
+
+  $form['swc']['swc_sorts'] = [
+    '#type' => 'textarea',
+    '#title' => 'Sorts',
+    '#default_value' => implode("\n", $sorts),
+    '#description' => t('Options available for the <code>search-sort</code> component. One sort option per line. Each line should have a field name, direction(asc or desc), and label separated by a | i.e. title|desc|Z-A'),
+  ];
+  $form['swc']['swc_page_sizes'] = [
+    '#type' => 'textarea',
+    '#title' => 'Page Sizes',
+    '#default_value' => implode("\n", $page_sizes),
+    '#description' => t('Options available for the <code>search-results-per-page</code> component. One page size per line. Each line should have a page size and label separated by a | i.e. 10|Ten'),
+  ];
+  $form['swc']['swc_displays'] = [
+    '#type' => 'textarea',
+    '#title' => 'Displays',
+    '#default_value' => implode("\n", $displays),
+    '#description' => t('Options available for the <code>search-results-switcher</code> component. One display per line. Each line should have a display name and label separated by a | i.e. list|List'),
+  ];
+
+  $form['swc']['swc_result_mapping'] = [
+    '#type' => 'fieldset',
+    '#title' => 'Result mappings',
+    '#description' => t('Map results to the component to use for rendering them in the <code>search-results</code> component.'),
+  ];
+
+  $form['swc']['swc_result_mapping']['swc_result_field'] = [
+    '#type' => 'textfield',
+    '#title' => 'Result field',
+    '#default_value' => $config->getThirdPartySetting('search_web_components', 'results')['field'],
+    '#description' => t('The field in the index to use for mapping a result to an element'),
+  ];
+
+  // @todo static::ajaxSubmit() requires data-drupal-selector to be the same
+  //   between the various Ajax requests. A bug in
+  //   \Drupal\Core\Form\FormBuilder prevents that from happening unless
+  //   $form['#id'] is also the same. Normally, #id is set to a unique HTML
+  //   ID via Html::getUniqueId(), but here we bypass that in order to work
+  //   around the data-drupal-selector bug. This is okay so long as we
+  //   assume that this form only ever occurs once on a page. Remove this
+  //   workaround in https://www.drupal.org/node/2897377.
+  $form['#id'] = Html::getId($form_state->getBuildInfo()['form_id']);
+  $form['swc']['swc_result_mapping']['mappings'] = [
+    '#type' => 'table',
+    // Turn off input processing for this table, it is used purely for
+    // presentational purposes.
+    '#input' => FALSE,
+    '#header' => [
+      ['data' => t('Keys')],
+      ['data' => t('Element')],
+      ['data' => t('Settings')],
+      ['data' => t('Operations')],
+    ],
+    '#empty' => t('No mappings defined.'),
+  ];
+
+  foreach ($config->getThirdPartySetting('search_web_components', 'results')['mappings'] as $index => $mapping) {
+    $mapping_form = &$form['swc']['swc_result_mapping']['mappings'][$index];
+
+    $mapping_form['keys'] = [
+      '#markup' => implode('<br/>', $mapping['keys']),
+    ];
+    $mapping_form['element'] = [
+      '#markup' => '<code>' . $mapping['element'] . '</code>',
+    ];
+    $mapping_form['settings'] = ['#markup' => '<code>' . ($mapping['settings'] ? Json::encode($mapping['settings']) : '') . '</code>'];
+
+    $mapping_form['operations'] = [
+      '#type' => 'operations',
+      '#links' => [
+        'edit' => [
+          'title' => t('Edit'),
+          'url' => Url::fromRoute('search_web_components.results_mapping.mapping_form', [
+            'endpoint' => $config->id(),
+            'index' => $index,
+          ]),
+          'attributes' => [
+            'class' => ['use-ajax'],
+            'data-dialog-type' => 'modal',
+            'data-dialog-options' => Json::encode([
+              'width' => '95%',
+            ]),
+          ],
+        ],
+        'delete' => [
+          'title' => t('Delete'),
+          'url' => Url::fromRoute('search_web_components.results_mapping.mapping_delete_form', [
+            'endpoint' => $config->id(),
+            'index' => $index,
+          ]),
+          'attributes' => [
+            'class' => ['use-ajax'],
+            'data-dialog-type' => 'modal',
+            'data-dialog-options' => Json::encode([
+              'width' => 800,
+            ]),
+          ],
+        ],
+      ],
+    ];
+  }
+
+  $form['swc']['swc_result_mapping']['add_new'] = [
+    '#type' => 'link',
+    '#title' => t('Add new mapping'),
+    '#url' => Url::fromRoute('search_web_components.results_mapping.mapping_form', [
+      'endpoint' => $config->id(),
+      'index' => '_new',
+    ]),
+    '#attributes' => [
+      'class' => [
+        'button', 'use-ajax',
+      ],
+      'data-dialog-type' => 'modal',
+      'data-dialog-options' => Json::encode([
+        'width' => 700,
+      ]),
+    ],
+  ];
+
+  $form['#entity_builders'][] = 'search_web_components_endpoint_edit_form_builder';
+}
+
+/**
+ * Save additional SWC values to the search_api_endpoint config object.
+ */
+function search_web_components_endpoint_edit_form_builder($entity_type, SearchApiEndpointInterface $search_endpoint, &$form, FormStateInterface $form_state) {
+  $source_sorts = $form_state->getValue('swc_sorts');
+  $source_sorts = explode("\n", $source_sorts);
+  $source_sorts = array_filter($source_sorts);
+  $sorts = [];
+  foreach ($source_sorts as $sort) {
+    if (substr_count($sort, '|') !== 2) {
+      continue;
+    }
+    [$key, $order, $label] = explode('|', $sort);
+    $sorts[] = [
+      'key' => trim($key),
+      'order' => trim($order),
+      'label' => t(trim($label)),
+    ];
+  }
+
+  $source_page_sizes = $form_state->getValue('swc_page_sizes');
+  $source_page_sizes = explode("\n", $source_page_sizes);
+  $source_page_sizes = array_filter($source_page_sizes);
+  $sizes = [];
+  foreach ($source_page_sizes as $page_size) {
+    if (substr_count($page_size, '|') !== 1) {
+      continue;
+    }
+    [$key, $label] = explode('|', $page_size);
+    $sizes[] = [
+      'key' => trim($key),
+      'label' => t(trim($label)),
+    ];
+  }
+
+  $source_displays = $form_state->getValue('swc_displays');
+  $source_displays = explode("\n", $source_displays);
+  $source_displays = array_filter($source_displays);
+  $displays = [];
+  foreach ($source_displays as $display) {
+    if (substr_count($display, '|') !== 1) {
+      continue;
+    }
+    [$key, $label] = explode('|', $display);
+    $displays[] = [
+      'key' => trim($key),
+      'label' => t(trim($label)),
+    ];
+  }
+
+  $search_endpoint->setThirdPartySetting('search_web_components', 'sorts', $sorts);
+  $search_endpoint->setThirdPartySetting('search_web_components', 'page_sizes', $sizes);
+  $search_endpoint->setThirdPartySetting('search_web_components', 'displays', $displays);
+
+  $results = $search_endpoint->getThirdPartySetting('search_web_components', 'results');
+  $results['field'] = $form_state->getValue('swc_result_field');
+  $search_endpoint->setThirdPartySetting('search_web_components', 'results', $results);
+}

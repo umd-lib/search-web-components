@@ -1,0 +1,119 @@
+/*
+ * @file
+ * Provides the layout styles for two-column layout section.
+ */
+
+.search-web-components--layout--twocol > search-root {
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+
+  .layout__region--top,
+  .layout__region--bottom {
+    min-width: 100%;
+  }
+
+  .layout__region--middle {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .layout__region--second {
+    flex-direction: row;
+    flex-basis: 100%;
+
+    > .layout__region {
+      flex: 0 1 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+.search-web-components--layout--twocol > search-root > .layout__region {
+  flex: 0 1 100%;
+  max-width: 100%;
+}
+
+@media screen and (min-width: 40em) {
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--50-50
+    > search-root
+    .layout__region--first,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--50-50
+    > search-root
+    .layout__region--second {
+    flex: 0 1 50%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--33-67
+    > search-root
+    .layout__region--first,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--67-33
+    > search-root
+    .layout__region--second {
+    flex: 0 1 33%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--33-67
+    > search-root
+    .layout__region--second,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--67-33
+    > search-root
+    .layout__region--first {
+    flex: 0 1 67%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--25-75
+    > search-root
+    .layout__region--first,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--75-25
+    > search-root
+    .layout__region--second {
+    flex: 0 1 25%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--25-75
+    > search-root
+    .layout__region--second,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--75-25
+    > search-root
+    .layout__region--first {
+    flex: 0 1 75%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--15-85
+    > search-root
+    .layout__region--first,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--85-15
+    > search-root
+    .layout__region--second {
+    flex: 0 1 85%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--85-15
+    > search-root
+    .layout__region--second,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--15-85
+    > search-root
+    .layout__region--first {
+    flex: 0 1 25%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--20-80
+    > search-root
+    .layout__region--first,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--80-20
+    > search-root
+    .layout__region--second {
+    flex: 0 1 80%;
+  }
+
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--80-20
+    > search-root
+    .layout__region--second,
+  .search-web-components--layout--twocol.search-web-components--layout--twocol--20-80
+    > search-root
+    .layout__region--first {
+    flex: 0 1 20%;
+  }
+}

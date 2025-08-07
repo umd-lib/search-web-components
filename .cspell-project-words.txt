@@ -1,0 +1,6 @@
+autodocs
+nums
+wdio
+NONSWC
+keytest
+Labeltest
