@@ -29,6 +29,7 @@ final class SearchBoxBlock extends BlockBase {
       'submitText' => '',
       'ariaLabelText' => '',
       'placeHolderText' => '',
+      'componentLabelText' => 'Search',
     ];
   }
 
@@ -56,6 +57,11 @@ final class SearchBoxBlock extends BlockBase {
       '#title' => $this->t('Placeholder text for search input'),
       '#default_value' => $this->configuration['placeHolderText'],
     ];
+    $form['componentLabelText'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Component label for search input'),
+      '#default_value' => $this->configuration['componentLabelText'],
+    ];
     return $form;
   }
 
@@ -67,6 +73,7 @@ final class SearchBoxBlock extends BlockBase {
     $this->configuration['submitText'] = $form_state->getValue('submitText');
     $this->configuration['ariaLabelText'] = $form_state->getValue('ariaLabelText');
     $this->configuration['placeHolderText'] = $form_state->getValue('placeHolderText');
+    $this->configuration['componentLabelText'] = $form_state->getValue('componentLabelText');
   }
 
   /**
@@ -87,6 +94,9 @@ final class SearchBoxBlock extends BlockBase {
     }
     if ($config['placeHolderText']) {
       $searchAttributes->setAttribute('placeHolderText', $this->t($config['placeHolderText'])->__toString());
+    }
+    if ($config['componentLabelText']) {
+      $searchAttributes->setAttribute('componentLabelText', $this->t($config['componentLabelText'])->__toString());
     }
 
     return [

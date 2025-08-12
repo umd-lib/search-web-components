@@ -210,6 +210,9 @@ block.settings.swc_search_box:
     placeHolderText:
       type: string
       label: 'Placeholder text'
+    componentLabelText:
+      type: string
+      label: 'Component Label text'
 
 block.settings.swc_search_dialog_toggle:
   type: block_settings

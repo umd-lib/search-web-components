@@ -16,17 +16,19 @@ export default meta;
 type Story = StoryObj;
 
 export const Primary: Story = {
-  render: ({url, submitText, ariaLabelText, placeHolderText}) =>
+  render: ({url, submitText, ariaLabelText, placeHolderText, componentLabelText}) =>
     html`<search-box
       url="${url}"
       submitText="${submitText}"
       ariaLabelText="${ariaLabelText}"
       placeHolderText="${placeHolderText}"
+      componentLabelText="${componentLabelText}"
     ></search-box>`,
   args: {
     url: '#',
     submitText: 'Search',
     ariaLabelText: 'Search',
     placeHolderText: 'Search',
+    componentLabelText: 'Search',
   },
 };

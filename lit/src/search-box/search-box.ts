@@ -30,6 +30,12 @@ export class SearchBox extends LitElement {
   @property({attribute: true})
   placeHolderText = '';
 
+  /**
+   * The component label text for the search box.
+   */
+  @property({attribute: true})
+  componentLabelText = '';
+
   protected override createRenderRoot(): HTMLElement | DocumentFragment {
     this.style.display = 'block';
     return this;
@@ -55,6 +61,7 @@ export class SearchBox extends LitElement {
   override render() {
     return html`
       <form class="search-box" @submit="${(e: SubmitEvent) => this._submit(e)}">
+        <h2> ${this.componentLabelText} </h2>
         <input
           class="search-box-input"
           type="text"
