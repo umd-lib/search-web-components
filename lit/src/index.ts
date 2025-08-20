@@ -12,6 +12,7 @@ import {SearchResultElementDefault} from './search-result-element-default/search
 import {SearchResultElementRendered} from './search-result-element-rendered/search-result-element-rendered.js';
 import {SearchResultSummary} from './search-result-summary/search-result-summary.js';
 import {SearchResults} from './search-results/search-results.js';
+import {SearchResultElementUMDLibraries} from './umd/search-result-element-umd-libraries.js';
 import {SearchResultsPerPage} from './search-results-per-page/search-results-per-page.js';
 import {SearchResultsSwitcher} from './search-results-switcher/search-results-switcher.js';
 import {SearchSimplePager} from './search-simple-pager/search-simple-pager.js';
@@ -41,4 +42,5 @@ export default {
   SearchSort,
   SearchDialogPane,
   SearchDialogToggle,
+  SearchResultElementUMDLibraries,
 };

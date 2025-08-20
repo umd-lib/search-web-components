@@ -26,6 +26,9 @@ final class SearchResultsBlock extends BlockBase {
     return [
       'resultField' => '',
       'mappings' => '',
+      'titleField' => '',
+      'thumbnailField' => '',
+      'listFields' => '',
     ];
   }
 
@@ -45,6 +48,24 @@ final class SearchResultsBlock extends BlockBase {
       '#description' => $this->t("A JSON array of object mappings An array of objects that contain the element, keys, and settings for results. I.e. [{\"element\":\"search-result-element-rendered\",\"keys\":[\"article\",\"page\"],\"settings\":{\"key\":\"rendered_result\"}}]. 'default' can be used as a fallback for unmapped results. When using the display switcher keys can be appended with the display id i.e `-grid` to make mapping specific to a display type. Tools like <a href='https://jsonformatter.org/' target='_blank'>https://jsonformatter.org/</a>a can help validate your JSON."),
       '#default_value' => $this->configuration['mappings'],
     ];
+    $form['titleField'] =[
+      '#type' => 'textfield',
+      '#title' => $this->t('Title Fields'),
+      '#description' => $this->t("Title field from the index to retrieve."),
+      '#default_value' => $this->configuration['filterFields'],
+    ];
+    $form['thumbnailField'] =[
+      '#type' => 'textfield',
+      '#title' => $this->t('Thumbnail Fields'),
+      '#description' => $this->t("Thumbnail field from the index to retrieve."),
+      '#default_value' => $this->configuration['filterFields'],
+    ];
+    $form['listFields'] =[
+      '#type' => 'textfield',
+      '#title' => $this->t('List Fields'),
+      '#description' => $this->t("Comma-separated fields from the index to retrieve."),
+      '#default_value' => $this->configuration['filterFields'],
+    ];
     return $form;
   }
 
@@ -54,6 +75,9 @@ final class SearchResultsBlock extends BlockBase {
   public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['resultField'] = $form_state->getValue('resultField');
     $this->configuration['mappings'] = $form_state->getValue('mappings');
+    $this->configuration['titleField'] = $form_state->getValue('titleField');
+    $this->configuration['thumbnailField'] = $form_state->getValue('thumbnailField');
+    $this->configuration['listFields'] = $form_state->getValue('listFields');
   }
 
   /**
@@ -68,6 +92,16 @@ final class SearchResultsBlock extends BlockBase {
     }
     if ($config['mappings']) {
       $searchAttributes->setAttribute('mappings', $config['mappings']);
+    }
+
+    if ($config['titleField']) {
+      $searchAttributes->setAttribute('titleField', $config['titleField']);
+    }
+    if ($config['thumbnailField']) {
+      $searchAttributes->setAttribute('thumbnailField', $config['thumbnailField']);
+    }
+    if ($config['listFields']) {
+      $searchAttributes->setAttribute('listFields', $config['listFields']);
     }
 
     return [
