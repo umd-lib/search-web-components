@@ -22,25 +22,36 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
       return html`<div>No Search Results Element Found</div>`;
     }
 
-    const title = element.getAttribute('titlefield') as result_fields;
-    const thumbnail = element.getAttribute('thumbnailfield') as result_fields;
-    const lists = element.getAttribute('listfields');
+    const title_field = element.getAttribute('titlefield') as result_fields;
+    const thumbnail_field = element.getAttribute('thumbnailfield') as result_fields;
+    const list_fields = element.getAttribute('listfields');
 
-    if (title === null || title === '') {
+    if (title_field === null || title_field === '') {
       return html`<div> Title not configured </div>`;
     }
-    if (thumbnail === null || thumbnail === '') {
+    if (thumbnail_field === null || thumbnail_field === '') {
       return html`<div> Thumbnail not configured </div>`;
     }
-    if (lists === null || lists === '') {
+    if (list_fields === null || list_fields === '') {
       return html`<div> List Fields not configured </div>`;
     }
 
-    const fields = lists.split(',').map(field => field as result_fields);
+    let title = this.data[title_field];
+    let thumbnail = this.data[thumbnail_field]
+    const fields = list_fields.split(',').map(field => field as result_fields);
+
+    if (Array.isArray(title)) {
+      title = title.map((t: string) => t.startsWith('[@') ? t.split(']')[1] : t);
+      title = title.join(' | ');
+    }
+
+    if (Array.isArray(thumbnail)) {
+      thumbnail = thumbnail[0];
+    }
 
     return html`
-      <h2> ${this.data[title]} </h2>
-      <img src="${this.data[thumbnail][0]}" />
+      <h2> ${title} </h2>
+      <img src="${thumbnail}" />
       <ul>
         ${fields.map(field =>
           field === 'id' ? html`<li hidden> ${this.data[field]} </li>`: html`<li> ${this.data[field]} </li>`
