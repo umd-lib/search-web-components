@@ -88,13 +88,13 @@ class ResultMappingForm extends FormBase {
       '#title' => $this->t('Element'),
       '#required' => TRUE,
       '#default_value' => $mapping['element'] ?? '',
-      '#description' => $this->t('The element to render results in.<br/><strong>Search Web Components provides:</strong><br/>search-result-element-default: Render results as pretty printed json<br/>search-result-element-rendered: Render html from a field on the result'),
+      '#description' => $this->t('The element to render results in.<br/><strong>Search Web Components provides:</strong><br/>search-result-element-default: Render results as pretty printed json<br/>search-result-element-rendered: Render html from a field on the result<br/>search-result-element-umd-libraries: Custom element created by the University of Maryland Libraries'),
     ];
     $form['settings'] = [
       '#type' => 'textarea',
       '#default_value' => isset($mapping['settings']) ? Json::encode($mapping['settings']) : '',
       '#title' => $this->t('Settings'),
-      '#description' => $this->t('A JSON string of settings for the specified element.<br/><strong>Search Web Components settings are:</strong><br/>search-result-element-default: No settings available.<br/>search-result-element-rendered: A JSON object containing the field to render. i.e. {"field": "rendered_result"}'),
+      '#description' => $this->t('A JSON string of settings for the specified element.<br/><strong>Search Web Components settings are:</strong><br/>search-result-element-default: No settings available.<br/>search-result-element-rendered: A JSON object containing the field to render. i.e. {"field": "rendered_result"}<br/>search-result-element-default: No settings available.<br/>search-result-element-umd-libraries: A JSON object containing the id, title, thumbnail, fields (comma separated), and base_path. i.e. {"id": "iiif_manifest__id", "title": "object__title__display", "thumbnail": "iiif_thumbnail_sequence__uris", "fields": "field_1,field_2", "base_path": "/results/id/"}'),
     ];
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [

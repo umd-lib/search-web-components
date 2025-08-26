@@ -8,6 +8,16 @@ import { BaseSearchElement } from '../BaseSearchElement';
 @customElement('search-result-element-umd-libraries')
 export class SearchResultElementUMDLibraries extends BaseSearchElement {
   /**
+   * The settings for this element type.
+   * This
+   */
+  @property({type: Object})
+  settings: {
+    field?: string;
+    [key: string]: any;
+  } = {};
+
+  /**
    * The result data.
    */
   @property({ attribute: true, type: Object })
@@ -16,26 +26,13 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
   override render() {
     type result_fields = keyof typeof this.data;
 
-    const element = document.querySelector('search-results');
+    const id_field = this.settings['id'] as result_fields;
+    const title_field = this.settings['title'] as result_fields;
+    const thumbnail_field = this.settings['thumbnail'] as result_fields;
+    const list_fields: string = this.settings['fields'];
+    const base_path: string = this.settings['base_path'];
 
-    if (element === null) {
-      return html`<div>No Search Results Element Found</div>`;
-    }
-
-    const title_field = element.getAttribute('titlefield') as result_fields;
-    const thumbnail_field = element.getAttribute('thumbnailfield') as result_fields;
-    const list_fields = element.getAttribute('listfields');
-
-    if (title_field === null || title_field === '') {
-      return html`<div> Title not configured </div>`;
-    }
-    if (thumbnail_field === null || thumbnail_field === '') {
-      return html`<div> Thumbnail not configured </div>`;
-    }
-    if (list_fields === null || list_fields === '') {
-      return html`<div> List Fields not configured </div>`;
-    }
-
+    let id = this.data[id_field];
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field]
     const fields = list_fields.split(',').map(field => field as result_fields);
@@ -50,7 +47,12 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     }
 
     return html`
-      <h2> ${title} </h2>
+      <h2>
+        <a href="${base_path + id}">
+          ${title}
+        </a>
+      </h2>
+
       ${ thumbnail === 'static:unavailable' ? nothing : html`<img src="${thumbnail}" />` }
       <ul>
         ${fields.map(field =>
