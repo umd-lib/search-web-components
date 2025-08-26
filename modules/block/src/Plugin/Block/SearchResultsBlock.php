@@ -52,19 +52,19 @@ final class SearchResultsBlock extends BlockBase {
       '#type' => 'textfield',
       '#title' => $this->t('Title Fields'),
       '#description' => $this->t("Title field from the index to retrieve."),
-      '#default_value' => $this->configuration['filterFields'],
+      '#default_value' => $this->configuration['titleField'],
     ];
     $form['thumbnailField'] =[
       '#type' => 'textfield',
       '#title' => $this->t('Thumbnail Fields'),
       '#description' => $this->t("Thumbnail field from the index to retrieve."),
-      '#default_value' => $this->configuration['filterFields'],
+      '#default_value' => $this->configuration['thumbnailField'],
     ];
     $form['listFields'] =[
       '#type' => 'textfield',
       '#title' => $this->t('List Fields'),
       '#description' => $this->t("Comma-separated fields from the index to retrieve."),
-      '#default_value' => $this->configuration['filterFields'],
+      '#default_value' => $this->configuration['listFields'],
     ];
     return $form;
   }
