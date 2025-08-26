@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { BaseSearchElement } from '../BaseSearchElement';
 
@@ -51,10 +51,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
     return html`
       <h2> ${title} </h2>
-      <img src="${thumbnail}" />
+      ${ thumbnail === 'static unavailable' ? nothing : html`<img src="${thumbnail}" />` }
       <ul>
         ${fields.map(field =>
-          field === 'id' ? html`<li hidden> ${this.data[field]} </li>`: html`<li> ${this.data[field]} </li>`
+          field === 'id' ? html`<li hidden> ${this.data[field]} </li>` : html`<li> ${this.data[field]} </li>`
         )}
       </ul>
       <hr />
