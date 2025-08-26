@@ -51,7 +51,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
     return html`
       <h2> ${title} </h2>
-      ${ thumbnail === 'static unavailable' ? nothing : html`<img src="${thumbnail}" />` }
+      ${ thumbnail === 'static:unavailable' ? nothing : html`<img src="${thumbnail}" />` }
       <ul>
         ${fields.map(field =>
           field === 'id' ? html`<li hidden> ${this.data[field]} </li>` : html`<li> ${this.data[field]} </li>`
