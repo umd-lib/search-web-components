@@ -37,7 +37,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field]
     let field_output = '' 
-    console.log(fields)
 
     if (Array.isArray(title)) {
       title = title.map((t: string) => t.startsWith('[@') ? t.split(']')[1] : t);
