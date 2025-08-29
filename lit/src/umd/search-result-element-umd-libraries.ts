@@ -30,7 +30,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const id_field = this.settings['id'] as result_fields;
     const title_field = this.settings['title'] as result_fields;
     const thumbnail_field = this.settings['thumbnail'] as result_fields;
-    const fields = this.settings['fields_array'];
+    const fields = this.settings['fields'];
     const base_path: string = this.settings['base_path'];
 
     let id = this.data[id_field];

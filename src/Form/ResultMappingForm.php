@@ -94,7 +94,14 @@ class ResultMappingForm extends FormBase {
       '#type' => 'textarea',
       '#default_value' => isset($mapping['settings']) ? Json::encode($mapping['settings']) : '',
       '#title' => $this->t('Settings'),
-      '#description' => $this->t('A JSON string of settings for the specified element.<br/><strong>Search Web Components settings are:</strong><br/>search-result-element-default: No settings available.<br/>search-result-element-rendered: A JSON object containing the field to render. i.e. {"field": "rendered_result"}<br/>search-result-element-default: No settings available.<br/>search-result-element-umd-libraries: A JSON object containing the id, title, thumbnail, fields (comma separated), and base_path. i.e. {"id": "iiif_manifest__id", "title": "object__title__display", "thumbnail": "iiif_thumbnail_sequence__uris", "fields": "field_1,field_2", "base_path": "/results/id/"}'),
+      '#description' => $this->t('A JSON string of settings for the specified element.<br/>
+        <strong>Search Web Components settings are:</strong><br/>
+        search-result-element-default: No settings available.<br/>
+        search-result-element-rendered: A JSON object containing the field to render.
+        i.e. {"field": "rendered_result"}<br/>
+        search-result-element-default: No settings available.<br/>
+        search-result-element-umd-libraries:
+          A JSON object containing the id, title, thumbnail, fields (label {field_name, show_label}), and base_path. i.e. {"id": "machine_id", "title": "machine_title", "thumbnail": "machine_thumbnail", "fields": {"Label": {"key": "machine_key", "show_label": "true"}}, "base_path": "/results/id/"}'),
     ];
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
