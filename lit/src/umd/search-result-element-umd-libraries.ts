@@ -8,6 +8,7 @@ import {unsafeHTML} from 'lit/directives/unsafe-html.js';
  */
 @customElement('search-result-element-umd-libraries')
 export class SearchResultElementUMDLibraries extends BaseSearchElement {
+
   /**
    * The settings for this element type.
    * This
@@ -36,7 +37,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let id = this.data[id_field];
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field]
-    let field_output = '' 
+    let field_output = ''
 
     if (Array.isArray(title)) {
       title = title.map((t: string) => t.startsWith('[@') ? t.split(']')[1] : t);
@@ -62,6 +63,12 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     }
 
     let revised_id = id.replace("solr_document/")
+
+    let query_string = this?.context?.query?.get('q')
+
+    if (query_string) {
+      revised_id += "?q=" + query_string
+    }
 
     return html`
       <h2>
