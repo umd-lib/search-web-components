@@ -1,6 +1,6 @@
 import { html, nothing } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
-import { BaseSearchElement } from '../BaseSearchElement';
+import { BaseSearchElement } from '../../BaseSearchElement';
 
 interface Field {
   key: string;
