@@ -102,6 +102,13 @@ export interface SortOption {
   order: string;
 }
 
+export interface UMDSort {
+  sort_by: Array<string>;
+  order: Array<string>;
+  results_per: Array<string>;
+  post: boolean;
+}
+
 declare global {
   interface GlobalEventHandlersEventMap {
     'update-context': CustomEvent<{context: SearchContext}>;
