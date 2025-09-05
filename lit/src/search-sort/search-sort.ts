@@ -67,7 +67,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
     }
 
     if (resultsPerPage) {
-      query.set('results_per_page', resultsPerPage);
+      query.set('limit', resultsPerPage);
     }
 
     if (sortKey === this.context?.response?.default_sort) {
