@@ -2,16 +2,22 @@ import { html, nothing } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { BaseSearchElement } from '../BaseSearchElement';
 
+interface Field {
+  key: string;
+  show_label?: string;
+}
+
 /**
  * A default result render element that shows the raw JSON for each result in a collapsible details element.
  */
 @customElement('search-result-element-umd-libraries')
 export class SearchResultElementUMDLibraries extends BaseSearchElement {
+
   /**
    * The settings for this element type.
    * This
    */
-  @property({type: Object})
+  @property({ type: Object })
   settings: {
     field?: string;
     [key: string]: any;
@@ -24,18 +30,27 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
   data: Record<string, any> = {};
 
   override render() {
-    type result_fields = keyof typeof this.data;
 
-    const id_field = this.settings['id'] as result_fields;
-    const title_field = this.settings['title'] as result_fields;
-    const thumbnail_field = this.settings['thumbnail'] as result_fields;
-    const list_fields: string = this.settings['fields'];
+    const id_field = this.settings['id'] as string;
+    const title_field = this.settings['title'] as string;
+    const thumbnail_field = this.settings['thumbnail'] as string;
+    const fields: Record<string, Field> = this.settings['fields'];
     const base_path: string = this.settings['base_path'];
 
-    let id = this.data[id_field];
+    const query_string = this?.context?.query?.get('q');
+    let id = this.data[id_field].replace("solr_document/");
+    id = query_string ? id + "?q=" + query_string : id;
+
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field]
-    const fields = list_fields.split(',').map(field => field as result_fields);
+
+    const field_list = Object.entries(fields).map(([label, field]) => {
+      if (field.show_label && field.show_label == "true") {
+        return html`<li> <strong> ${label}:</strong> ${this.data[field.key]} </li>`
+      } else {
+        return html`<li> ${this.data[field.key]} </li>`
+      }
+    });
 
     if (Array.isArray(title)) {
       title = title.map((t: string) => t.startsWith('[@') ? t.split(']')[1] : t);
@@ -53,12 +68,9 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         </a>
       </h2>
 
-      ${ thumbnail === 'static:unavailable' ? nothing : html`<img src="${thumbnail}" />` }
-      <ul>
-        ${fields.map(field =>
-          field === 'id' ? html`<li hidden> ${this.data[field]} </li>` : html`<li> ${this.data[field]} </li>`
-        )}
-      </ul>
+      ${thumbnail === 'static:unavailable' ? nothing : html`<img src="${thumbnail}" />`}
+
+      ${html`<ul> ${field_list} </ul>`}
       <hr />
     `;
   }
