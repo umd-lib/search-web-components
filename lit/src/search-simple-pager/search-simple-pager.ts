@@ -209,11 +209,11 @@ export class SearchSimplePager extends BaseSearchElement {
 
     return html`
       <div class="pager">
-        ${wrappingButtons.first} ${wrappingButtons.prev}
+        ${wrappingButtons.prev} ${wrappingButtons.first}
         ${wrappingPages.prev.length > 0 ? wrappingPages.prev : null}
         ${this._getCurrentPageElement()}
         ${wrappingPages.next.length > 0 ? wrappingPages.next : null}
-        ${wrappingButtons.next} ${wrappingButtons.last}
+        ${wrappingButtons.last} ${wrappingButtons.next}
       </div>
     `;
   }
