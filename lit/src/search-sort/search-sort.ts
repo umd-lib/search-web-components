@@ -2,7 +2,7 @@ import {html, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {BaseSearchElement} from '../BaseSearchElement';
 import {repeat} from 'lit/directives/repeat.js';
-import {SortOption} from '../types';
+import {SortOption, UMDSort} from '../types';
 import {DropdownMixin} from '../BaseDropdownElement';
 
 // @TODO support a default sort key.
@@ -19,7 +19,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * HTML element to use when rendering options.
    */
   @property()
-  type: 'select' | 'list' | 'html' = 'select';
+  type: 'select' | 'list' | 'html' | 'umd-libraries' = 'select';
 
   /**
    * The label to display for the sort select field.
@@ -32,6 +32,12 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    */
   @property({type: Array})
   sorts: SortOption[] = [];
+
+  /**
+   * Sort options specific for the UMD Libraries sort component.
+   */
+  @property({type: Object})
+  umd_sorts: UMDSort = { sort_by: [], order: [], results_per: [], post: false};
 
   @state()
   indexConfigLoaded = false;
@@ -52,12 +58,16 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * @param sortKey
    * @param sortOrder
    */
-  _querySort(sortKey: string, sortOrder: string): void {
+  _querySort(sortKey: string, sortOrder: string, resultsPerPage?: string, method: 'GET' | 'POST' = 'GET'): void {
     const query = new URLSearchParams(this.context?.query?.toString() ?? '');
 
     if (sortKey) {
       query.set('sort', sortKey);
       query.set('order', sortOrder);
+    }
+
+    if (resultsPerPage) {
+      query.set('limit', resultsPerPage);
     }
 
     if (sortKey === this.context?.response?.default_sort) {
@@ -68,7 +78,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
       query.delete('order');
     }
 
-    this.getResults(query);
+    this.getResults(query, method);
   }
 
   /**
@@ -196,6 +206,59 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
     `;
   }
 
+  _sortTemplates(label: string, name: string, options: string[]) {
+    return html`
+      <div>
+        <label for="${name}-${this.uid}"> ${label} </label>
+        <select id="${name}-${this.uid}" name="${name}" required>
+          ${options.map((option) => {
+            if (option.includes(':')) {
+              const [label, value] = option.split(':');
+              return html`
+                <option value="${value}"> ${label} </option>
+              `;
+            }
+            else {
+              return html`
+                <option value="${option}"> ${option} </option>
+              `;
+            }})
+          }
+        </select>
+      </div>
+    `;
+  }
+
+  /**
+   * Custom sort component for UMD Libraries
+   */
+  _getCustom() {
+    const sort_by = this.umd_sorts['sort_by'];
+    const order = this.umd_sorts['order'];
+    const results_per = this.umd_sorts['results_per'];
+    const method = this.umd_sorts['post'] ? 'POST' : 'GET';
+
+    const sort_templates = [];
+    sort_templates.push(this._sortTemplates('Sort By', 'sort_by', sort_by));
+    sort_templates.push(this._sortTemplates('Order', 'order', order));
+    sort_templates.push(this._sortTemplates('Results Per', 'results', results_per));
+
+    return html`
+      ${sort_templates}
+      <button
+        @click=${(e: Event) => {
+          e.preventDefault();
+          const sort_value = (document.getElementById(`sort_by-${this.uid}`) as HTMLSelectElement)?.value ?? '';
+          const order_value = (document.getElementById(`order-${this.uid}`) as HTMLSelectElement)?.value ?? '';
+          const results_value = (document.getElementById(`results-${this.uid}`) as HTMLSelectElement)?.value ?? '';
+          this._querySort(sort_value, order_value, results_value, method);
+        }}
+      >
+        Apply Changes
+      </button>
+    `;
+  }
+
   override render() {
     if (this.sorts.length === 0 || !this.context?.response) {
       return null;
@@ -208,6 +271,8 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
         return this._getList();
       case 'html':
         return this._getHtml();
+      case 'umd-libraries':
+        return this._getCustom();
     }
   }
 

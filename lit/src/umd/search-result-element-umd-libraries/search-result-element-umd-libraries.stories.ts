@@ -1,8 +1,8 @@
 import type {Meta, StoryObj} from '@storybook/web-components';
 import {html} from 'lit';
-import {SearchRoot} from '../search-root/search-root';
+import {SearchRoot} from '../../search-root/search-root';
 import {SearchResultElementUMDLibraries} from './search-result-element-umd-libraries';
-import {MockData} from '../MockData';
+import {MockData} from '../../MockData';
 
 //@ts-expect-error required import.
 const a = SearchResultElementUMDLibraries;

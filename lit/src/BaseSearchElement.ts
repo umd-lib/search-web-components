@@ -78,7 +78,7 @@ export class BaseSearchElement extends LitElement {
     this.getResults(query);
   }
 
-  async getResults(query: URLSearchParams) {
+  async getResults(query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {
     const url = new URL(window.location.href);
     url.search = query.toString();
 
@@ -96,7 +96,7 @@ export class BaseSearchElement extends LitElement {
     }
 
     [context.response] = await Promise.all([
-      BaseSearchElement.doSearch(context.url ?? '', searchQuery),
+      BaseSearchElement.doSearch(context.url ?? '', searchQuery, method),
     ]);
 
     this.context = {...context} as SearchContext;
@@ -107,7 +107,7 @@ export class BaseSearchElement extends LitElement {
     }
   }
 
-  static async doSearch(url: string, query: URLSearchParams) {
+  static async doSearch(url: string, query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {
     const searchQuery = new URLSearchParams(query.toString());
 
     let appliedCount = 0;
@@ -130,7 +130,7 @@ export class BaseSearchElement extends LitElement {
     const requestUrl = new URL(url);
     requestUrl.search = searchQuery.toString();
 
-    return BaseSearchElement.doFetch(requestUrl).then(
+    return BaseSearchElement.doFetch(requestUrl, undefined, method).then(
       (response: SearchResponseType) => {
         return response;
       }
@@ -139,11 +139,13 @@ export class BaseSearchElement extends LitElement {
 
   static async doFetch(
     url: RequestInfo | URL,
-    headerOptions: HeadersInit | undefined = undefined
+    headerOptions: HeadersInit | undefined = undefined,
+    method: 'GET' | 'POST' = 'GET'
   ) {
     const headers = new Headers(headerOptions);
 
     return fetch(url, {
+      method: method,
       headers: headers,
       cache: 'no-store',
     })
