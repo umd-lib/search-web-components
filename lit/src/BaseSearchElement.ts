@@ -46,7 +46,7 @@ export class BaseSearchElement extends LitElement {
 
     query.delete('page');
 
-    this.getResults(query);
+    this.getResults(query, 'POST');
   }
 
   clearFacet(key: string) {
@@ -56,7 +56,7 @@ export class BaseSearchElement extends LitElement {
     query.delete(queryKey);
     query.delete('page');
 
-    this.getResults(query);
+    this.getResults(query, 'POST');
   }
 
   clearFacets() {
@@ -75,7 +75,7 @@ export class BaseSearchElement extends LitElement {
       query.delete('page');
     }
 
-    this.getResults(query);
+    this.getResults(query, 'POST');
   }
 
   async getResults(query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {

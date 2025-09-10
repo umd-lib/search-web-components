@@ -70,7 +70,7 @@ export class SearchSimplePager extends BaseSearchElement {
       query.delete('page');
     }
 
-    this.getResults(query);
+    this.getResults(query, 'POST');
   }
 
   /**
