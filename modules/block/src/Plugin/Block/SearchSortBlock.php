@@ -71,11 +71,6 @@ final class SearchSortBlock extends BlockBase {
       '#title' => $this->t('UMD Libraries Sort Configuration'),
       '#description' => $this->t('Configuration for the UMD Libraries sort option. Format is sort_by|order|results_per|post where each value is comma separated. Post is a boolean value, according to https://www.php.net/manual/en/filter.constants.php#constant.filter-validate-bool. Sort_by values are colon separated key/value pairs. Example: Title:object__title__display,Relevance:relevance|asc,desc|10,25,50,- All -'),
       '#default_value' => $this->configuration['umd_sorts'],
-      '#states' => [
-        'visible' => [
-          ':input[name="layout_settings[type]"]' => ['value' => 'umd-libraries'],
-        ],
-      ],
     ];
     return $form;
   }
