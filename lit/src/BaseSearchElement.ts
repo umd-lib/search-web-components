@@ -102,9 +102,6 @@ export class BaseSearchElement extends LitElement {
     this.context = {...context} as SearchContext;
     this.updateContext(<SearchContext>context);
 
-    if (this.context.updateUrl) {
-      window.history.pushState(null, '', url.toString());
-    }
   }
 
   static async doSearch(url: string, query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {
