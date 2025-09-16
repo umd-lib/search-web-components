@@ -78,7 +78,7 @@ export class BaseSearchElement extends LitElement {
     this.getResults(query);
   }
 
-  async getResults(query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {
+  async getResults(query: URLSearchParams) {
     const url = new URL(window.location.href);
     url.search = query.toString();
 
@@ -102,12 +102,9 @@ export class BaseSearchElement extends LitElement {
     this.context = {...context} as SearchContext;
     this.updateContext(<SearchContext>context);
 
-    if (this.context.updateUrl) {
-      window.history.pushState(null, '', url.toString());
-    }
   }
 
-  static async doSearch(url: string, query: URLSearchParams, method: 'GET' | 'POST' = 'GET') {
+  static async doSearch(url: string, query: URLSearchParams) {
     const searchQuery = new URLSearchParams(query.toString());
 
     let appliedCount = 0;
@@ -140,12 +137,10 @@ export class BaseSearchElement extends LitElement {
   static async doFetch(
     url: RequestInfo | URL,
     headerOptions: HeadersInit | undefined = undefined,
-    method: 'GET' | 'POST' = 'GET'
   ) {
     const headers = new Headers(headerOptions);
 
     return fetch(url, {
-      method: method,
       headers: headers,
       cache: 'no-store',
     })

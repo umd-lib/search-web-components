@@ -142,13 +142,6 @@ export class SearchRoot extends LitElement {
     );
     context.responseReady = true;
 
-    // Update the url to match the state of the first query on load.
-    if (context.updateUrl) {
-      const u = new URL(window.location.href);
-      u.search = context.query.toString();
-      window.history.pushState(null, '', u.toString());
-    }
-
     this.context = context;
     this.addEventListener('update-context', (e) => {
       //@ts-expect-error This custom event has this property but isn't registered correctly in all tooling.
