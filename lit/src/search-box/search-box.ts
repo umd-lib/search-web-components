@@ -1,11 +1,12 @@
-import {html, LitElement} from 'lit';
+import {html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {BaseSearchElement} from '../BaseSearchElement';
 
 /**
  * A simple search box that can be placed in the header or other parts of a site to allow a user to search and be redirected to a search page.
  */
 @customElement('search-box')
-export class SearchBox extends LitElement {
+export class SearchBox extends BaseSearchElement {
   /**
    * The absolute or relative url of the page to redirect the search query to.
    */
@@ -42,7 +43,7 @@ export class SearchBox extends LitElement {
   }
 
   /**
-   * Handles redirecting the user to the correct page on form submission.
+   * Handles submitting the query to the api endpoint.
    *
    * @param e The form submit event.
    */
@@ -50,11 +51,12 @@ export class SearchBox extends LitElement {
     e.preventDefault();
 
     if (e.currentTarget instanceof Element) {
-      window.location.replace(
-        this.url +
-          '?q=' +
-          e?.currentTarget?.querySelector('input')?.value?.trim()
-      );
+      const value = e?.currentTarget?.querySelector('input')?.value?.trim();
+
+      const query = new URLSearchParams();
+      query.set('q', value || '');
+
+      this.getResults(query);
     }
   }
 
