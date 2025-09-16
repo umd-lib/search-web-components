@@ -96,7 +96,7 @@ export class BaseSearchElement extends LitElement {
     }
 
     [context.response] = await Promise.all([
-      BaseSearchElement.doSearch(context.url ?? '', searchQuery, method),
+      BaseSearchElement.doSearch(context.url ?? '', searchQuery),
     ]);
 
     this.context = {...context} as SearchContext;
@@ -127,7 +127,7 @@ export class BaseSearchElement extends LitElement {
     const requestUrl = new URL(url);
     requestUrl.search = searchQuery.toString();
 
-    return BaseSearchElement.doFetch(requestUrl, undefined, method).then(
+    return BaseSearchElement.doFetch(requestUrl, undefined).then(
       (response: SearchResponseType) => {
         return response;
       }

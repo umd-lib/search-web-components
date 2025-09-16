@@ -250,7 +250,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
           const sort_value = (document.getElementById(`sort_by-${this.uid}`) as HTMLSelectElement)?.value ?? '';
           const order_value = (document.getElementById(`order-${this.uid}`) as HTMLSelectElement)?.value ?? '';
           const results_value = (document.getElementById(`results-${this.uid}`) as HTMLSelectElement)?.value ?? '';
-          this._querySort(sort_value, order_value, results_value, method);
+          this._querySort(sort_value, order_value, results_value);
         }}
       >
         Apply Changes
