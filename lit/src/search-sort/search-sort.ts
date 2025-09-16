@@ -58,7 +58,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * @param sortKey
    * @param sortOrder
    */
-  _querySort(sortKey: string, sortOrder: string, resultsPerPage?: string, method: 'GET' | 'POST' = 'GET'): void {
+  _querySort(sortKey: string, sortOrder: string, resultsPerPage?: string): void {
     const query = new URLSearchParams(this.context?.query?.toString() ?? '');
 
     if (sortKey) {
@@ -78,7 +78,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
       query.delete('order');
     }
 
-    this.getResults(query, method);
+    this.getResults(query);
   }
 
   /**
@@ -236,7 +236,6 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
     const sort_by = this.umd_sorts['sort_by'];
     const order = this.umd_sorts['order'];
     const results_per = this.umd_sorts['results_per'];
-    const method = this.umd_sorts['post'] ? 'POST' : 'GET';
 
     const sort_templates = [];
     sort_templates.push(this._sortTemplates('Sort By', 'sort_by', sort_by));

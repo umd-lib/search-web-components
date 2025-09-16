@@ -69,7 +69,7 @@ final class SearchSortBlock extends BlockBase {
     $form['umd_sorts'] = [
       '#type' => 'textarea',
       '#title' => $this->t('UMD Libraries Sort Configuration'),
-      '#description' => $this->t('Configuration for the UMD Libraries sort option. Format is sort_by|order|results_per|post where each value is comma separated. Post is a boolean value, according to https://www.php.net/manual/en/filter.constants.php#constant.filter-validate-bool. Sort_by values are colon separated key/value pairs. Example: Title:object__title__display,Relevance:relevance|asc,desc|10,25,50,- All -'),
+      '#description' => $this->t('Configuration for the UMD Libraries sort option. Format is sort_by|order|results_per|post where each value is comma separated. Sort_by values are colon separated key/value pairs. Example: Title:object__title__display,Relevance:relevance|asc,desc|10,25,50,- All -'),
       '#default_value' => $this->configuration['umd_sorts'],
     ];
     return $form;
@@ -113,14 +113,13 @@ final class SearchSortBlock extends BlockBase {
     // Also, the end result doesn't need to be an array, just a single object
     $umd_sorts = [];
 
-    if (substr_count($config['umd_sorts'], '|') === 3) {
-      [$sort_by, $order, $results_per, $post] = explode('|', $config['umd_sorts']);
+    if (substr_count($config['umd_sorts'], '|') === 2) {
+      [$sort_by, $order, $results_per] = explode('|', $config['umd_sorts']);
 
       $umd_sorts = [
         'sort_by' => explode(',', trim($sort_by)),
         'order' => explode(',', trim($order)),
         'results_per' => explode(',', trim($results_per)),
-        'post' => filter_var(trim($post), FILTER_VALIDATE_BOOLEAN),
       ];
     }
 
