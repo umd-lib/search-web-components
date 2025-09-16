@@ -342,3 +342,8 @@ block.settings.swc_search_sort:
     htmlSelectLabel:
       type: string
       label: 'HTML select label'
+
+block.settings.swc_search_share:
+  type: block_settings
+  label: 'Settings'
+
