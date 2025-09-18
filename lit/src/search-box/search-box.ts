@@ -62,17 +62,24 @@ export class SearchBox extends BaseSearchElement {
 
   override render() {
     return html`
-      <form class="search-box" @submit="${(e: SubmitEvent) => this._submit(e)}">
-        <h2> ${this.componentLabelText} </h2>
-        <input
-          class="search-box-input"
-          type="text"
-          placeholder="${this.placeHolderText}"
-          aria-label="${this.ariaLabelText}"
-        />
-        <button class="search-box-submit" type="submit">
-          ${this.submitText}
-        </button>
+      <form
+        class="search-box s-box-large-h s-box-medium-v c-bg-secondary s-margin-general-medium"
+        @submit="${(e: SubmitEvent) => this._submit(e)}"
+      >
+        <h2 class="t-title-small t-uppercase s-stack-small">
+          ${this.componentLabelText}
+        </h2>
+        <div class="search-box-action-area c-bg-secondary">
+          <input
+            class="search-box-input t-body-medium c-content-primary c-bg-secondary"
+            type="text"
+            placeholder="${this.placeHolderText}"
+            aria-label="${this.ariaLabelText}"
+          ></input>
+          <button class="search-box-submit" type="submit">
+            <div class="sr-only">${this.submitText}</div>
+          </button>
+        </div>
       </form>
     `;
   }
