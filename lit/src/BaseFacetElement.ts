@@ -214,7 +214,17 @@ export default class BaseFacetElement extends BaseSearchElement {
   _getLabelElement(): TemplateResult {
     const facet = this._getFacetData();
     const text = this.overrideLabel ? this.overrideLabel : facet.label;
-    return html`<div class="facet-label ${facet.key}">${text}</div>`;
+    const labelId = `facet-label-${this.uid}`;
+    const hasActiveOptions = facet.active_values && facet.active_values.length > 0;
+    return html`<h2
+      id="${labelId}"
+      class="facet-label t-title-small t-uppercase s-stack-medium ${facet.key}"
+      role="heading"
+      aria-level="2"
+      ?active="${hasActiveOptions}"
+    >
+      ${text}
+    </h2>`;
   }
 
   /**
@@ -262,11 +272,15 @@ export default class BaseFacetElement extends BaseSearchElement {
     label: TemplateResult,
     options: TemplateResult
   ): TemplateResult {
+    const collapseId = `facet-collapse-${this.uid}`;
+
     return html`
       ${label}
       <div
-        id="${'facet-collapse-' + this.uid}"
+        id="${collapseId}"
         class="facet-options ${this.optionsOpen ? 'open' : 'closed'}"
+        role="region"
+        aria-hidden="${!this.optionsOpen}"
       >
         ${this.optionsOpen ? options : null}
       </div>
@@ -286,11 +300,17 @@ export default class BaseFacetElement extends BaseSearchElement {
     ) {
       return html``;
     }
+
+    const buttonText = this.resetText.replaceAll('@count', '' + facet.active_values.length);
+    const ariaLabel = `Reset ${facet.label} filters. Currently ${facet.active_values.length} ${facet.active_values.length === 1 ? 'filter is' : 'filters are'} selected.`;
+
     return html`<button
       class="${this.key} facet reset"
       @click="${() => this.clearFacet(this.urlAlias)}"
+      aria-label="${ariaLabel}"
+      type="button"
     >
-      ${this.resetText.replaceAll('@count', '' + facet.active_values.length)}
+      ${buttonText}
     </button>`;
   }
 
