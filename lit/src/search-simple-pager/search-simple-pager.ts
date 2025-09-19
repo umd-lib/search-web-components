@@ -84,15 +84,27 @@ export class SearchSimplePager extends BaseSearchElement {
     </button>`;
   }
 
-  _getPrevNextButtonElement(label: string|number, goto: number, classes: string, disabled: boolean) {
+  _getPrevNextButtonElement(
+    label: string | number,
+    goto: number,
+    classes: string,
+    disabled: boolean,
+    direction: 'prev' | 'next'
+  ) {
     return html`
-    <button
-      class=${classes}
-      ?disabled=${disabled}
-      @click=${() => this._changePage(goto)}
-    >
-      ${label}
-    </button>`;
+      <button
+        class=${classes}
+        ?disabled=${disabled}
+        @click=${() => this._changePage(goto)}
+        aria-label=${disabled
+          ? `${label} page button disabled`
+          : `Go to ${label} page`}
+      >
+        ${direction === 'next'
+          ? html`${label}<span class="i-chevron"></span>`
+          : html`<span class="i-chevron"></span>${label}`}
+      </button>
+    `;
   }
 
   /**
@@ -118,8 +130,9 @@ export class SearchSimplePager extends BaseSearchElement {
           this._getPrevNextButtonElement(
             currentPage - p + 1,
             currentPage - p,
-            "prev page",
-            false
+            'prev page',
+            false,
+            'prev'
           )
         );
       }
@@ -129,8 +142,9 @@ export class SearchSimplePager extends BaseSearchElement {
           this._getPrevNextButtonElement(
             currentPage + p + 1,
             currentPage + p,
-            "next page",
-            false
+            'next page',
+            false,
+            'next'
           )
         );
       }
@@ -153,19 +167,23 @@ export class SearchSimplePager extends BaseSearchElement {
 
     const prev = html` ${this.showNextPrev
       ? this._getPrevNextButtonElement(
-        this.prevLabel,
-        currentPage - 1,
-        "prev button",
-        currentPage === 0
-      ) : null}`;
+          this.prevLabel,
+          currentPage - 1,
+          'prev button umd-lib secondary',
+          currentPage === 0,
+          'prev'
+        )
+      : null}`;
 
     const next = html` ${this.showNextPrev
       ? this._getPrevNextButtonElement(
-        this.nextLabel,
-        currentPage + 1,
-        "next button",
-        currentPage === maxPages - 1
-      ) : null}`;
+          this.nextLabel,
+          currentPage + 1,
+          'next button umd-lib secondary',
+          currentPage === maxPages - 1,
+          'next'
+        )
+      : null}`;
 
     const first = html` ${this.showFirstLast
       ? html`<button
@@ -195,6 +213,52 @@ export class SearchSimplePager extends BaseSearchElement {
     };
   }
 
+  /**
+   * Get the result pagination elements.
+   */
+  _getResultPaginationElements(): TemplateResult {
+    const currentPage = this.context?.response?.search_results_page ?? 0;
+    const maxPages = this.context?.response?.search_results_pages ?? 0;
+
+    return html`
+      <div>
+        <span class="sr-only"
+          >Page navigation: Enter page number, currently on page
+          ${currentPage + 1} of ${maxPages}</span
+        >
+        <label for="results-pagination" aria-hidden="true" class="t-body-small"
+          >Go to page</label
+        >
+        <input
+          class="t-interactive c-border-secondary c-content-primary"
+          type="number"
+          id="results-pagination"
+          name="page"
+          min="1"
+          max="${maxPages}"
+          value="${currentPage + 1}"
+          aria-label="Enter page number, from 1 to ${maxPages}"
+        />
+        <span aria-hidden="true" class="t-body-small">of ${maxPages}</span>
+        <button
+          @click=${() => {
+            const input = this.renderRoot.querySelector<HTMLInputElement>(
+              '#results-pagination'
+            );
+            const value = input ? parseInt(input.value, 10) : currentPage + 1;
+            if (!isNaN(value) && value >= 1 && value <= maxPages) {
+              this._changePage(value - 1);
+            }
+          }}
+          aria-label="Go to page number entered in the input box"
+          class="umd-lib button"
+        >
+          Go
+        </button>
+      </div>
+    `;
+  }
+
   override render() {
     if (
       this.context === undefined ||
@@ -204,17 +268,33 @@ export class SearchSimplePager extends BaseSearchElement {
       return;
     }
 
-    const wrappingPages = this._getWrappingPagesElements();
     const wrappingButtons = this._getWrappingButtonElements();
 
     return html`
-      <div class="pager">
-        ${wrappingButtons.prev} ${wrappingButtons.first}
-        ${wrappingPages.prev.length > 0 ? wrappingPages.prev : null}
-        ${this._getCurrentPageElement()}
-        ${wrappingPages.next.length > 0 ? wrappingPages.next : null}
-        ${wrappingButtons.last} ${wrappingButtons.next}
-      </div>
+      <nav class="pager" aria-label="Result navigation">
+        <div
+          class="pagination__status t-body-small s-stack-small"
+          id="page-context"
+        >
+          Currently on Page
+          ${typeof this.context?.response?.search_results_page === 'number'
+            ? this.context.response.search_results_page + 1
+            : 0}
+          of
+          ${typeof this.context?.response?.search_results_pages === 'number'
+            ? this.context.response.search_results_pages
+            : 0}
+        </div>
+        <div class="pagination__actions">
+          <ul class="pagination__action buttons">
+            <li>${wrappingButtons.prev}</li>
+            <li>${wrappingButtons.next}</li>
+          </ul>
+          <div class="pagination__action go-to-result-page">
+            ${this._getResultPaginationElements()}
+          </div>
+        </div>
+      </nav>
     `;
   }
 }

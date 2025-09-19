@@ -130,9 +130,9 @@ export class SearchResults extends BaseSearchElement {
               }
 
               return html`<li
-                class="result-${this.safeIdentifier(
+                class="search-result result-${this.safeIdentifier(
                   result[this.resultField] ?? 'default'
-                )}"
+                )} s-margin-general-medium"
               >
                 <${unsafeStatic(resultMap.element)}
                   .data=${result}
