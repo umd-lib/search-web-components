@@ -37,7 +37,7 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * Sort options specific for the UMD Libraries sort component.
    */
   @property({type: Object})
-  umd_sorts: UMDSort = { sort_by: [], order: [], results_per: [], post: false};
+  umd_sorts: UMDSort = {sort_by: [], order: [], results_per: [], post: false};
 
   @state()
   indexConfigLoaded = false;
@@ -58,7 +58,11 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * @param sortKey
    * @param sortOrder
    */
-  _querySort(sortKey: string, sortOrder: string, resultsPerPage?: string): void {
+  _querySort(
+    sortKey: string,
+    sortOrder: string,
+    resultsPerPage?: string
+  ): void {
     const query = new URLSearchParams(this.context?.query?.toString() ?? '');
 
     if (sortKey) {
@@ -140,16 +144,30 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
       (item) => item.key,
       (item) => {
         const v = item.key + '|' + item.order;
-        return html`<li>
+        const isSelected = v === s;
+        return html`<li role="none">
           <button
-            class="${v === s ? 'selected' : null}"
+            type="button"
+            role="radio"
+            class="${isSelected ? 'selected' : null}"
             value=${v}
+            aria-checked="${isSelected}"
+            aria-label="Sort by ${item.label}"
             @click=${(e: Event) => {
               e.preventDefault();
               this._querySort(item.key, item.order);
             }}
+            @keydown=${(e: KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this._querySort(item.key, item.order);
+              }
+            }}
           >
             ${item.label}
+            ${isSelected
+              ? html`<span class="sr-only"> (currently selected)</span>`
+              : ''}
           </button>
         </li>`;
       }
@@ -160,13 +178,28 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * Get the elements for a vanilla select field.
    */
   _getSelect() {
+    const selected = this._getSelected();
+    const describedById = `sort-desc-${this.uid}`;
+
     return html`
       ${this.labelText
         ? html`<label for="sort-${this.uid}">${this.labelText}</label>`
         : null}
+      <div
+        id="${describedById}"
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        ${selected
+          ? `Currently sorted by ${selected.label}`
+          : 'No sort applied'}
+      </div>
       <select
         id="sort-${this.uid}"
         name="sort"
+        aria-describedby="${describedById}"
+        aria-label="${this.labelText || 'Sort options'}"
         @change="${(e: Event) => {
           e.preventDefault();
           const el = e.currentTarget as HTMLInputElement;
@@ -184,11 +217,31 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
    * Get the elements for a list field.
    */
   _getList() {
+    const selected = this._getSelected();
+    const describedById = `sort-list-desc-${this.uid}`;
+
     return html`
       ${this.labelText
-        ? html`<label for="sort-${this.uid}">${this.labelText}</label>`
+        ? html`<div class="sort-label" id="sort-label-${this.uid}">
+            ${this.labelText}
+          </div>`
         : null}
-      <ul id="sort-${this.uid}">
+      <div
+        id="${describedById}"
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        ${selected
+          ? `Currently sorted by ${selected.label}`
+          : 'No sort applied'}
+      </div>
+      <ul
+        id="sort-${this.uid}"
+        role="radiogroup"
+        aria-labelledby="sort-label-${this.uid}"
+        aria-describedby="${describedById}"
+      >
         ${this._getListOptions()}
       </ul>
     `;
@@ -207,23 +260,33 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
   }
 
   _sortTemplates(label: string, name: string, options: string[]) {
+    const selectId = `${name}-${this.uid}`;
+    const helpId = `${name}-help-${this.uid}`;
+
     return html`
-      <div>
-        <label for="${name}-${this.uid}"> ${label} </label>
-        <select id="${name}-${this.uid}" name="${name}" required>
+      <div class="sort-option s-stack-small">
+        <label for="${selectId}" class="t-label c-content-primary">
+          ${label}
+        </label>
+        <div id="${helpId}" class="sr-only">
+          Select ${label.toLowerCase()} from the available options
+        </div>
+        <select
+          id="${selectId}"
+          name="${name}"
+          required
+          class="c-bg-secondary"
+          aria-describedby="${helpId}"
+          aria-label="${label}"
+        >
           ${options.map((option) => {
             if (option.includes(':')) {
-              const [label, value] = option.split(':');
-              return html`
-                <option value="${value}"> ${label} </option>
-              `;
+              const [optionLabel, value] = option.split(':');
+              return html` <option value="${value}">${optionLabel}</option> `;
+            } else {
+              return html` <option value="${option}">${option}</option> `;
             }
-            else {
-              return html`
-                <option value="${option}"> ${option} </option>
-              `;
-            }})
-          }
+          })}
         </select>
       </div>
     `;
@@ -236,25 +299,85 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
     const sort_by = this.umd_sorts['sort_by'];
     const order = this.umd_sorts['order'];
     const results_per = this.umd_sorts['results_per'];
+    const statusId = `sort-status-${this.uid}`;
+    const formId = `sort-form-${this.uid}`;
 
     const sort_templates = [];
     sort_templates.push(this._sortTemplates('Sort By', 'sort_by', sort_by));
     sort_templates.push(this._sortTemplates('Order', 'order', order));
-    sort_templates.push(this._sortTemplates('Results Per', 'results', results_per));
+    sort_templates.push(
+      this._sortTemplates('Results Per Page', 'results', results_per)
+    );
 
     return html`
-      ${sort_templates}
-      <button
-        @click=${(e: Event) => {
-          e.preventDefault();
-          const sort_value = (document.getElementById(`sort_by-${this.uid}`) as HTMLSelectElement)?.value ?? '';
-          const order_value = (document.getElementById(`order-${this.uid}`) as HTMLSelectElement)?.value ?? '';
-          const results_value = (document.getElementById(`results-${this.uid}`) as HTMLSelectElement)?.value ?? '';
-          this._querySort(sort_value, order_value, results_value);
-        }}
+      <div
+        class="search-sort c-bg-secondary s-margin-general-medium s-box-small-v s-box-small-h"
+        role="region"
+        aria-labelledby="sort-title-${this.uid}"
       >
-        Apply Changes
-      </button>
+        <div
+          id="sort-title-${this.uid}"
+          class="sort-title t-title-small t-uppercase s-stack-medium c-content-primary"
+        >
+          Sort & Display
+        </div>
+        <div
+          id="${statusId}"
+          class="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          Sort and display options form
+        </div>
+        <form
+          id="${formId}"
+          class="sort-options s-stack-medium"
+          aria-describedby="${statusId}"
+        >
+          ${sort_templates}
+        </form>
+        <button
+          type="submit"
+          class="umd-lib button secondary"
+          aria-describedby="${statusId}"
+          @click=${(e: Event) => {
+            e.preventDefault();
+            const sort_value =
+              (
+                document.getElementById(
+                  `sort_by-${this.uid}`
+                ) as HTMLSelectElement
+              )?.value ?? '';
+            const order_value =
+              (
+                document.getElementById(
+                  `order-${this.uid}`
+                ) as HTMLSelectElement
+              )?.value ?? '';
+            const results_value =
+              (
+                document.getElementById(
+                  `results-${this.uid}`
+                ) as HTMLSelectElement
+              )?.value ?? '';
+            this._querySort(sort_value, order_value, results_value);
+
+            // Update status for screen readers
+            const statusElement = document.getElementById(statusId);
+            if (statusElement) {
+              statusElement.textContent = `Applied sort: ${sort_value} in ${order_value} order, showing ${results_value} results per page`;
+            }
+          }}
+          @keydown=${(e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              (e.target as HTMLButtonElement).click();
+            }
+          }}
+        >
+          Apply
+        </button>
+      </div>
     `;
   }
 
