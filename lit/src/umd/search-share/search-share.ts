@@ -15,6 +15,15 @@ export class SearchShare extends LitElement {
     document.addEventListener('update-context', (e) => {
       //@ts-expect-error This custom event has this property but isn't registered correctly in all tooling.
       this.queryText = decodeURIComponent(e.context.query.toString());
+
+      if (this.queryText === 'q=') {
+        this.queryText = '';
+      }
+
+      if (this.queryText.startsWith('q=&')) {
+        this.queryText = this.queryText.replace('q=&', '');
+      }
+
     });
   }
 
@@ -27,10 +36,7 @@ export class SearchShare extends LitElement {
   }
 
   private _copySearchResults(): void {
-    const url = new URL(window.location.href);
-    url.searchParams.set('q', this.queryText);
-
-    navigator.clipboard.writeText(decodeURIComponent(url.toString()));
+    navigator.clipboard.writeText(decodeURIComponent(window.location.href + '?' + this.queryText));
   }
 }
 
