@@ -71,21 +71,24 @@ export class FacetCheckbox extends BaseFacetElement {
     }
 
     const showToggle = opts.length > this.FACET_LIMIT;
+    const showFilter = opts.length > this.FACET_LIMIT || this.filterText !== '';
     const limitFacets = opts.length > this.FACET_LIMIT && !this.showAllFacets;
 
     const shown = limitFacets ? opts.slice(0, this.FACET_LIMIT) : opts;
     const hidden = limitFacets ? opts.slice(this.FACET_LIMIT) : [];
 
     return html`
-      <input
-        type="text"
-        placeholder="Search Term"
-        .value=${this.filterText}
-        @input=${(e: Event) => {
-          const target = e.target as HTMLInputElement;
-          this.filterText = target.value;
-        }}
-      />
+      ${showFilter ?
+        html` <input
+                type="text"
+                placeholder="Search Term"
+                .value=${this.filterText}
+                @input=${(e: Event) => {
+                  const target = e.target as HTMLInputElement;
+                  this.filterText = target.value;
+                }}
+              />`
+        : nothing}
 
       <ul>
         ${repeat(
