@@ -170,7 +170,7 @@ export class FacetCheckbox extends BaseFacetElement {
     const optionsListId = `facet-options-${this.uid}`;
 
     return html`
-      ${(children ?? facet.results).length > 10
+      ${(children ?? facet.results).length > this.FACET_LIMIT
         ? html`
             <div class="facet-search s-stack-medium" role="search">
               <label
@@ -347,8 +347,21 @@ export class FacetCheckbox extends BaseFacetElement {
     if (this.collapsible) {
       return this.wrapCollapsible(
         this._getCollapsibleLabelElement(),
-        html`${this._getActiveFacetsSection()} ${this._getOptions()}
-        ${this._getSoftLimitElement()} ${this._getResetElement()} `
+        html`
+          <div
+            class="facet-wrapper"
+            role="region"
+            aria-label="${wrapperAriaLabel}"
+          >
+            <!-- Live region for screen reader announcements -->
+            <div aria-live="polite" aria-atomic="true" class="sr-only">
+              ${this.announceMessage}
+            </div>
+
+            ${this._getActiveFacetsSection()} ${this._getOptions()}
+            ${this._getSoftLimitElement()} ${this._getResetElement()}
+          </div>
+        `
       );
     }
 
@@ -363,7 +376,9 @@ export class FacetCheckbox extends BaseFacetElement {
           ${this.announceMessage}
         </div>
 
-        ${this.showLabel ? this._getLabelElement() : null}
+        <div class="s-stack-medium">
+          ${this.showLabel ? this._getLabelElement() : null}
+        </div>
         ${this._getActiveFacetsSection()} ${this._getOptions()}
         ${this._getSoftLimitElement()} ${this._getResetElement()}
       </div>

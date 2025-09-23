@@ -215,7 +215,8 @@ export default class BaseFacetElement extends BaseSearchElement {
     const facet = this._getFacetData();
     const text = this.overrideLabel ? this.overrideLabel : facet.label;
     const labelId = `facet-label-${this.uid}`;
-    const hasActiveOptions = facet.active_values && facet.active_values.length > 0;
+    const hasActiveOptions =
+      facet.active_values && facet.active_values.length > 0;
     return html`<h2
       id="${labelId}"
       class="facet-label t-title-small t-uppercase s-stack-medium ${facet.key}"
@@ -234,16 +235,27 @@ export default class BaseFacetElement extends BaseSearchElement {
     const facet = this._getFacetData();
     const text = this.overrideLabel ? this.overrideLabel : facet.label;
 
-    return html`<button
-      aria-expanded="${this.optionsOpen}"
-      class="facet-label ${facet.key} ${this.optionsOpen ? 'open' : 'closed'}"
-      @click=${() => (this.optionsOpen = !this.optionsOpen)}
-      aria-controls="${'facet-collapse-' + this.uid}"
-    >
-      ${text}${this.showCountInCollapseLabel && facet.active_values?.length
-        ? `(${facet.active_values.length})`
-        : null}
-    </button>`;
+    return html`
+      <button
+        aria-expanded="${this.optionsOpen}"
+        class="facet-label collapsible ${facet.key} ${this.optionsOpen
+          ? 'open'
+          : 'closed'} c-bg-secondary s-box-small-v s-box-small-h"
+        @click=${() => (this.optionsOpen = !this.optionsOpen)}
+        aria-controls="${'facet-collapse-' + this.uid}"
+        aria-label="${text} facet filter"
+      >
+        <div class="facet-label-text">
+          <h2 class="t-title-small t-uppercase c-content-primary">
+            ${text}${this.showCountInCollapseLabel &&
+            facet.active_values?.length
+              ? `(${facet.active_values.length})`
+              : null}
+          </h2>
+        </div>
+        <span class="i-chevron-down" aria-hidden="true"></span>
+      </button>
+    `;
   }
 
   /**
@@ -278,7 +290,9 @@ export default class BaseFacetElement extends BaseSearchElement {
       ${label}
       <div
         id="${collapseId}"
-        class="facet-options ${this.optionsOpen ? 'open' : 'closed'}"
+        class="facet-options facet-wrapper ${this.optionsOpen
+          ? 'open'
+          : 'closed'} c-bg-secondary s-margin-general-medium s-box-small-v s-box-small-h"
         role="region"
         aria-hidden="${!this.optionsOpen}"
       >
@@ -301,8 +315,15 @@ export default class BaseFacetElement extends BaseSearchElement {
       return html``;
     }
 
-    const buttonText = this.resetText.replaceAll('@count', '' + facet.active_values.length);
-    const ariaLabel = `Reset ${facet.label} filters. Currently ${facet.active_values.length} ${facet.active_values.length === 1 ? 'filter is' : 'filters are'} selected.`;
+    const buttonText = this.resetText.replaceAll(
+      '@count',
+      '' + facet.active_values.length
+    );
+    const ariaLabel = `Reset ${facet.label} filters. Currently ${
+      facet.active_values.length
+    } ${
+      facet.active_values.length === 1 ? 'filter is' : 'filters are'
+    } selected.`;
 
     return html`<button
       class="${this.key} facet reset"
