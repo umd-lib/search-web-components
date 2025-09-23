@@ -34,10 +34,16 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const thumbnail_field = this.settings['thumbnail'] as string;
     const fields: Record<string, Field> = this.settings['fields'];
     const base_path: string = this.settings['base_path'];
-
     const query_string = this?.context?.query?.get('q');
-    let id = this.data[id_field].replace('solr_document/');
-    id = query_string ? id + '?q=' + query_string : id;
+
+    let id = undefined;
+    if (id_field in this.data) {
+      id = this.data[id_field].trim();
+      if (this.data[id_field].includes('solr_document')) {
+        id = this.data[id_field].replace('solr_document/', '');
+      }
+      id = query_string ? id + '?q=' + query_string : id;
+    }
 
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
