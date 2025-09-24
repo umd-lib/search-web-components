@@ -64,18 +64,11 @@ export class FacetButton extends BaseFacetElement {
       return null;
     }
 
-    if (this.collapsible) {
-      return this.wrapCollapsible(
-        this._getCollapsibleLabelElement(),
-        html`${this._getOptions()} ${this._getSoftLimitElement()}
-        ${this._getResetElement()}`
-      );
-    }
-
-    return html`
-      ${this.showLabel ? this._getLabelElement() : null} ${this._getOptions()}
-      ${this._getSoftLimitElement()} ${this._getResetElement()}
-    `;
+    return this.wrapCollapsible(
+      this._getCollapsibleLabelElement(),
+      html`${this._getOptions()} ${this._getSoftLimitElement()}
+      ${this._getResetElement()}`
+    );
   }
 }
 

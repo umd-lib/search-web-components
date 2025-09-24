@@ -40,11 +40,6 @@ export default class BaseFacetElement extends BaseSearchElement {
   @property()
   resetText = `Reset (@count)`;
 
-  /**
-   * Make the facet options collapsible.
-   */
-  @property({type: Boolean})
-  collapsible = false;
 
   /**
    * Default a collapsible facet to closed.
@@ -137,10 +132,6 @@ export default class BaseFacetElement extends BaseSearchElement {
     this.resetText = this._configOrAttribute(
       facet.settings.widget.resetText,
       this.resetText
-    );
-    this.collapsible = this._configOrAttribute(
-      facet.settings.widget.collapsible,
-      this.collapsible
     );
     this.closed = this._configOrAttribute(
       facet.settings.widget.closed,
@@ -364,7 +355,7 @@ export default class BaseFacetElement extends BaseSearchElement {
       this.classList.remove('is-active');
     }
 
-    if (this.collapsible && !this.optionsOpen) {
+    if (!this.optionsOpen) {
       this.classList.add('collapsed');
     } else {
       this.classList.remove('collapsed');

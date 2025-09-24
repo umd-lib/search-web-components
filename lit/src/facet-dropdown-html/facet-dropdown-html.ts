@@ -135,25 +135,15 @@ export class FacetDropdownHtml extends DropdownMixin(BaseFacetElement) {
       return null;
     }
 
-    if (this.collapsible) {
-      return this.wrapCollapsible(
-        this._getCollapsibleLabelElement(),
-        html`
-          <div class="html-dropdown-container">
-            ${this._getHtmlSelectLabelElement()} ${this._getHtmlSelectElement()}
-            ${this._getResetElement()}
-          </div>
-        `
-      );
-    }
-
-    return html`
-      ${this.showLabel ? this._getHtmlLabelElement() : null}
-      <div class="html-dropdown-container">
-        ${this._getHtmlSelectLabelElement()} ${this._getHtmlSelectElement()}
-        ${this._getResetElement()}
-      </div>
-    `;
+    return this.wrapCollapsible(
+      this._getCollapsibleLabelElement(),
+      html`
+        <div class="html-dropdown-container">
+          ${this._getHtmlSelectLabelElement()} ${this._getHtmlSelectElement()}
+          ${this._getResetElement()}
+        </div>
+      `
+    );
   }
 }
 

@@ -27,6 +27,7 @@ export class FacetCheckbox extends BaseFacetElement {
   @state()
   announceMessage: string = '';
 
+  // the number of facets to show before hiding the rest behind a "Show More" button, and providing a search box to filter the options.
   readonly FACET_LIMIT = 10;
 
   override updated(changedProperties: Map<string, any>) {
@@ -344,45 +345,24 @@ export class FacetCheckbox extends BaseFacetElement {
     const facet = this._getFacetData();
     const wrapperAriaLabel = `${facet.label} facet filter`;
 
-    if (this.collapsible) {
-      return this.wrapCollapsible(
-        this._getCollapsibleLabelElement(),
-        html`
-          <div
-            class="facet-wrapper"
-            role="region"
-            aria-label="${wrapperAriaLabel}"
-          >
-            <!-- Live region for screen reader announcements -->
-            <div aria-live="polite" aria-atomic="true" class="sr-only">
-              ${this.announceMessage}
-            </div>
-
-            ${this._getActiveFacetsSection()} ${this._getOptions()}
-            ${this._getSoftLimitElement()} ${this._getResetElement()}
+    return this.wrapCollapsible(
+      this._getCollapsibleLabelElement(),
+      html`
+        <div
+          class="facet-wrapper"
+          role="region"
+          aria-label="${wrapperAriaLabel}"
+        >
+          <!-- Live region for screen reader announcements -->
+          <div aria-live="polite" aria-atomic="true" class="sr-only">
+            ${this.announceMessage}
           </div>
-        `
-      );
-    }
 
-    return html`
-      <div
-        class="facet-wrapper c-bg-secondary s-margin-general-medium s-box-small-v s-box-small-h"
-        role="region"
-        aria-label="${wrapperAriaLabel}"
-      >
-        <!-- Live region for screen reader announcements -->
-        <div aria-live="polite" aria-atomic="true" class="sr-only">
-          ${this.announceMessage}
+          ${this._getActiveFacetsSection()} ${this._getOptions()}
+          ${this._getSoftLimitElement()} ${this._getResetElement()}
         </div>
-
-        <div class="s-stack-medium">
-          ${this.showLabel ? this._getLabelElement() : null}
-        </div>
-        ${this._getActiveFacetsSection()} ${this._getOptions()}
-        ${this._getSoftLimitElement()} ${this._getResetElement()}
-      </div>
-    `;
+      `
+    );
   }
 }
 

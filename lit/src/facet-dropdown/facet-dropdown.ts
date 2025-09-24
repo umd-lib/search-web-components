@@ -112,15 +112,10 @@ export class FacetDropdown extends BaseFacetElement {
       return null;
     }
 
-    if (this.collapsible) {
-      return this.wrapCollapsible(
-        this._getCollapsibleLabelElement(),
-        html`${this._getSelectElement()} ${this._getResetElement()}`
-      );
-    }
-
-    return html` ${this.showLabel ? this._getLabelElementSelect() : null}
-    ${this._getSelectElement()} ${this._getResetElement()}`;
+    return this.wrapCollapsible(
+      this._getCollapsibleLabelElement(),
+      html`${this._getSelectElement()} ${this._getResetElement()}`
+    );
   }
 }
 
