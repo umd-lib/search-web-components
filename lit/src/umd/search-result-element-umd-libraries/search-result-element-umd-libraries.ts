@@ -59,32 +59,26 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         return nothing;
       }
 
-      let extraClass = '';
-      let srOnlyText = '';
+      // for metadata missing labels, add default ones for first three fields
+      let labelText = '';
       if (idx === 0) {
-        extraClass = 'type';
-        srOnlyText = 'Item type:';
+        labelText = 'Item type:';
       } else if (idx === 1) {
-        extraClass = 'collection';
-        srOnlyText = 'Collection:';
+        labelText = 'Collection:';
       } else if (idx === 2) {
-        extraClass = 'date';
-        srOnlyText = 'Date:';
+        labelText = 'Date:';
       }
 
-      const ddClass = `t-label${extraClass ? ' ' + extraClass : ''}`;
-
       if (field.show_label && field.show_label == 'true') {
-        return html`<div class="">
-          <dt>${label}:</dt>
-          <dd class="${ddClass}">${value}</dd>
+        return html`<div class="t-label">
+          <dt class="t-bold">${label}:</dt>
+          <dd>${value}</dd>
         </div>`;
       } else {
-        return html`<dd class="${ddClass}">
-          <span></span>
-          <span class="sr-only">${srOnlyText}</span>
-          ${value}
-        </dd>`;
+        return html`<div class="t-label">
+          <dt class="t-bold">${labelText}</dt>
+          <dd>${value}</dd>
+        </div>`;
       }
     });
 
