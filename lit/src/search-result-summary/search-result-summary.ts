@@ -61,9 +61,12 @@ export class SearchResultSummary extends BaseSearchElement {
       : '';
 
     const result = this.summaryText
-      .replaceAll('@start', '' + nums.start)
+      .replaceAll('@start', 'Showing ' + nums.start)
       .replaceAll('@end', '' + nums.end)
-      .replaceAll('@total', '' + nums.total)
+      .replaceAll(
+        '@total',
+        '' + nums.total + (nums.total === 1 ? ' result' : ' results')
+      )
       .replaceAll('@searchQuery', this.context?.query?.get('q') ?? '')
       .replaceAll('@time', '' + time);
 

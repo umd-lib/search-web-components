@@ -1,6 +1,6 @@
 block.settings.swc_facet_button:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     endpoint:
       type: string
@@ -13,35 +13,35 @@ block.settings.swc_facet_button:
       label: Key
     overrideLabel:
       type: string
-      label: 'Override label'
+      label: "Override label"
     showLabel:
       type: boolean
-      label: 'Show Label'
+      label: "Show Label"
     showCount:
       type: boolean
-      label: 'Show count'
+      label: "Show count"
     showReset:
       type: boolean
-      label: 'Show reset'
+      label: "Show reset"
     resetText:
       type: string
-      label: 'Reset text'
+      label: "Reset text"
     collapsible:
       type: boolean
-      label: 'Collapsible'
+      label: "Collapsible"
     closed:
       type: boolean
-      label: 'Closed'
+      label: "Closed"
     showCountInCollapseLabel:
       type: boolean
-      label: 'Show count in collapsible label'
+      label: "Show count in collapsible label"
     preferAttributes:
       type: boolean
-      label: 'Prefer attributes'
+      label: "Prefer attributes"
 
 block.settings.swc_facet_checkbox:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     endpoint:
       type: string
@@ -54,38 +54,38 @@ block.settings.swc_facet_checkbox:
       label: Key
     overrideLabel:
       type: string
-      label: 'Override label'
+      label: "Override label"
     showLabel:
       type: boolean
-      label: 'Show Label'
+      label: "Show Label"
     showCount:
       type: boolean
-      label: 'Show count'
+      label: "Show count"
     showReset:
       type: boolean
-      label: 'Show reset'
+      label: "Show reset"
     resetText:
       type: string
-      label: 'Reset text'
+      label: "Reset text"
     collapsible:
       type: boolean
-      label: 'Collapsible'
+      label: "Collapsible"
     closed:
       type: boolean
-      label: 'Closed'
+      label: "Closed"
     showCountInCollapseLabel:
       type: boolean
-      label: 'Show count in collapsible label'
+      label: "Show count in collapsible label"
     preferAttributes:
       type: boolean
-      label: 'Prefer attributes'
+      label: "Prefer attributes"
     useRadios:
       type: boolean
-      label: 'Use radios'
+      label: "Use radios"
 
 block.settings.swc_facet_dropdown:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     endpoint:
       type: string
@@ -98,38 +98,38 @@ block.settings.swc_facet_dropdown:
       label: Key
     overrideLabel:
       type: string
-      label: 'Override label'
+      label: "Override label"
     showLabel:
       type: boolean
-      label: 'Show Label'
+      label: "Show Label"
     showCount:
       type: boolean
-      label: 'Show count'
+      label: "Show count"
     showReset:
       type: boolean
-      label: 'Show reset'
+      label: "Show reset"
     resetText:
       type: string
-      label: 'Reset text'
+      label: "Reset text"
     collapsible:
       type: boolean
-      label: 'Collapsible'
+      label: "Collapsible"
     closed:
       type: boolean
-      label: 'Closed'
+      label: "Closed"
     showCountInCollapseLabel:
       type: boolean
-      label: 'Show count in collapsible label'
+      label: "Show count in collapsible label"
     preferAttributes:
       type: boolean
-      label: 'Prefer attributes'
+      label: "Prefer attributes"
     selectLabel:
       type: string
-      label: 'Select label'
+      label: "Select label"
 
 block.settings.swc_facet_dropdown_html:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     endpoint:
       type: string
@@ -142,208 +142,211 @@ block.settings.swc_facet_dropdown_html:
       label: Key
     overrideLabel:
       type: string
-      label: 'Override label'
+      label: "Override label"
     showLabel:
       type: boolean
-      label: 'Show Label'
+      label: "Show Label"
     showCount:
       type: boolean
-      label: 'Show count'
+      label: "Show count"
     showReset:
       type: boolean
-      label: 'Show reset'
+      label: "Show reset"
     resetText:
       type: string
-      label: 'Reset text'
+      label: "Reset text"
     collapsible:
       type: boolean
-      label: 'Collapsible'
+      label: "Collapsible"
     closed:
       type: boolean
-      label: 'Closed'
+      label: "Closed"
     showCountInCollapseLabel:
       type: boolean
-      label: 'Show count in collapsible label'
+      label: "Show count in collapsible label"
     preferAttributes:
       type: boolean
-      label: 'Prefer attributes'
+      label: "Prefer attributes"
     required:
       type: boolean
-      label: 'Required'
+      label: "Required"
     htmlSelectLabel:
       type: string
-      label: 'HTML select label'
+      label: "HTML select label"
     multipleSelect:
       type: boolean
-      label: 'Multiple select'
+      label: "Multiple select"
 
 block.settings.swc_search_applied_facets:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     removeText:
       type: string
-      label: 'Remove text'
+      label: "Remove text"
     resetText:
       type: string
-      label: 'Reset text'
+      label: "Reset text"
     showReset:
       type: boolean
-      label: 'Show count in collapsible label'
+      label: "Show count in collapsible label"
     showIndividual:
       type: boolean
-      label: 'Prefer attributes'
+      label: "Prefer attributes"
 
 block.settings.swc_search_box:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     url:
       type: string
-      label: 'URL'
+      label: "URL"
     submitText:
       type: string
-      label: 'Submit text'
+      label: "Submit text"
     ariaLabelText:
       type: string
-      label: 'Aria label text'
+      label: "Aria label text"
     placeHolderText:
       type: string
-      label: 'Placeholder text'
+      label: "Placeholder text"
     componentLabelText:
       type: string
-      label: 'Component Label text'
+      label: "Component Label text"
 
 block.settings.swc_search_dialog_toggle:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     aboveBreakpointText:
       type: string
-      label: 'Above breakpoint text'
+      label: "Above breakpoint text"
     dialogOpenText:
       type: string
-      label: 'Dialog open text'
+      label: "Dialog open text"
     dialogCloseText:
       type: string
-      label: 'Dialog close text'
+      label: "Dialog close text"
     showAppliedCount:
       type: boolean
-      label: 'Show applied count'
+      label: "Show applied count"
 
 block.settings.swc_search_input:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     labelText:
       type: string
-      label: 'Label text'
+      label: "Label text"
     placeHolderText:
       type: string
-      label: 'Placeholder text'
+      label: "Placeholder text"
     clearText:
       type: string
-      label: 'Clear text'
+      label: "Clear text"
 
 block.settings.swc_search_no_results_message:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     noResultsContent:
       type: text_format
-      label: 'No results content'
+      label: "No results content"
 
 block.settings.swc_search_results:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     resultField:
       type: string
-      label: 'Result field'
+      label: "Result field"
     mappings:
       type: string
-      label: 'Mappings'
+      label: "Mappings"
 
 block.settings.swc_search_results_per_page:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     type:
       type: string
-      label: 'Type'
+      label: "Type"
     labelText:
       type: string
-      label: 'Label text'
+      label: "Label text"
     options:
       type: string
-      label: 'Options'
+      label: "Options"
     htmlSelectLabel:
       type: string
-      label: 'HTML select label'
+      label: "HTML select label"
 
 block.settings.swc_search_results_switcher:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     options:
       type: string
-      label: 'Options'
+      label: "Options"
 
 block.settings.swc_search_result_summary:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     summaryText:
       type: string
-      label: 'Summary text'
+      label: "Summary text"
 
 block.settings.swc_search_simple_pager:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     prevLabel:
       type: string
-      label: 'Previous label'
+      label: "Previous label"
     nextLabel:
       type: string
-      label: 'Next label'
+      label: "Next label"
     firstLabel:
       type: string
-      label: 'First label'
+      label: "First label"
     lastLabel:
       type: string
-      label: 'Last label'
+      label: "Last label"
     showNextPrev:
       type: boolean
-      label: 'Show next/previous'
+      label: "Show next/previous"
     showFirstLast:
       type: boolean
-      label: 'Show first/last'
+      label: "Show first/last"
     pagesToDisplay:
       type: integer
-      label: 'Pages to display'
+      label: "Pages to display"
     firstLastPagesToDisplay:
       type: integer
-      label: 'First last pages to display'
+      label: "First last pages to display"
 
 block.settings.swc_search_sort:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
   mapping:
     type:
       type: string
-      label: 'Type'
+      label: "Type"
     labelText:
       type: string
-      label: 'Label text'
+      label: "Label text"
     sorts:
       type: string
-      label: 'Sorts'
+      label: "Sorts"
     htmlSelectLabel:
       type: string
-      label: 'HTML select label'
+      label: "HTML select label"
 
 block.settings.swc_search_share:
   type: block_settings
-  label: 'Settings'
+  label: "Settings"
 
+block.settings.swc_search_result_toolbar:
+  type: block_settings
+  label: "Settings"

@@ -107,7 +107,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           </h2>
           ${html`<dl class="item-fields">${field_list}</dl>`}
         </div>
-        ${thumbnail === 'static:unavailable'
+        ${!thumbnail_field || !thumbnail || thumbnail === 'static:unavailable'
           ? nothing
           : html`<img
               src="${thumbnail}"

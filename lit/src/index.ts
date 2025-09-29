@@ -21,6 +21,7 @@ import {BaseSearchElement} from './BaseSearchElement.js';
 import {SearchDialogToggle} from './search-dialog-toggle/search-dialog-toggle.js';
 import {SearchDialogPane} from './search-dialog-pane/search-dialog-pane.js';
 import {SearchShare} from './umd/search-share/search-share.js';
+import {SearchResultToolbar} from './umd/search-result-toolbar/search-result-toolbar.js';
 
 export default {
   BaseSearchElement,
@@ -45,4 +46,5 @@ export default {
   SearchDialogToggle,
   SearchResultElementUMDLibraries,
   SearchShare,
+  SearchResultToolbar,
 };

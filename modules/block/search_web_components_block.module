@@ -37,5 +37,6 @@ function search_web_components_block_theme() {
     'swc_search_simple_pager' => $default,
     'swc_search_sort' => $default,
     'swc_search_share' => $default,
+    'swc_search_result_toolbar' => $default,
   ];
 }
