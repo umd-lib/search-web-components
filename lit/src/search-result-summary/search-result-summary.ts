@@ -56,6 +56,10 @@ export class SearchResultSummary extends BaseSearchElement {
   _getSummaryElement(): TemplateResult {
     const nums = this._getNumbers();
 
+    if (nums.total === 0) {
+      return html`Showing 0 results.`;
+    }
+
     const time = this.context?.response?.took
       ? this.context?.response?.took / 1000
       : '';

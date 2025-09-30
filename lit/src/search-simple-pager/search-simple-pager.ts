@@ -263,7 +263,8 @@ export class SearchSimplePager extends BaseSearchElement {
     if (
       this.context === undefined ||
       !this.context.responseReady ||
-      this.context.response?.search_results_pages === 1
+      this.context.response?.search_results_pages === 1 ||
+      this.context.response?.search_results_pages === 0
     ) {
       return;
     }

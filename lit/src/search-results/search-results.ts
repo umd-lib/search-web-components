@@ -103,8 +103,28 @@ export class SearchResults extends BaseSearchElement {
   _getResults(): TemplateResult | null {
     const results = this.context?.response?.search_results ?? [];
 
+    // No results
     if (results.length === 0) {
-      return null;
+      return html`
+        <div
+          class="no-results s-box-medium-v s-box-medium-h c-bg-secondary s-margin-general-large"
+        >
+          <div class="title s-margin-general-medium">
+            <h2 class="t-title-medium s-stack-small">No records found</h2>
+            <p>
+              <span>There are no results matching your search term. </span>
+            </p>
+          </div>
+          <div class="refine-search wysiwyg-editor">
+            <h3 class="t-title-small">Suggestions</h3>
+            <ul>
+              <li>Check your spelling</li>
+              <li>Try more general keywords.</li>
+              <li>Try different keywords that mean the same thing</li>
+            </ul>
+          </div>
+        </div>
+      `;
     }
 
     return html`
