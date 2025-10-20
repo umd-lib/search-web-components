@@ -109,6 +109,36 @@ export interface UMDSort {
   post: boolean;
 }
 
+export interface StandAloneSearchContext {
+  url?: string;
+  resultsCount: string;
+  responseReady?: boolean;
+  query?: URLSearchParams;
+  response: StandAloneSearchResponseType;
+}
+
+export interface StandAloneSearchResponseType {
+  results: object[],
+  total: number;
+  page: number;
+  per_page: number;
+  no_results_link: string;
+  module_link: string;
+  query: string;
+  endpoint: string;
+}
+
+export interface StandAloneSearchResultType {
+  description?: string;
+  item_format?: string;
+  link?: string;
+  title?: string;
+  extra?: object;
+  author?: string;
+  availability?: string;
+  date?: string;
+}
+
 declare global {
   interface GlobalEventHandlersEventMap {
     'update-context': CustomEvent<{context: SearchContext}>;
