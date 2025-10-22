@@ -1,5 +1,9 @@
 import {ContextRoot} from '@lit/context';
-import {StandAloneSearchContext, StandAloneSearchResponseType, StandAloneSearchResultType} from '../../types';
+import {
+  StandAloneSearchContext,
+  StandAloneSearchResponseType,
+  StandAloneSearchResultType,
+} from '../../types';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElement, html, TemplateResult} from 'lit';
 
@@ -30,7 +34,7 @@ export class StandAloneSearchResults extends LitElement {
       query: '',
       endpoint: '',
       results: [],
-    }
+    },
   };
 
   /**
@@ -108,7 +112,7 @@ export class StandAloneSearchResults extends LitElement {
 
     // Merge the current query with additional params.
     if (context.query.size == 0) {
-        return;
+      return;
     }
     let searchQuery = context.query;
     searchQuery.set('per_page', this.resultsCount);
@@ -153,12 +157,12 @@ export class StandAloneSearchResults extends LitElement {
       (response: StandAloneSearchResponseType) => {
         return response;
       }
-    )
+    );
   }
 
   static async doFetch(
     url: RequestInfo | URL,
-    headerOptions: HeadersInit | undefined = undefined,
+    headerOptions: HeadersInit | undefined = undefined
   ) {
     const headers = new Headers(headerOptions);
 
@@ -193,34 +197,78 @@ export class StandAloneSearchResults extends LitElement {
       const author = record.author;
       const availability = record.availability;
       const date = record.date;
+
       records.push(html`
-        <ul>
-          ${title ? html`<li>${title}</li>` : ''}
-          ${link ? html`<li>${link}</li>` : ''}
-          ${item_format ? html`<li>${item_format}</li>` : ''}
-          ${description ? html`<li>${description}</li>` : ''}
-          ${author ? html`<li>${author}</li>` : ''}
-          ${availability ? html`<li>${availability}</li>` : ''}
-          ${date ? html`<li>${date}</li>` : ''}
-          ${collection.collection ? html`<li>${collection.collection}</li>` : ''}
-          <hr />
-        </ul>
+        <li class="search-result s-margin-general-medium">
+          <article>
+            <div class="item-detail">
+              ${title
+                ? html`<h2 class="item-title t-title-small s-stack-small">
+                    ${link
+                      ? html` <a href="${link}"
+                          ><span class="sr-only">Title:</span>${title}
+                        </a>`
+                      : html`${title}`}
+                  </h2>`
+                : ''}
+              <dl class="item-fields">
+                ${item_format
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Item format:</dt>
+                      <dd>${item_format}</dd>
+                    </div>`
+                  : ''}
+                ${description
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Description:</dt>
+                      <dd>${description}</dd>
+                    </div>`
+                  : ''}
+                ${author
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Author:</dt>
+                      <dd>${author}</dd>
+                    </div>`
+                  : ''}
+                ${availability
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Availability:</dt>
+                      <dd>${availability}</dd>
+                    </div>`
+                  : ''}
+                ${date
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Date:</dt>
+                      <dd>${date}</dd>
+                    </div>`
+                  : ''}
+                ${collection?.collection
+                  ? html`<div class="t-label">
+                      <dt class="t-bold">Collection</dt>
+                      <dd>${collection.collection}</dd>
+                    </div>`
+                  : ''}
+              </dl>
+            </div>
+          </article>
+        </li>
       `);
     });
 
     if (records.length > 0) {
       return html`
         <div>
-          ${records}
+          <ul>
+            ${records}
+          </ul>
           <p>${this.moduleLink || this.context.response.module_link}</p>
         </div>
       `;
     } else {
-      return html`
-        <div>
-          <p>No Results</p>
-          <p>${this.noResultsLink || this.context.response.no_results_link}</p>
-        </div>`;
+      return html` <div>
+        <p>No Results</p>
+        <p>${this.noResultsLink || this.context.response.no_results_link}</p>
+      </div>`;
     }
   }
 }
