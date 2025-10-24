@@ -21,7 +21,6 @@ export class StandAloneSearchResults extends LitElement {
    */
   @state()
   context: StandAloneSearchContext = {
-    url: '',
     query: new URLSearchParams(window.location.search),
     responseReady: false,
     resultsCount: '5',
@@ -51,6 +50,9 @@ export class StandAloneSearchResults extends LitElement {
 
   @property()
   noResultsLink = '';
+
+  @property()
+  noResultsMessage = '';
 
   @property()
   blockTitle = '';
@@ -90,22 +92,11 @@ export class StandAloneSearchResults extends LitElement {
       const newQuery = new URLSearchParams(queryText);
       if (newQuery.has("q") && newQuery.get("q")?.trim != undefined) {
         this.getResults(newQuery);
+        console.log(newQuery);
       }
     });
 
     let initialQuery: URLSearchParams | undefined;
-    if (this.searchEndpoint) {
-      const [url, query] = this.searchEndpoint.split('?');
-      if (url.startsWith('/')) {
-        context.url = new URL(url, document.baseURI).href;
-      } else {
-        context.url = url;
-      }
-
-      if (query) {
-        initialQuery = new URLSearchParams(query);
-      }
-    }
     context.resultsCount = this.resultsCount;
 
     // Initialize the query to empty if it's not set or if we want to ignore parameters in the url.
@@ -136,7 +127,7 @@ export class StandAloneSearchResults extends LitElement {
     searchQuery.set('per_page', this.resultsCount);
 
     context.response = await StandAloneSearchResults.doSearch(
-      context.url ?? '',
+      this.searchEndpoint,
       searchQuery
     );
     context.responseReady = true;
@@ -155,9 +146,10 @@ export class StandAloneSearchResults extends LitElement {
 
     // Merge the query with additional params from the search root.
     let searchQuery = query;
+    console.log(searchQuery);
 
     [context.response] = await Promise.all([
-      StandAloneSearchResults.doSearch(context.url ?? '', searchQuery),
+      StandAloneSearchResults.doSearch(this.searchEndpoint, searchQuery),
     ]);
 
     this.context = {...context} as StandAloneSearchContext;
@@ -313,8 +305,17 @@ export class StandAloneSearchResults extends LitElement {
     } else {
       return html`
         <div>
-          <p>No Results</p>
-          <p>${this.noResultsLink || this.context.response.no_results_link}</p>
+          <header>
+            <h2 class="t-title-small t-uppercase s-stack-small">
+              <span class="${this.blockIcon}"></span>
+              <a id="${this.context.response.endpoint}"
+                  href="${this.noResultsLink || this.context.response.no_results_link}">${this.blockTitle}</a>
+            </h2>
+          </header>
+          <p>${this.blockDescription}</p>
+          <footer>
+            <p><a href="${this.noResultsLink || this.context.response.no_results_link}">${this.noResultsMessage}</a></p>
+          </footer>
         </div>
       `;
     }

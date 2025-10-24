@@ -31,6 +31,7 @@ final class StandAloneSearchBlock extends BlockBase {
       'blockDescription' => '',
       'bottomLinkText' => '',
       'blockIcon' => '',
+      'noResultsMessage' => '',
     ];
   }
 
@@ -76,6 +77,11 @@ final class StandAloneSearchBlock extends BlockBase {
       '#description' => $this->t('Search URL to use if no results'),
       '#default_value' => $this->configuration['noResultsLink'],
     ];
+    $form['noResultsMessage'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('No Results Message'),
+      '#default_value' => $this->configuration['noResultMessage'],
+    ];
     $form['resultsCount'] = [
       '#type' => 'number',
       '#required' => TRUE,
@@ -93,6 +99,7 @@ final class StandAloneSearchBlock extends BlockBase {
     $this->configuration['searchEndpoint'] = $form_state->getValue('searchEndpoint');
     $this->configuration['resultsCount'] = $form_state->getValue('resultsCount');
     $this->configuration['noResultsLink'] = $form_state->getValue('noResultsLink');
+    $this->configuration['noResultsMessage'] = $form_state->getValue('noResultsMessage');
     $this->configuration['blockTitle'] = $form_state->getValue('blockTitle');
     $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
     $this->configuration['bottomLinkText'] = $form_state->getValue('bottomLinkText');
@@ -114,6 +121,9 @@ final class StandAloneSearchBlock extends BlockBase {
     }
     if (!empty($config['noResultsLink'])) {
       $searchAttributes->setAttribute('noResultsLink', $config['noResultsLink']);
+    }
+    if (!empty($config['noResultsMessage'])) {
+      $searchAttributes->setAttribute('noResultsMessage', $config['noResultsMessage']);
     }
     if (!empty($config['blockTitle'])) {
       $searchAttributes->setAttribute('blockTitle', $config['blockTitle']);

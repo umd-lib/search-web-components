@@ -110,7 +110,6 @@ export interface UMDSort {
 }
 
 export interface StandAloneSearchContext {
-  url?: string;
   resultsCount: string;
   responseReady?: boolean;
   query?: URLSearchParams;
