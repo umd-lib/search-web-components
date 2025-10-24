@@ -53,7 +53,16 @@ export class StandAloneSearchResults extends LitElement {
   noResultsLink = '';
 
   @property()
-  moduleLink = '';
+  blockTitle = '';
+
+  @property()
+  blockDescription = '';
+
+  @property()
+  bottomLinkText = '';
+
+  @property()
+  blockIcon = '';
 
   /**
    * The current context root.
@@ -74,6 +83,15 @@ export class StandAloneSearchResults extends LitElement {
     super.connectedCallback();
 
     const context = {...this.context};
+    
+    document.addEventListener('update-context', (e) => {
+      //@ts-expect-error
+      const queryText = decodeURIComponent(e.context.query.toString());
+      const newQuery = new URLSearchParams(queryText);
+      if (newQuery.has("q") && newQuery.get("q")?.trim != undefined) {
+        this.getResults(newQuery);
+      }
+    });
 
     let initialQuery: URLSearchParams | undefined;
     if (this.searchEndpoint) {
@@ -130,6 +148,22 @@ export class StandAloneSearchResults extends LitElement {
     });
   }
 
+  async getResults(query: URLSearchParams) {
+
+    const context = {...this.context};
+    context.query = query;
+
+    // Merge the query with additional params from the search root.
+    let searchQuery = query;
+
+    [context.response] = await Promise.all([
+      StandAloneSearchResults.doSearch(context.url ?? '', searchQuery),
+    ]);
+
+    this.context = {...context} as StandAloneSearchContext;
+  }
+
+
   static async doSearch(url: string, query: URLSearchParams) {
     const searchQuery = new URLSearchParams(query.toString());
 
@@ -185,6 +219,8 @@ export class StandAloneSearchResults extends LitElement {
 
   override render() {
     const results = this.context.response.results;
+    const total = this.context.response.total;
+    const footer = this.bottomLinkText.replace("%total%", total.toString());
 
     const records: TemplateResult[] = [];
     results.forEach(function (result) {
@@ -258,17 +294,29 @@ export class StandAloneSearchResults extends LitElement {
     if (records.length > 0) {
       return html`
         <div>
+          <header>
+            <h2 class="t-title-small t-uppercase s-stack-small">
+              <span class="${this.blockIcon}"></span>
+              <a id="${this.context.response.endpoint}"
+                  href="${this.context.response.module_link}">${this.blockTitle}</a>
+            </h2>
+          </header>
+          <p>${this.blockDescription}</p>
           <ul>
             ${records}
           </ul>
-          <p>${this.moduleLink || this.context.response.module_link}</p>
+          <footer>
+            <p><a href="${this.context.response.module_link}">${footer}</a></p>
+          </footer>
         </div>
       `;
     } else {
-      return html` <div>
-        <p>No Results</p>
-        <p>${this.noResultsLink || this.context.response.no_results_link}</p>
-      </div>`;
+      return html`
+        <div>
+          <p>No Results</p>
+          <p>${this.noResultsLink || this.context.response.no_results_link}</p>
+        </div>
+      `;
     }
   }
 }

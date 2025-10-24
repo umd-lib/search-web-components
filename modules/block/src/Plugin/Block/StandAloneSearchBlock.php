@@ -27,6 +27,10 @@ final class StandAloneSearchBlock extends BlockBase {
       'searchEndpoint' => '',
       'resultsCount' => '5',
       'noResultsLink' => '',
+      'blockTitle' => '',
+      'blockDescription' => '',
+      'bottomLinkText' => '',
+      'blockIcon' => '',
     ];
   }
 
@@ -34,8 +38,34 @@ final class StandAloneSearchBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state): array {
+    $form['blockIcon'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => $this->t('Block Icon'),
+      '#default_value' => $this->configuration['blockIcon'],
+    ];
+    $form['blockTitle'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => $this->t('Block Title'),
+      '#default_value' => $this->configuration['blockTitle'],
+    ];
+    $form['blockDescription'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => $this->t('Block Description'),
+      '#default_value' => $this->configuration['blockDescription'],
+    ];
+    $form['bottomLinkText'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => $this->t('Bottom Link Text'),
+      '#description' => $this->t('Use %total% as a placeholder for a results count.'),
+      '#default_value' => $this->configuration['bottomLinkText'],
+    ];
     $form['searchEndpoint'] = [
       '#type' => 'textfield',
+      '#required' => TRUE,
       '#title' => $this->t('Search Endpoint'),
       '#description' => $this->t('External API URL'),
       '#default_value' => $this->configuration['searchEndpoint'],
@@ -46,14 +76,9 @@ final class StandAloneSearchBlock extends BlockBase {
       '#description' => $this->t('Search URL to use if no results'),
       '#default_value' => $this->configuration['noResultsLink'],
     ];
-    $form['moduleLink'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Module Link'),
-      '#description' => $this->t('Where to redirect user for more results'),
-      '#default_value' => $this->configuration['moduleLink'],
-    ];
     $form['resultsCount'] = [
       '#type' => 'number',
+      '#required' => TRUE,
       '#title' => $this->t('Number of Results'),
       '#description' => $this->t('How many results to display in standalone search block'),
       '#default_value' => $this->configuration['resultsCount'],
@@ -68,7 +93,10 @@ final class StandAloneSearchBlock extends BlockBase {
     $this->configuration['searchEndpoint'] = $form_state->getValue('searchEndpoint');
     $this->configuration['resultsCount'] = $form_state->getValue('resultsCount');
     $this->configuration['noResultsLink'] = $form_state->getValue('noResultsLink');
-    $this->configuration['moduleLink'] = $form_state->getValue('moduleLink');
+    $this->configuration['blockTitle'] = $form_state->getValue('blockTitle');
+    $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
+    $this->configuration['bottomLinkText'] = $form_state->getValue('bottomLinkText');
+    $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
   }
 
   /**
@@ -87,10 +115,18 @@ final class StandAloneSearchBlock extends BlockBase {
     if (!empty($config['noResultsLink'])) {
       $searchAttributes->setAttribute('noResultsLink', $config['noResultsLink']);
     }
-    if (!empty($config['moduleLink'])) {
-      $searchAttributes->setAttribute('moduleLink', $config['moduleLink']);
+    if (!empty($config['blockTitle'])) {
+      $searchAttributes->setAttribute('blockTitle', $config['blockTitle']);
     }
-
+    if (!empty($config['blockDescription'])) {
+      $searchAttributes->setAttribute('blockDescription', $config['blockDescription']);
+    }
+    if (!empty($config['bottomLinkText'])) {
+      $searchAttributes->setAttribute('bottomLinkText', $config['bottomLinkText']);
+    }
+    if (!empty($config['blockIcon'])) {
+      $searchAttributes->setAttribute('blockIcon', $config['blockIcon']);
+    }
 
     return [
       '#theme' => 'swc_standalone_search_results',
@@ -102,5 +138,4 @@ final class StandAloneSearchBlock extends BlockBase {
       ],
     ];
   }
-
 }
