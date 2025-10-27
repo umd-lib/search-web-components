@@ -81,16 +81,51 @@ export class StandAloneSearchResults extends LitElement {
     return this;
   }
 
+  /**
+   * Update link icons for bento links: use external icon when host differs.
+   * recreate the same feature as the emphasized link component in UMDLIB_UMDDS.
+   */
+  private updateLinkIcons(): void {
+    try {
+      const currentLocation = window.location;
+      const bentoLinks = this.querySelectorAll<HTMLAnchorElement>(
+        '.bento-search .emphasized-link a'
+      );
+
+      bentoLinks.forEach((link) => {
+        const linkIcon = link.querySelector('span');
+        if (!linkIcon) return;
+        if (link.host && link.host !== currentLocation.host) {
+          linkIcon.classList.remove('i-chevron');
+          linkIcon.classList.add('i-external-arrow');
+        } else {
+          linkIcon.classList.remove('i-external-arrow');
+          linkIcon.classList.add('i-chevron');
+        }
+      });
+    } catch (err) {
+      // Non-blocking; log for debugging.
+      // eslint-disable-next-line no-console
+      console.error('updateLinkIcons error', err);
+    }
+  }
+
+  protected override updated(_changedProps: Map<string, any>): void {
+    super.updated(_changedProps);
+    // Run after render to ensure DOM nodes exist.
+    this.updateLinkIcons();
+  }
+
   override async connectedCallback() {
     super.connectedCallback();
 
     const context = {...this.context};
-    
+
     document.addEventListener('update-context', (e) => {
       //@ts-expect-error
       const queryText = decodeURIComponent(e.context.query.toString());
       const newQuery = new URLSearchParams(queryText);
-      if (newQuery.has("q") && newQuery.get("q")?.trim != undefined) {
+      if (newQuery.has('q') && newQuery.get('q')?.trim != undefined) {
         this.getResults(newQuery);
         console.log(newQuery);
       }
@@ -140,8 +175,7 @@ export class StandAloneSearchResults extends LitElement {
   }
 
   async getResults(query: URLSearchParams) {
-
-    query.set("per_page", this.resultsCount);
+    query.set('per_page', this.resultsCount);
     const context = {...this.context};
     context.query = query;
 
@@ -211,7 +245,7 @@ export class StandAloneSearchResults extends LitElement {
   override render() {
     const results = this.context.response.results;
     const total = this.context.response.total;
-    const footer = this.bottomLinkText.replace("%total%", total.toString());
+    const footer = this.bottomLinkText.replace('%total%', total.toString());
 
     const records: TemplateResult[] = [];
     results.forEach(function (result) {
@@ -226,29 +260,27 @@ export class StandAloneSearchResults extends LitElement {
       const date = record.date;
 
       records.push(html`
-        <li class="search-result s-margin-general-medium">
+        <li class="bento-search-result-item s-box-small-v s-box-small-h">
           <article>
             <div class="item-detail">
               ${title
-                ? html`<h2 class="item-title t-title-small s-stack-small">
+                ? html`<h3 class="item-title t-title-small">
                     ${link
                       ? html` <a href="${link}"
                           ><span class="sr-only">Title:</span>${title}
                         </a>`
                       : html`${title}`}
-                  </h2>`
+                  </h3>`
+                : ''}
+              ${description
+                ? html`<p class="sr-only">description</p>
+                    <p class="t-body-small s-stack-small">${description}</p>`
                 : ''}
               <dl class="item-fields">
                 ${item_format
                   ? html`<div class="t-label">
                       <dt class="t-bold">Item format:</dt>
                       <dd>${item_format}</dd>
-                    </div>`
-                  : ''}
-                ${description
-                  ? html`<div class="t-label">
-                      <dt class="t-bold">Description:</dt>
-                      <dd>${description}</dd>
                     </div>`
                   : ''}
                 ${author
@@ -282,42 +314,69 @@ export class StandAloneSearchResults extends LitElement {
       `);
     });
 
-    if (records.length > 0) {
-      return html`
-        <div>
-          <header>
-            <h2 class="t-title-small t-uppercase s-stack-small">
-              <span class="${this.blockIcon}"></span>
-              <a id="${this.context.response.endpoint}"
-                  href="${this.context.response.module_link}">${this.blockTitle}</a>
+    return html`
+      <div>
+        <section class="bento-search c-border-tertiary s-margin-general-medium">
+          <div
+            class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
+          >
+            <div class="bento-search-header-icon-container" aria-hidden="true">
+              <i
+                data-lucide="${this.blockIcon}"
+                class="bento-search-header-icon"
+              ></i>
+            </div>
+            <h2 class="t-title-medium">
+              <a
+                id="${this.context.response.endpoint}"
+                href="${this.noResultsLink ||
+                this.context.response.no_results_link}"
+                >${this.blockTitle}</a
+              >
             </h2>
-          </header>
-          <p>${this.blockDescription}</p>
-          <ul>
-            ${records}
-          </ul>
-          <footer>
-            <p><a href="${this.context.response.module_link}">${footer}</a></p>
-          </footer>
-        </div>
-      `;
-    } else {
-      return html`
-        <div>
-          <header>
-            <h2 class="t-title-small t-uppercase s-stack-small">
-              <span class="${this.blockIcon}"></span>
-              <a id="${this.context.response.endpoint}"
-                  href="${this.noResultsLink || this.context.response.no_results_link}">${this.blockTitle}</a>
-            </h2>
-          </header>
-          <p>${this.blockDescription}</p>
-          <footer>
-            <p><a href="${this.noResultsLink || this.context.response.no_results_link}">${this.noResultsMessage}</a></p>
-          </footer>
-        </div>
-      `;
-    }
+          </div>
+          <p
+            class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
+          >
+            ${this.blockDescription}
+          </p>
+          ${records.length > 0
+            ? html` <ul>
+                  ${records}
+                </ul>
+                <div class="bento-search-footer">
+                  ${footer
+                    ? html`<div class="s-box-small-v s-box-small-h">
+                        <div class="umd-lib emphasized-link">
+                          <a
+                            href="${this.context.response.module_link}"
+                            class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
+                          >
+                            <span class="i-chevron"></span>${footer}
+                          </a>
+                        </div>
+                      </div>`
+                    : ''}
+                </div>`
+            : html` <div class="bento-search-footer">
+                ${this.noResultsMessage
+                  ? html` <div class="s-box-small-v s-box-small-h">
+                      <div class="umd-lib emphasized-link">
+                        <a
+                          href="${this.noResultsLink ||
+                          this.context.response.no_results_link}"
+                          class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
+                        >
+                          <span class="i-chevron"></span>${this
+                            .noResultsMessage}
+                        </a>
+                      </div>
+                    </div>`
+                  : ''}
+              </div>`}
+        </section>
+      </div>
+    `;
   }
 }
 
