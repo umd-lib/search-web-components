@@ -141,12 +141,12 @@ export class StandAloneSearchResults extends LitElement {
 
   async getResults(query: URLSearchParams) {
 
+    query.set("per_page", this.resultsCount);
     const context = {...this.context};
     context.query = query;
 
     // Merge the query with additional params from the search root.
     let searchQuery = query;
-    console.log(searchQuery);
 
     [context.response] = await Promise.all([
       StandAloneSearchResults.doSearch(this.searchEndpoint, searchQuery),
@@ -154,7 +154,6 @@ export class StandAloneSearchResults extends LitElement {
 
     this.context = {...context} as StandAloneSearchContext;
   }
-
 
   static async doSearch(url: string, query: URLSearchParams) {
     const searchQuery = new URLSearchParams(query.toString());
