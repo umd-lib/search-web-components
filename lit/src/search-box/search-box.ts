@@ -62,7 +62,7 @@ export class SearchBox extends BaseSearchElement {
 
   override render() {
     return html`
-      <form
+      <form id="swc-search-box"
         class="search-box s-box-large-h s-box-medium-v c-bg-secondary s-margin-general-medium"
         @submit="${(e: SubmitEvent) => this._submit(e)}"
       >

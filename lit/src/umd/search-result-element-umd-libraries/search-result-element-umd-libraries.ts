@@ -98,7 +98,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const altText = firstFieldKey ? this.data[firstFieldKey] : '';
 
     return html`
-      <section>
+      <article>
         <div class="item-detail">
           <h2 class="item-title t-title-small s-stack-small">
             <a href="${base_path + id}"
@@ -119,7 +119,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
               this.classList.add('image-error', 't-label', 't-italic');
               this.alt='.   ${altText} - image not found';"
             />`}
-      </section>
+      </article>
     `;
   }
 }
