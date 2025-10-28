@@ -1,10 +1,15 @@
-import {html, nothing} from 'lit';
+import {nothing, html} from 'lit';
 import {property, customElement} from 'lit/decorators.js';
 import {BaseSearchElement} from '../../BaseSearchElement';
+
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
+// Needed for markup in external databases.
+import {repeat} from 'lit/directives/repeat.js';
 
 interface Field {
   key: string;
   show_label?: string;
+  facet_link_pattern?: string;
 }
 
 /**
@@ -48,39 +53,86 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
 
-    const field_list = Object.entries(fields).map(([label, field], idx) => {
-      const value = this.data[field.key];
-      if (
-        value === undefined ||
-        value === null ||
-        value === '' ||
-        (Array.isArray(value) && value.length === 0)
-      ) {
-        return nothing;
-      }
+    const field_entries = Object.entries(fields)
+      .map(([label, field], idx) => {
+        const value = this.data[field.key];
+        if (
+          value === undefined ||
+          value === null ||
+          value === '' ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          return null;
+        }
 
-      // for metadata missing labels, add default ones for first three fields
-      let labelText = '';
-      if (idx === 0) {
-        labelText = 'Item type:';
-      } else if (idx === 1) {
-        labelText = 'Collection:';
-      } else if (idx === 2) {
-        labelText = 'Date:';
-      }
+        // Prefer the entry key or an explicit field.label; otherwise use fallbacks for first three fields.
+        const rawLabel =
+          (typeof label === 'string' && label) ||
+          (field && (field as any).label) ||
+          '';
+        let labelText = rawLabel.trim();
 
-      if (field.show_label && field.show_label == 'true') {
-        return html`<div class="t-label">
-          <dt class="t-bold">${label}:</dt>
-          <dd>${value}</dd>
-        </div>`;
-      } else {
-        return html`<div class="t-label">
-          <dt class="t-bold">${labelText}</dt>
-          <dd>${value}</dd>
-        </div>`;
-      }
-    });
+        if (!labelText) {
+          const fallback = ['Item type:', 'Collection:', 'Date:'];
+          labelText = fallback[idx] || '';
+        }
+
+        const displayLabel = field.show_label == 'true' ? label : labelText;
+
+        return {
+          label: displayLabel,
+          value,
+          field,
+          template:
+            field.show_label == 'true'
+              ? Array.isArray(value) && field.facet_link_pattern != undefined
+                ? html` <div class="t-label">
+                    <dt class="t-bold">${label}:</dt>
+                    <dd>
+                      ${repeat(
+                        value,
+                        (val) => val,
+                        (val, index) =>
+                          html`<a href="${field.facet_link_pattern}${val}"
+                              >${val}</a
+                            >
+                            ${index < value.length - 1 ? ', ' : ''}`
+                      )}
+                    </dd>
+                  </div>`
+                : Array.isArray(value)
+                ? html`<div class="t-label">
+                    <dt class="t-bold">${label}:</dt>
+                    <dd>
+                      ${repeat(
+                        value,
+                        (val) => val,
+                        (val, index) =>
+                          html`${val}${index < value.length - 1 ? ', ' : ''}`
+                      )}
+                    </dd>
+                  </div>`
+                : html`<div class="t-label">
+                    <dt class="t-bold">${label}:</dt>
+                    <dd>${unsafeHTML(value)}</dd>
+                  </div>`
+              : html`<div class="t-label">
+                  <dt class="t-bold">${labelText}</dt>
+                  <dd>${unsafeHTML(value)}</dd>
+                </div>`,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry != null);
+
+    // Extract first field for use in h2 when base_path && id is false
+    const firstField = field_entries[0];
+    const remainingFields = field_entries.slice(1);
+
+    // Create field list based on whether we're using first field in h2
+    const field_list =
+      base_path && id
+        ? field_entries.map((entry) => entry.template)
+        : remainingFields.map((entry) => entry.template);
 
     if (Array.isArray(title)) {
       title = title.map((t: string) =>
@@ -100,11 +152,47 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article>
         <div class="item-detail">
-          <h2 class="item-title t-title-small s-stack-small">
-            <a href="${base_path + id}"
-              ><span class="sr-only">Title:</span>${title}
-            </a>
-          </h2>
+          ${base_path && id
+            ? html`
+                <h2 class="item-title t-title-small s-stack-small">
+                  <a href="${base_path + id}"
+                    ><span class="sr-only">Title:</span>${title}
+                  </a>
+                </h2>
+              `
+            : firstField
+            ? html`
+                <h2 class="item-title t-title-small s-stack-small">
+                  ${Array.isArray(firstField.value)
+                    ? firstField.field.facet_link_pattern
+                      ? repeat(
+                          firstField.value,
+                          (val) => val,
+                          (val) =>
+                            html`
+                              <a
+                                href="${firstField.field
+                                  .facet_link_pattern}${val}"
+                              >
+                                ${firstField.label}${firstField.label
+                                  ? ': '
+                                  : ''}
+                                ${val}</a
+                              >
+                            `
+                        )
+                      : repeat(
+                          firstField.value,
+                          (val) => val,
+                          (val) =>
+                            html`${firstField.label}${firstField.label
+                              ? ': '
+                              : ''}${val}`
+                        )
+                    : unsafeHTML(firstField.value)}
+                </h2>
+              `
+            : ''}
           ${html`<dl class="item-fields">${field_list}</dl>`}
         </div>
         ${!thumbnail_field || !thumbnail || thumbnail === 'static:unavailable'
