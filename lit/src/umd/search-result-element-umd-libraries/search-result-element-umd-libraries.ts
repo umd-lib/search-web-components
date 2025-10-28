@@ -1,10 +1,13 @@
-import {html, nothing} from 'lit';
-import {property, customElement} from 'lit/decorators.js';
-import {BaseSearchElement} from '../../BaseSearchElement';
+import { nothing, html } from 'lit';
+import { property, customElement } from 'lit/decorators.js';
+import { BaseSearchElement } from '../../BaseSearchElement';
+// Needed for markup in external databases.
+import { repeat } from 'lit/directives/repeat.js';
 
 interface Field {
   key: string;
   show_label?: string;
+  facet_link_pattern?: string;
 }
 
 /**
@@ -70,10 +73,32 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
       }
 
       if (field.show_label && field.show_label == 'true') {
-        return html`<div class="t-label">
-          <dt class="t-bold">${label}:</dt>
-          <dd>${value}</dd>
-        </div>`;
+        if (Array.isArray(value) && field.facet_link_pattern != undefined) {
+          return html`
+            <div class="t-label">
+              <dt class="t-bold">${label}:</dt>
+              <dd>
+                ${repeat(value, val => val, (val, index) =>
+                  html`
+                    <a href="${field.facet_link_pattern}${val}">${val}</a>
+                    ${index < value.length - 1 ? ', ' : ''}`)}
+              </dd>
+            </div>`;
+        } else if (Array.isArray(value)) {
+          return html`
+            <div class="t-label">
+              <dt class="t-bold">${label}:</dt>
+              <dd>
+                ${repeat(value, val => val, (val, index) =>
+                  html`${val}${index < value.length - 1 ? ', ' : ''}`)}
+              </dd>
+            </div>`;
+        } else {
+          return html`<div class="t-label">
+            <dt class="t-bold">${label}:</dt>
+            <dd>${value}</dd>
+          </div>`;
+        }
       } else {
         return html`<div class="t-label">
           <dt class="t-bold">${labelText}</dt>
@@ -100,11 +125,13 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article>
         <div class="item-detail">
-          <h2 class="item-title t-title-small s-stack-small">
-            <a href="${base_path + id}"
-              ><span class="sr-only">Title:</span>${title}
-            </a>
-          </h2>
+          ${base_path && id ? html`
+            <h2 class="item-title t-title-small s-stack-small">
+              <a href="${base_path + id}"
+                ><span class="sr-only">Title:</span>${title}
+              </a>
+            </h2>
+          ` : ''}
           ${html`<dl class="item-fields">${field_list}</dl>`}
         </div>
         ${!thumbnail_field || !thumbnail || thumbnail === 'static:unavailable'
