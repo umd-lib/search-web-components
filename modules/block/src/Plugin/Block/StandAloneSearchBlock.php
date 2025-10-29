@@ -80,7 +80,7 @@ final class StandAloneSearchBlock extends BlockBase {
     $form['noResultsMessage'] = [
       '#type' => 'textfield',
       '#title' => $this->t('No Results Message'),
-      '#default_value' => $this->configuration['noResultMessage'],
+      '#default_value' => $this->configuration['noResultsMessage'],
     ];
     $form['resultsCount'] = [
       '#type' => 'number',
