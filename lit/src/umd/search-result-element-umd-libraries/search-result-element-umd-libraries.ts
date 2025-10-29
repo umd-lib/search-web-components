@@ -114,11 +114,11 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                   </div>`
                 : html`<div class="t-label">
                     <dt class="t-bold">${label}:</dt>
-                    <dd>${unsafeHTML(value)}</dd>
+                    <dd>${value ?? unsafeHTML(value)}</dd>
                   </div>`
               : html`<div class="t-label">
                   <dt class="t-bold">${labelText}</dt>
-                  <dd>${unsafeHTML(value)}</dd>
+                  <dd>${value ?? unsafeHTML(value)}</dd>
                 </div>`,
         };
       })
