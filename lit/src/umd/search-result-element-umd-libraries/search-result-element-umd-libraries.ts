@@ -78,6 +78,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         }
 
         const displayLabel = field.show_label == 'true' ? label : labelText;
+        console.log(value);
 
         return {
           label: displayLabel,
@@ -114,12 +115,16 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                   </div>`
                 : html`<div class="t-label">
                     <dt class="t-bold">${label}:</dt>
-                    <dd>${value ?? unsafeHTML(value)}</dd>
+                    <dd>${unsafeHTML(value)}</dd>
                   </div>`
-              : html`<div class="t-label">
+              : Array.isArray(value) ? html`<div class="t-label">
                   <dt class="t-bold">${labelText}</dt>
-                  <dd>${value ?? unsafeHTML(value)}</dd>
-                </div>`,
+                  <dd>${repeat(value, (val) => val, (val, index) => html`${val}${index < value.length - 1 ? ', ' : '' }`)}</dd>
+                </div>` 
+                : html`<div class="t-label">
+                    <dt class="t-bold">${label}:</dt>
+                    <dd>${unsafeHTML(value)}</dd>
+                  </div>`
         };
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
