@@ -101,7 +101,15 @@ class ResultMappingForm extends FormBase {
         i.e. {"field": "rendered_result"}<br/>
         search-result-element-default: No settings available.<br/>
         search-result-element-umd-libraries:
-          A JSON object containing the id, title, thumbnail, fields (label {field_name, show_label, facet_link_pattern}), and base_path. i.e. {"id": "machine_id", "title": "machine_title", "thumbnail": "machine_thumbnail", "fields": {"Label": {"key": "machine_key", "show_label": "true"}}, "base_path": "/results/id/"}'),
+          A JSON object containing:<br />
+          id, title, thumbnail, fields (label {field_name:string, show_label:bool, facet_link_pattern:string, is_boolean:bool, boolean_true:string, boolean_false:string}), and base_path.<br />
+          i.e. {<br />
+               "id": "machine_id", "title": "machine_title", "thumbnail": "machine_thumbnail",
+               "fields":<br />
+                 {"Author": {"key": "author_field", "show_label": "true"},<br />
+                 "Available Online": {"key": "is_available", "is_boolean":"true", "boolean_true":"Available Online", "boolean_false":"Request Only"},<br />
+               "base_path": "/results/id/"<br />
+               }'),
     ];
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [

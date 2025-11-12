@@ -10,6 +10,9 @@ interface Field {
   key: string;
   show_label?: string;
   facet_link_pattern?: string;
+  is_boolean?: string;
+  boolean_true?: string;
+  boolean_false?: string;
 }
 
 /**
@@ -53,16 +56,21 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
 
+    let has_value = true;
     const field_entries = Object.entries(fields)
       .map(([label, field], idx) => {
         const value = this.data[field.key];
+        let is_bool = field.is_boolean == 'true' ? true : false;
         if (
           value === undefined ||
           value === null ||
           value === '' ||
           (Array.isArray(value) && value.length === 0)
         ) {
-          return null;
+          if (!is_bool) {
+            return null;
+          }
+          has_value = false;
         }
 
         // Prefer the entry key or an explicit field.label; otherwise use fallbacks for first three fields.
@@ -78,7 +86,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         }
 
         const displayLabel = field.show_label == 'true' ? label : labelText;
-        console.log(value);
 
         return {
           label: displayLabel,
@@ -96,8 +103,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                         (val, index) =>
                           html`<a href="${field.facet_link_pattern}${val}"
                               >${val}</a
-                            >
-                            ${index < value.length - 1 ? ', ' : ''}`
+                            >${index < value.length - 1 ? ', ' : ''}`
                       )}
                     </dd>
                   </div>`
@@ -115,7 +121,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                   </div>`
                 : html`<div class="t-label">
                     <dt class="t-bold">${label}:</dt>
-                    <dd>${unsafeHTML(value)}</dd>
+                    <dd>${is_bool ? html`${has_value == true ? field.boolean_true : field.boolean_false}` : unsafeHTML(value)}</dd>
                   </div>`
               : Array.isArray(value) ? html`<div class="t-label">
                   <dt class="t-bold">${labelText}</dt>
@@ -123,7 +129,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                 </div>` 
                 : html`<div class="t-label">
                     <dt class="t-bold">${label}:</dt>
-                    <dd>${unsafeHTML(value)}</dd>
+                    <dd>${is_bool ? html`${has_value == true ? field.boolean_true : field.boolean_false}` : unsafeHTML(value)}</dd>
                   </div>`
         };
       })
