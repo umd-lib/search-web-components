@@ -39,6 +39,8 @@ export class SearchResults extends BaseSearchElement {
   @state()
   processedMappings: ProcessedMappings = {};
 
+  is_standalone = false;
+
   /**
    * Ensure the focusElement is focused when the dropdown is opened.
    */
@@ -61,6 +63,12 @@ export class SearchResults extends BaseSearchElement {
           element: mapping.element,
           settings: mapping.settings,
         };
+        if (mapping.settings['is_standalone']) {
+          let standalone_str = mapping.settings['is_standalone'];
+          if (standalone_str == 'true') {
+            this.is_standalone = true;
+          }
+        }
       });
     });
 
@@ -103,6 +111,10 @@ export class SearchResults extends BaseSearchElement {
   _getResults(): TemplateResult | null {
     const results = this.context?.response?.search_results ?? [];
 
+    if (this.is_standalone) {
+      return this._getStandaloneResults(results);
+    }
+
     // No results
     if (results.length === 0) {
       return html`
@@ -126,10 +138,9 @@ export class SearchResults extends BaseSearchElement {
         </div>
       `;
     }
-
     return html`
       <div>
-        <ul class="${this.context?.resultDisplay}">
+        <ul class="${this.context?.resultDisplay}" test="true">
           ${repeat(
             results,
             (result) => result.id,
@@ -164,6 +175,138 @@ export class SearchResults extends BaseSearchElement {
         </ul>
       </div>
     `;
+  }
+
+  /**
+   * For bento-like results
+   */
+  _getStandaloneResults(results: SearchResultType[]): TemplateResult | null {
+    let current_query = undefined;
+    if (this.context?.query && this.context?.query.has('q') && this.context?.query.get('q')?.trim != undefined) {
+      let curr = this.context?.query.get('q') ?? '';
+      console.log(curr);
+      if (curr != undefined) {
+        current_query = curr;
+      }
+    }
+    // No results
+    if (results.length === 0 || current_query == undefined) {
+      return html`
+        <div>
+          <section class="bento-search c-border-tertiary s-margin-general-medium">
+            <div
+              class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
+              <div class="bento-search-header-icon-container" aria-hidden="true">
+                <i
+                  data-lucide="dog"
+                  class="bento-search-header-icon"
+                ></i>
+              </div>
+              <h2 class="t-title-medium">
+                <a
+                  id="primary-search"
+                  href="/search"
+                  >Image & Text Repository</a
+                >
+              </h2>
+            </div>
+            <p
+              class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
+            >
+              Results from our Image and Text Repository
+            </p>
+            <div class="bento-search-footer">
+              <div class="s-box-small-v s-box-small-h">
+                <div class="umd-lib emphasized-link">
+                  <a
+                    href="/search"
+                    class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
+                  >
+                    <span class="i-chevron"></span>Sorry no results
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+    return html`
+      <div>
+        <section class="bento-search c-border-tertiary s-margin-general-medium">
+          <div
+            class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
+            <div class="bento-search-header-icon-container" aria-hidden="true">
+              <i
+                data-lucide="dog"
+                class="bento-search-header-icon"
+              ></i>
+            </div>
+            <h2 class="t-title-medium">
+              <a
+                id="primary-search"
+                href="/search?q=${current_query}"
+                >Image and Text Search</a
+              >
+            </h2>
+          </div>
+          <p
+            class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
+          >
+            Results from our Image and Text Repository
+          </p>
+          <ul class="${this.context?.resultDisplay}">
+            ${repeat(
+              results,
+              (result) => result.id,
+              (result) => {
+                const resultMap = this._mapResult(result);
+
+                if (!resultMap) {
+                  return null;
+                }
+
+                if (!customElements.get(resultMap.element)) {
+                  console.warn(
+                    resultMap.element +
+                      ' is not defined as a custom element for element mapping:',
+                    result
+                  );
+                  return null;
+                }
+
+                return html`
+                  <li
+                    class="bento-search-result-item s-box-small-v s-box-small-h
+                           result-${this.safeIdentifier(result[this.resultField] ?? 'default'
+                    )} s-margin-general-medium"
+                  ><article>
+                    <div class="item-detail">
+                    <${unsafeStatic(resultMap.element)}
+                      .data=${result}
+                      .settings=${resultMap.settings}
+                    />
+                    </div>
+                  </article></li>`;
+              }
+            )}
+          </ul>
+          <div class="bento-search-footer">
+            <div class="s-box-small-v s-box-small-h">
+              <div class="umd-lib emphasized-link">
+                <a
+                  href="/search?q=${current_query}"
+                  class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
+                >
+                  <span class="i-chevron"></span>See all results
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+
   }
 
   override render() {

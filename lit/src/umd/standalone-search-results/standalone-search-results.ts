@@ -127,7 +127,6 @@ export class StandAloneSearchResults extends LitElement {
       const newQuery = new URLSearchParams(queryText);
       if (newQuery.has('q') && newQuery.get('q')?.trim != undefined) {
         this.getResults(newQuery);
-        console.log(newQuery);
       }
     });
 

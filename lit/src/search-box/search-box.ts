@@ -13,6 +13,9 @@ export class SearchBox extends BaseSearchElement {
   @property({attribute: true})
   url = '';
 
+  @property()
+  current_query = '';
+
   /**
    * The text for the submit button.
    */
@@ -42,6 +45,20 @@ export class SearchBox extends BaseSearchElement {
     return this;
   }
 
+  override async connectedCallback() {
+    super.connectedCallback();
+    if (!this.context?.query) {
+      return;
+    }
+    if (this.context?.query.has('q') && this.context?.query.get('q')?.trim != undefined) {
+      let curr = this.context?.query.get('q') ?? '';
+      console.log(curr);
+      if (curr != undefined) {
+        this.current_query = curr;
+      }
+    }
+  }
+
   /**
    * Handles submitting the query to the api endpoint.
    *
@@ -54,6 +71,7 @@ export class SearchBox extends BaseSearchElement {
       const value = e?.currentTarget?.querySelector('input')?.value?.trim();
 
       const query = new URLSearchParams();
+      this.current_query = value || '';
       query.set('q', value || '');
 
       this.getResults(query);
@@ -75,6 +93,7 @@ export class SearchBox extends BaseSearchElement {
             type="text"
             placeholder="${this.placeHolderText}"
             aria-label="${this.ariaLabelText}"
+            value="${this.current_query}"
           ></input>
           <button class="search-box-submit" type="submit">
             <div class="sr-only">${this.submitText}</div>
