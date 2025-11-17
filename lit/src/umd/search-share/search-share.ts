@@ -10,8 +10,11 @@ export class SearchShare extends BaseSearchElement {
   @property()
   queryText: string = '';
 
+  initialQuery: string = '';
+
   override connectedCallback() {
     super.connectedCallback();
+
 
     document.addEventListener('update-context', (e) => {
       //@ts-expect-error
@@ -20,6 +23,10 @@ export class SearchShare extends BaseSearchElement {
       if (this.queryText.startsWith('q=&'))
         this.queryText = this.queryText.replace('q=&', '');
     });
+
+    if (this.context?.query?.toString() != undefined) {
+      this.initialQuery = this.context.query.toString() ?? undefined;
+    }
 
     setTimeout(() => {
       // @ts-ignore: ClipboardJS is loaded globally by the theme
@@ -79,8 +86,9 @@ export class SearchShare extends BaseSearchElement {
 
   private getShareUrl(): string {
     const baseUrl = window.location.href.replace(/(\?.*)$/, '');
+    let qs = this.queryText ? this.queryText : this.initialQuery;
     return (
-      baseUrl + (this.queryText ? '?' + decodeURIComponent(this.queryText) : '')
+      baseUrl + (qs ? '?' + decodeURIComponent(qs) : '')
     );
   }
 
