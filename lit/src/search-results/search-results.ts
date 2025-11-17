@@ -40,6 +40,7 @@ export class SearchResults extends BaseSearchElement {
   processedMappings: ProcessedMappings = {};
 
   is_standalone = false;
+  standalone_icon = '';
 
   /**
    * Ensure the focusElement is focused when the dropdown is opened.
@@ -67,6 +68,12 @@ export class SearchResults extends BaseSearchElement {
           let standalone_str = mapping.settings['is_standalone'];
           if (standalone_str == 'true') {
             this.is_standalone = true;
+          }
+        }
+        if (mapping.settings['standalone_icon']) {
+          let icon = mapping.settings['standalone_icon'];
+          if (icon != undefined && icon != '') {
+            this.standalone_icon = icon;
           }
         }
       });
@@ -199,7 +206,7 @@ export class SearchResults extends BaseSearchElement {
               class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
               <div class="bento-search-header-icon-container" aria-hidden="true">
                 <i
-                  data-lucide="cat"
+                  data-lucide="${this.standalone_icon}"
                   class="bento-search-header-icon"
                 ></i>
               </div>
@@ -239,7 +246,7 @@ export class SearchResults extends BaseSearchElement {
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
             <div class="bento-search-header-icon-container" aria-hidden="true">
               <i
-                data-lucide="cat"
+                data-lucide="${this.standalone_icon}"
                 class="bento-search-header-icon"
               ></i>
             </div>
