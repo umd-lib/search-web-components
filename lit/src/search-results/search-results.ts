@@ -112,7 +112,8 @@ export class SearchResults extends BaseSearchElement {
     const results = this.context?.response?.search_results ?? [];
 
     if (this.is_standalone) {
-      return this._getStandaloneResults(results);
+      const total = this.context?.response?.search_results_count ?? 0;
+      return this._getStandaloneResults(results, total);
     }
 
     // No results
@@ -180,7 +181,7 @@ export class SearchResults extends BaseSearchElement {
   /**
    * For bento-like results
    */
-  _getStandaloneResults(results: SearchResultType[]): TemplateResult | null {
+  _getStandaloneResults(results: SearchResultType[], total: number): TemplateResult | null {
     let current_query = undefined;
     if (this.context?.query && this.context?.query.has('q') && this.context?.query.get('q')?.trim != undefined) {
       let curr = this.context?.query.get('q') ?? '';
@@ -198,7 +199,7 @@ export class SearchResults extends BaseSearchElement {
               class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
               <div class="bento-search-header-icon-container" aria-hidden="true">
                 <i
-                  data-lucide="dog"
+                  data-lucide="cat"
                   class="bento-search-header-icon"
                 ></i>
               </div>
@@ -238,7 +239,7 @@ export class SearchResults extends BaseSearchElement {
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
             <div class="bento-search-header-icon-container" aria-hidden="true">
               <i
-                data-lucide="dog"
+                data-lucide="cat"
                 class="bento-search-header-icon"
               ></i>
             </div>
@@ -298,7 +299,7 @@ export class SearchResults extends BaseSearchElement {
                   href="/search?q=${current_query}"
                   class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
                 >
-                  <span class="i-chevron"></span>See all results
+                  <span class="i-chevron"></span>See all ${total} results
                 </a>
               </div>
             </div>
