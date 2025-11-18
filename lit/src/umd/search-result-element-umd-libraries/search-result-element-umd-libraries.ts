@@ -59,7 +59,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let has_value = true;
     const field_entries = Object.entries(fields)
       .map(([label, field], idx) => {
-        const value = this.data[field.key];
+        let value = this.data[field.key];
         let is_bool = field.is_boolean == 'true' ? true : false;
         if (
           value === undefined ||
@@ -83,6 +83,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         if (!labelText) {
           const fallback = ['Item type:', 'Collection:', 'Date:'];
           labelText = fallback[idx] || '';
+        }
+
+        if (labelText == "Excerpt") {
+          value = value.replace(/\|n[^\s]*/g, ' ');
         }
 
         const displayLabel = field.show_label == 'true' ? label : labelText;
