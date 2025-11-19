@@ -66,6 +66,9 @@ export class StandAloneSearchResults extends LitElement {
   @property()
   blockIcon = '';
 
+  @property()
+  blockID = '';
+
   /**
    * The current context root.
    */
@@ -181,8 +184,12 @@ export class StandAloneSearchResults extends LitElement {
     // Merge the query with additional params from the search root.
     let searchQuery = query;
 
-    const spinner = document.getElementById('spinner');
-    if (spinner != undefined) {
+    const spinnerID = this.blockID + "-spinner";
+    const blockIconId = this.blockID + "-block-icon";
+    const spinner = document.getElementById(spinnerID);
+    const icon = document.getElementById(blockIconId);
+    if (spinner != undefined && icon != undefined) {
+      icon.style.display = 'none';
       spinner.style.display = 'block';
     }
     try {
@@ -194,8 +201,9 @@ export class StandAloneSearchResults extends LitElement {
     } catch (error) {
       
     } finally {
-      if (spinner != undefined) {
+      if (spinner != undefined && icon != undefined) {
         spinner.style.display = 'none';
+        icon.style.display = 'block';
       }
     }
 
@@ -328,14 +336,22 @@ export class StandAloneSearchResults extends LitElement {
 
     return html`
       <div>
-        <section class="bento-search c-border-tertiary s-margin-general-medium">
+        <section class="bento-search c-border-tertiary s-margin-general-medium" id="${this.blockID}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
           >
             <div class="bento-search-header-icon-container" aria-hidden="true">
               <i
+                id="${this.blockID}-block-icon"
+                style="display: block;"
                 data-lucide="${this.blockIcon}"
                 class="bento-search-header-icon"
+              ></i>
+              <i
+                id="${this.blockID}-spinner"
+                style="display: none;"
+                data-lucide="hourglass"
+                class=bento-search-header-icon"
               ></i>
             </div>
             <h2 class="t-title-medium">
@@ -346,12 +362,6 @@ export class StandAloneSearchResults extends LitElement {
                 >${this.blockTitle}</a
               >
             </h2>
-            <div id="spinner" class="spinner" style="display: none;">
-              <i
-                data-lucide="hourglass"
-                class=bento-search-header-icon"
-              ></i>
-            </div>
           </div>
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"

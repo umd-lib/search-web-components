@@ -32,6 +32,7 @@ final class StandAloneSearchBlock extends BlockBase {
       'bottomLinkText' => '',
       'blockIcon' => '',
       'noResultsMessage' => '',
+      'blockID' => 'bento-block-standalone',
     ];
   }
 
@@ -89,6 +90,13 @@ final class StandAloneSearchBlock extends BlockBase {
       '#description' => $this->t('How many results to display in standalone search block'),
       '#default_value' => $this->configuration['resultsCount'],
     ];
+    $form['blockID'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Block ID'),
+      '#required' => TRUE,
+      '#description' => $this->t('How the block will be referenced internally. Single, lowercase word or lc words seperated by dashes.'),
+      '#default_value' => $this->configuration['blockID'],
+    ];
     return $form;
   }
 
@@ -104,6 +112,8 @@ final class StandAloneSearchBlock extends BlockBase {
     $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
     $this->configuration['bottomLinkText'] = $form_state->getValue('bottomLinkText');
     $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
+    $blockID = $form_state->getValue('blockID');
+    $this->configuration['blockID'] = strtolower(trim($blockID));
   }
 
   /**
@@ -112,6 +122,10 @@ final class StandAloneSearchBlock extends BlockBase {
   public function build(): array {
     $config = $this->configuration;
     $searchAttributes = new Attribute();
+
+    if (!empty($config['blockID'])) {
+      $searchAttributes->setAttribute('blockID', $config['blockID']);
+    }
 
     if (!empty($config['searchEndpoint'])) {
       $searchAttributes->setAttribute('searchEndpoint', $config['searchEndpoint']);
