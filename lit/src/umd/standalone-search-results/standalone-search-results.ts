@@ -181,11 +181,24 @@ export class StandAloneSearchResults extends LitElement {
     // Merge the query with additional params from the search root.
     let searchQuery = query;
 
-    [context.response] = await Promise.all([
-      StandAloneSearchResults.doSearch(this.searchEndpoint, searchQuery),
-    ]);
+    const spinner = document.getElementById('spinner');
+    if (spinner != undefined) {
+      spinner.style.display = 'block';
+    }
+    try {
+      [context.response] = await Promise.all([
+        StandAloneSearchResults.doSearch(this.searchEndpoint, searchQuery),
+      ]);
 
-    this.context = {...context} as StandAloneSearchContext;
+      this.context = {...context} as StandAloneSearchContext;
+    } catch (error) {
+      
+    } finally {
+      if (spinner != undefined) {
+        spinner.style.display = 'none';
+      }
+    }
+
   }
 
   static async doSearch(url: string, query: URLSearchParams) {
@@ -333,6 +346,12 @@ export class StandAloneSearchResults extends LitElement {
                 >${this.blockTitle}</a
               >
             </h2>
+            <div id="spinner" class="spinner" style="display: none;">
+              <i
+                data-lucide="hourglass"
+                class=bento-search-header-icon"
+              ></i>
+            </div>
           </div>
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
