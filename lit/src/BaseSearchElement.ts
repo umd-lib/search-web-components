@@ -80,8 +80,8 @@ export class BaseSearchElement extends LitElement {
 
   async getResults(query: URLSearchParams) {
     const url = new URL(window.location.href);
+    console.log(query);
     url.search = query.toString();
-
     const context = {...this.context};
     context.query = query;
 
@@ -101,7 +101,6 @@ export class BaseSearchElement extends LitElement {
 
     this.context = {...context} as SearchContext;
     this.updateContext(<SearchContext>context);
-
   }
 
   static async doSearch(url: string, query: URLSearchParams) {
@@ -114,6 +113,7 @@ export class BaseSearchElement extends LitElement {
     // to support it in the url and convert the user visible url to one that
     // Drupal supports.
     for (const [key, value] of query.entries()) {
+      console.log(key);
       if (!key.startsWith('f[')) {
         continue;
       }

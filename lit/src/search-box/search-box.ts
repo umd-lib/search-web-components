@@ -66,15 +66,22 @@ export class SearchBox extends BaseSearchElement {
    */
   _submit(e: SubmitEvent): void {
     e.preventDefault();
+    const curr = this.context?.query;
+    console.log(curr);
 
     if (e.currentTarget instanceof Element) {
       const value = e?.currentTarget?.querySelector('input')?.value?.trim();
-
-      const query = new URLSearchParams();
       this.current_query = value || '';
-      query.set('q', value || '');
 
-      this.getResults(query);
+      if (this.context?.query != undefined) {
+        const query = this.context?.query;
+        query.set('q', value || '');
+        this.getResults(query)
+      } else {
+        const query = new URLSearchParams();
+        query.set('q', value || '');
+        this.getResults(query);
+      }
     }
   }
 
