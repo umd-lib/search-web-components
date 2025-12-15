@@ -44,17 +44,9 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const base_path: string = this.settings['base_path'];
     const query_string = this?.context?.query?.get('q');
 
-    let id = undefined;
-    if (id_field in this.data) {
-      id = this.data[id_field].trim();
-      if (this.data[id_field].includes('solr_document')) {
-        id = this.data[id_field].replace('solr_document/', '');
-      }
-      id = query_string ? id + '?q=' + query_string : id;
-    }
-
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
+    let id = undefined;
 
     let has_value = true;
     const field_entries = Object.entries(fields)
@@ -85,8 +77,26 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           labelText = fallback[idx] || '';
         }
 
-        if (labelText == "Excerpt") {
-          value = value.replace(/\|n[^\s]*/g, ' ');
+        let page = 0;
+        if (id_field in this.data) {
+          id = this.data[id_field].trim();
+          if (this.data[id_field].includes('solr_document')) {
+            id = this.data[id_field].replace('solr_document/', '');
+          }
+          if (labelText == "Excerpt") {
+
+            const matches = value.match(/n=(\d+)/);
+            if (matches) {
+              page = matches[1] as number;
+            }
+            console.log(value);
+            value = value.replace(/\|n[^\s]*/g, ' ');
+          }
+          if (page > 0) {
+            id = query_string ? id + '?q=' + query_string + "&page=" + page : id;
+          } else {
+            id = query_string ? id + '?q=' + query_string : id;
+          }
         }
 
         const displayLabel = field.show_label == 'true' ? label : labelText;
