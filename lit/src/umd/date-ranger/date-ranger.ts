@@ -11,32 +11,33 @@ export class DateRanger extends BaseFacetElement {
    * The placeholder text for the input field.
    */
   @property()
-  placeHolderText = '';
+  placeHolderFromText = '';
+  @property()
+  placeHolderToText = '';
 
   /**
    * The text for the submit button.
    */
   @property()
+  submitButton = '';
+
+  /**
+   * The title for the block.
+   */
+  @property()
   labelText = '';
 
   /**
-   * The text for the clear input button.
+   * Which Search API facet field to query
    */
   @property()
-  clearText = 'Remove';
+  facetField = '';
 
   /**
    * Handles replacing the current query with a new query containing only the new keyword input.
    *
    * @param event The form submit event.
    */
-//   _dateQuery(event: SubmitEvent) {
-//     event.preventDefault();
-//     const fromField: HTMLInputElement | null = this.querySelector('input#date-from');
-//     const toField: HTMLInputElement | null = this.querySelector('input#date-to');
-
-//     const fromDate: string | undefined = fromField?.value.trim();
-//     let toDate: string | undefined = toField?.value.trim();
   _dateQuery(
     fromDate: string,
     toDate: string
@@ -50,7 +51,7 @@ export class DateRanger extends BaseFacetElement {
 
     let queryVal = '';
     if (!hasFrom && !hasTo) {
-      this.clearFacet('date');
+      this.clearFacet(this.facetField);
       return;
     }
 
@@ -68,7 +69,7 @@ export class DateRanger extends BaseFacetElement {
       }
     }
 
-    this.applyFacet('date', queryVal, true);
+    this.applyFacet(this.facetField, queryVal, true);
 
   }
 
@@ -98,7 +99,6 @@ export class DateRanger extends BaseFacetElement {
 
     this.getResults(query);
   }
-  //    <form class="date-ranger" id="date-ranger-form-${this.uid}" @submit="${this._dateQuery}">
 
   override render() {
     const statusId = `date-ranger-${this.uid}`;
@@ -112,7 +112,7 @@ export class DateRanger extends BaseFacetElement {
           id="date-ranger-${this.uid}"
           class="sort-title t-title-small t-uppercase s-stack-medium c-content-primary"
         >
-          Year Range
+         ${this.labelText} 
         </div>
         <div
           id="${statusId}"
@@ -124,23 +124,23 @@ export class DateRanger extends BaseFacetElement {
         </div>
       <form class="date-ranger" id="date-ranger-form-${this.uid}" aria-describedby="${statusId}">
         <span>
-          <div>Year From:</div>
+          <div>From:</div>
           <input
             class="date-from-input"
             id="date-from-${this.uid}"
             name="date-from"
             type="text"
             .value="${this?.context?.dateFrom ?? ''}"
-            placeholder="${this.placeHolderText}"
+            placeholder="${this.placeHolderFromText}"
           />
-          <div>Year To:</div>
+          <div>To:</div>
           <input
             class="date-to-input"
             id="date-to-${this.uid}"
             name="date-to"
             type="text"
             .value="${this?.context?.dateTo ?? ''}"
-            placeholder="${this.placeHolderText}"
+            placeholder="${this.placeHolderToText}"
           />
         </span>
         <button
@@ -159,7 +159,7 @@ export class DateRanger extends BaseFacetElement {
             this._dateQuery(from_date, to_date);
           }}
         >
-          Submit
+          ${this.submitButton} 
         </button>
       </form>
       </div>

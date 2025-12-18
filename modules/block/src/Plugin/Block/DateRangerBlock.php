@@ -25,6 +25,11 @@ final class DateRangerBlock extends BlockBase {
    */
   public function defaultConfiguration(): array {
     return [
+      'facetField' => 'date',
+      'labelText' => 'Year Range',
+      'placeHolderFromText' => '',
+      'placeHolderToText' => '',
+      'submitButton' => 'Filter',
     ];
   }
 
@@ -32,16 +37,30 @@ final class DateRangerBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state): array {
-    $form['type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Display as'),
-      '#default_value' => $this->configuration['type'],
-      '#options' => [
-        'select' => $this->t('select'),
-        'list' => $this->t('list'),
-        'html' => $this->t('html'),
-        'umd-libraries' => $this->t('umd-libraries'),
-      ],
+    $form['submitButton'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Submit Button Text'),
+      '#default_value' => $this->configuration['submitButton'],
+    ];
+    $form['labelText'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Label Text'),
+      '#default_value' => $this->configuration['labelText'],
+    ];
+    $form['placeHolderFromText'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('From Placeholder'),
+      '#default_value' => $this->configuration['placeHolderFromText'],
+    ];
+    $form['placeHolderToText'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('To Placeholder'),
+      '#default_value' => $this->configuration['placeHolderToText'],
+    ];
+    $form['facetField'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Facet Field'),
+      '#default_value' => $this->configuration['facetField'],
     ];
     return $form;
   }
@@ -50,7 +69,11 @@ final class DateRangerBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state): void {
-    $this->configuration['type'] = $form_state->getValue('type');
+    $this->configuration['facetField'] = $form_state->getValue('facetField');
+    $this->configuration['placeHolderFromText'] = $form_state->getValue('placeHolderFromText');
+    $this->configuration['placeHolderToText'] = $form_state->getValue('placeHolderToText');
+    $this->configuration['labelText'] = $form_state->getValue('labelText');
+    $this->configuration['submitButton'] = $form_state->getValue('submitButton');
   }
 
   /**
@@ -59,8 +82,27 @@ final class DateRangerBlock extends BlockBase {
   public function build(): array {
     $config = $this->configuration;
 
-    $searchAttributes = new Attribute([
-    ]);
+    $searchAttributes = new Attribute();
+
+    if ($config['submitButton']) {
+      $searchAttributes->setAttribute('submitButton', $config['submitButton']);
+    }
+
+    if ($config['labelText']) {
+      $searchAttributes->setAttribute('labelText', $config['labelText']);
+    }
+
+    if ($config['placeHolderFromText']) {
+      $searchAttributes->setAttribute('placeHolderFromText', $config['placeHolderFromText']);
+    }
+
+    if ($config['placeHolderToText']) {
+      $searchAttributes->setAttribute('placeHolderToText', $config['placeHolderToText']);
+    }
+
+    if ($config['facetField']) {
+      $searchAttributes->setAttribute('facetField', $config['facetField']);
+    }
 
     return [
       '#theme' => 'swc_date_ranger',
