@@ -73,6 +73,8 @@ export interface SearchContext {
   defaultPerPage: string;
   responseReady?: boolean;
   query?: URLSearchParams;
+  dateFrom?: string;
+  dateTo?: string;
   response?: SearchResponseType;
   updateUrl: boolean;
   resultDisplay: 'list' | 'grid' | string;
