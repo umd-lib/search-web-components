@@ -80,7 +80,6 @@ export class BaseSearchElement extends LitElement {
 
   async getResults(query: URLSearchParams) {
     const url = new URL(window.location.href);
-    console.log(query);
     url.search = query.toString();
     const context = {...this.context};
     context.query = query;
