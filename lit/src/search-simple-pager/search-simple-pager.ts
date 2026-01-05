@@ -71,6 +71,10 @@ export class SearchSimplePager extends BaseSearchElement {
     }
 
     this.getResults(query);
+
+    setTimeout(() => {
+      document.getElementById("block-umdlib-umdds-content")?.scrollIntoView();
+    }, 500);
   }
 
   /**
