@@ -50,7 +50,10 @@ export class SearchBox extends BaseSearchElement {
     if (!this.context?.query) {
       return;
     }
-    if (this.context?.query.has('q') && this.context?.query.get('q')?.trim != undefined) {
+    if (
+      this.context?.query.has('q') &&
+      this.context?.query.get('q')?.trim != undefined
+    ) {
       let curr = this.context?.query.get('q') ?? '';
       console.log(curr);
       if (curr != undefined) {
@@ -76,7 +79,7 @@ export class SearchBox extends BaseSearchElement {
       if (this.context?.query != undefined) {
         const query = this.context?.query;
         query.set('q', value || '');
-        this.getResults(query)
+        this.getResults(query);
       } else {
         const query = new URLSearchParams();
         query.set('q', value || '');
@@ -87,26 +90,30 @@ export class SearchBox extends BaseSearchElement {
 
   override render() {
     return html`
-      <form id="swc-search-box"
-        class="search-box s-box-large-h s-box-medium-v c-bg-secondary s-margin-general-medium"
-        @submit="${(e: SubmitEvent) => this._submit(e)}"
-      >
-        <h2 class="t-title-small t-uppercase s-stack-small">
-          ${this.componentLabelText}
-        </h2>
-        <div class="search-box-action-area c-bg-secondary">
-          <input
-            class="search-box-input t-body-medium c-content-primary c-bg-secondary"
-            type="text"
-            placeholder="${this.placeHolderText}"
-            aria-label="${this.ariaLabelText}"
-            value="${this.current_query}"
-          ></input>
-          <button class="search-box-submit" type="submit">
-            <div class="sr-only">${this.submitText}</div>
-          </button>
-        </div>
-      </form>
+      <search>
+        <form id="swc-search-box"
+          class="search-box s-box-large-h s-box-medium-v c-bg-secondary s-margin-general-medium"
+          @submit="${(e: SubmitEvent) => this._submit(e)}"
+        >
+          <h2 class="t-title-small t-uppercase s-stack-small">
+            ${this.componentLabelText}
+          </h2>
+          <div class="search-box-action-area c-bg-secondary">
+            <input
+              class="search-box-input t-body-medium c-content-primary c-bg-secondary"
+              type="text"
+              placeholder="${this.placeHolderText}"
+              aria-label="${this.ariaLabelText}"
+              value="${this.current_query}"
+              id="search-box-input"
+              name="search-box-input"
+            ></input>
+            <button class="search-box-submit" type="submit">
+              <div class="sr-only">${this.submitText}</div>
+            </button>
+          </div>
+        </form>
+      </search>
     `;
   }
 }
