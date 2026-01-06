@@ -200,7 +200,7 @@ export class DateRanger extends BaseFacetElement {
           id="date-ranger-form-${this.uid}"
           aria-labelledby="date-ranger-title-${this.uid}"
         >
-          <div class="date-input-group">
+          <div class="date-input-group s-stack-medium">
             <div class="date-input-item s-stack-small">
               <label
                 for="date-from-${this.uid}"
