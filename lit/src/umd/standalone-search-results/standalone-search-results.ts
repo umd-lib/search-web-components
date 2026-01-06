@@ -184,13 +184,11 @@ export class StandAloneSearchResults extends LitElement {
     // Merge the query with additional params from the search root.
     let searchQuery = query;
 
-    const spinnerID = this.blockID + "-spinner";
-    const blockIconId = this.blockID + "-block-icon";
-    const spinner = document.getElementById(spinnerID);
-    const icon = document.getElementById(blockIconId);
-    if (spinner != undefined && icon != undefined) {
-      icon.style.display = 'none';
-      spinner.style.display = 'block';
+    const loadingAnimation = document.getElementById(
+      'bento-search-loading-animation'
+    );
+    if (loadingAnimation != undefined) {
+      loadingAnimation.classList.add('is-loading');
     }
     try {
       [context.response] = await Promise.all([
@@ -199,14 +197,11 @@ export class StandAloneSearchResults extends LitElement {
 
       this.context = {...context} as StandAloneSearchContext;
     } catch (error) {
-      
     } finally {
-      if (spinner != undefined && icon != undefined) {
-        spinner.style.display = 'none';
-        icon.style.display = 'block';
+      if (loadingAnimation != undefined) {
+        loadingAnimation.classList.remove('is-loading');
       }
     }
-
   }
 
   static async doSearch(url: string, query: URLSearchParams) {
@@ -266,6 +261,37 @@ export class StandAloneSearchResults extends LitElement {
     const results = this.context.response.results;
     const total = this.context.response.total;
     const footer = this.bottomLinkText.replace('%total%', total.toString());
+
+    const loading_animation = html` <div
+      id="bento-search-loading-animation"
+      class="bento-search-loading-animation"
+    >
+      <div class="loading-item s-box-small-v s-box-small-h">
+        <div class="loading-title"></div>
+        <div class="loading-meta"></div>
+        <div class="loading-meta"></div>
+      </div>
+      <div class="loading-item s-box-small-v s-box-small-h">
+        <div class="loading-title"></div>
+        <div class="loading-meta"></div>
+        <div class="loading-meta"></div>
+      </div>
+      <div class="loading-item s-box-small-v s-box-small-h">
+        <div class="loading-title"></div>
+        <div class="loading-meta"></div>
+        <div class="loading-meta"></div>
+      </div>
+      <div class="loading-item s-box-small-v s-box-small-h">
+        <div class="loading-title"></div>
+        <div class="loading-meta"></div>
+        <div class="loading-meta"></div>
+      </div>
+      <div class="loading-item s-box-small-v s-box-small-h">
+        <div class="loading-title"></div>
+        <div class="loading-meta"></div>
+        <div class="loading-meta"></div>
+      </div>
+    </div>`;
 
     const records: TemplateResult[] = [];
     results.forEach(function (result) {
@@ -336,7 +362,10 @@ export class StandAloneSearchResults extends LitElement {
 
     return html`
       <div>
-        <section class="bento-search c-border-tertiary s-margin-general-medium" id="${this.blockID}">
+        <section
+          class="bento-search c-border-tertiary s-margin-general-medium"
+          id="${this.blockID}"
+        >
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
           >
@@ -346,12 +375,6 @@ export class StandAloneSearchResults extends LitElement {
                 style="display: block;"
                 data-lucide="${this.blockIcon}"
                 class="bento-search-header-icon"
-              ></i>
-              <i
-                id="${this.blockID}-spinner"
-                style="display: none;"
-                data-lucide="hourglass"
-                class=bento-search-header-icon"
               ></i>
             </div>
             <h2 class="t-title-medium">
@@ -368,6 +391,7 @@ export class StandAloneSearchResults extends LitElement {
           >
             ${this.blockDescription}
           </p>
+          ${loading_animation}
           ${records.length > 0
             ? html` <ul>
                   ${records}
@@ -386,22 +410,27 @@ export class StandAloneSearchResults extends LitElement {
                       </div>`
                     : ''}
                 </div>`
-            : html` <div class="bento-search-footer">
-                ${this.noResultsMessage
-                  ? html` <div class="s-box-small-v s-box-small-h">
-                      <div class="umd-lib emphasized-link">
-                        <a
-                          href="${this.noResultsLink ||
-                          this.context.response.no_results_link}"
-                          class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
-                        >
-                          <span class="i-chevron"></span>${this
-                            .noResultsMessage}
-                        </a>
-                      </div>
-                    </div>`
-                  : ''}
-              </div>`}
+            : html` <div
+                  class="bento-search-no-results s-box-small-v s-box-small-h"
+                >
+                  <p class="t-body-medium">No records found</p>
+                </div>
+                <div class="bento-search-footer">
+                  ${this.noResultsMessage
+                    ? html` <div class="s-box-small-v s-box-small-h">
+                        <div class="umd-lib emphasized-link">
+                          <a
+                            href="${this.noResultsLink ||
+                            this.context.response.no_results_link}"
+                            class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
+                          >
+                            <span class="i-chevron"></span>${this
+                              .noResultsMessage}
+                          </a>
+                        </div>
+                      </div>`
+                    : ''}
+                </div>`}
         </section>
       </div>
     `;
