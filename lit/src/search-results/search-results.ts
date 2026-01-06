@@ -80,6 +80,13 @@ export class SearchResults extends BaseSearchElement {
     });
 
     this.configLoaded = true;
+
+    // Initialize Lucide icons after rendering
+    requestAnimationFrame(() => {
+      if (typeof (window as any).lucide !== 'undefined') {
+        (window as any).lucide.createIcons();
+      }
+    });
   }
 
   /**
@@ -131,9 +138,7 @@ export class SearchResults extends BaseSearchElement {
         >
           <div class="title s-margin-general-medium">
             <h2 class="t-title-medium s-stack-small">No records found</h2>
-            <p>
-              <span>There are no results matching your search term. </span>
-            </p>
+            <p>There are no results matching your search term.</p>
           </div>
           <div class="refine-search wysiwyg-editor">
             <h3 class="t-title-small">Suggestions</h3>
@@ -186,11 +191,18 @@ export class SearchResults extends BaseSearchElement {
   }
 
   /**
-   * For bento-like results
+   * For bento-like results, currently used in the combined search page in digital collections
    */
-  _getStandaloneResults(results: SearchResultType[], total: number): TemplateResult | null {
+  _getStandaloneResults(
+    results: SearchResultType[],
+    total: number
+  ): TemplateResult | null {
     let current_query = undefined;
-    if (this.context?.query && this.context?.query.has('q') && this.context?.query.get('q')?.trim != undefined) {
+    if (
+      this.context?.query &&
+      this.context?.query.has('q') &&
+      this.context?.query.get('q')?.trim != undefined
+    ) {
       let curr = this.context?.query.get('q') ?? '';
       console.log(curr);
       if (curr != undefined) {
@@ -201,19 +213,24 @@ export class SearchResults extends BaseSearchElement {
     if (results.length === 0 || current_query == undefined) {
       return html`
         <div>
-          <section class="bento-search c-border-tertiary s-margin-general-medium">
+          <section
+            class="bento-search c-border-tertiary s-margin-general-medium"
+          >
             <div
-              class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
-              <div class="bento-search-header-icon-container" aria-hidden="true">
+              class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
+            >
+              <div
+                class="bento-search-header-icon-container"
+                aria-hidden="true"
+              >
                 <i
+                  id="${this.standalone_icon}-standalone-icon"
                   data-lucide="${this.standalone_icon}"
                   class="bento-search-header-icon"
                 ></i>
               </div>
               <h2 class="t-title-medium">
-                <a
-                  id="primary-search"
-                  href="/search"
+                <a id="primary-search" href="/search"
                   >Image & Text Repository</a
                 >
               </h2>
@@ -223,6 +240,9 @@ export class SearchResults extends BaseSearchElement {
             >
               Results from our Image and Text Repository
             </p>
+            <div class="bento-search-no-results s-box-small-v s-box-small-h">
+              <p class="t-body-medium">No records found</p>
+            </div>
             <div class="bento-search-footer">
               <div class="s-box-small-v s-box-small-h">
                 <div class="umd-lib emphasized-link">
@@ -230,7 +250,7 @@ export class SearchResults extends BaseSearchElement {
                     href="/search"
                     class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
                   >
-                    <span class="i-chevron"></span>Sorry no results
+                    <span class="i-chevron"></span>Try a different search
                   </a>
                 </div>
               </div>
@@ -243,7 +263,8 @@ export class SearchResults extends BaseSearchElement {
       <div>
         <section class="bento-search c-border-tertiary s-margin-general-medium">
           <div
-            class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h">
+            class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
+          >
             <div class="bento-search-header-icon-container" aria-hidden="true">
               <i
                 data-lucide="${this.standalone_icon}"
@@ -251,9 +272,7 @@ export class SearchResults extends BaseSearchElement {
               ></i>
             </div>
             <h2 class="t-title-medium">
-              <a
-                id="primary-search"
-                href="/search?q=${current_query}"
+              <a id="primary-search" href="/search?q=${current_query}"
                 >Image and Text Search</a
               >
             </h2>
@@ -283,19 +302,17 @@ export class SearchResults extends BaseSearchElement {
                   return null;
                 }
 
-                return html`
-                  <li
-                    class="bento-search-result-item s-box-small-v s-box-small-h
-                           result-${this.safeIdentifier(result[this.resultField] ?? 'default'
-                    )} s-margin-general-medium"
-                  ><article>
-                    <div class="item-detail">
-                    <${unsafeStatic(resultMap.element)}
-                      .data=${result}
-                      .settings=${resultMap.settings}
-                    />
-                    </div>
-                  </article></li>`;
+                return html` <li
+                  class="bento-search-result-item s-box-small-v s-box-small-h
+                           result-${this.safeIdentifier(
+                    result[this.resultField] ?? 'default'
+                  )}"
+                >
+                  <${unsafeStatic(resultMap.element)}
+                    .data=${result}
+                    .settings=${resultMap.settings}
+                  />
+                </li>`;
               }
             )}
           </ul>
@@ -314,7 +331,6 @@ export class SearchResults extends BaseSearchElement {
         </section>
       </div>
     `;
-
   }
 
   override render() {

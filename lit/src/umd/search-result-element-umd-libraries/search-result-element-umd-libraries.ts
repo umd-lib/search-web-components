@@ -83,8 +83,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           if (this.data[id_field].includes('solr_document')) {
             id = this.data[id_field].replace('solr_document/', '');
           }
-          if (labelText == "Excerpt") {
-
+          if (labelText == 'Excerpt') {
             const matches = value.match(/n=(\d+)/);
             if (matches) {
               page = matches[1] as number;
@@ -93,7 +92,9 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
             value = value.replace(/\|n[^\s]*/g, ' ');
           }
           if (page > 0) {
-            id = query_string ? id + '?q=' + query_string + "&page=" + page : id;
+            id = query_string
+              ? id + '?q=' + query_string + '&page=' + page
+              : id;
           } else {
             id = query_string ? id + '?q=' + query_string : id;
           }
@@ -135,16 +136,36 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                   </div>`
                 : html`<div class="t-label">
                     <dt class="t-bold">${label}:</dt>
-                    <dd>${is_bool ? html`${has_value == true ? field.boolean_true : field.boolean_false}` : unsafeHTML(value)}</dd>
+                    <dd>
+                      ${is_bool
+                        ? html`${has_value == true
+                            ? field.boolean_true
+                            : field.boolean_false}`
+                        : unsafeHTML(value)}
+                    </dd>
                   </div>`
-              : Array.isArray(value) ? html`<div class="t-label">
+              : Array.isArray(value)
+              ? html`<div class="t-label">
                   <dt class="t-bold">${labelText}</dt>
-                  <dd>${repeat(value, (val) => val, (val, index) => html`${val}${index < value.length - 1 ? ', ' : '' }`)}</dd>
-                </div>` 
-                : html`<div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>${is_bool ? html`${has_value == true ? field.boolean_true : field.boolean_false}` : unsafeHTML(value)}</dd>
-                  </div>`
+                  <dd>
+                    ${repeat(
+                      value,
+                      (val) => val,
+                      (val, index) =>
+                        html`${val}${index < value.length - 1 ? ', ' : ''}`
+                    )}
+                  </dd>
+                </div>`
+              : html`<div class="t-label">
+                  <dt class="t-bold">${label}:</dt>
+                  <dd>
+                    ${is_bool
+                      ? html`${has_value == true
+                          ? field.boolean_true
+                          : field.boolean_false}`
+                      : unsafeHTML(value)}
+                  </dd>
+                </div>`,
         };
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
@@ -179,11 +200,11 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         <div class="item-detail">
           ${base_path && id
             ? html`
-                <h2 class="item-title t-title-small s-stack-small">
+                <h3 class="item-title t-title-small s-stack-small">
                   <a href="${base_path + id}"
                     ><span class="sr-only">Title:</span>${title}
                   </a>
-                </h2>
+                </h3>
               `
             : firstField
             ? html`
