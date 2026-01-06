@@ -336,47 +336,49 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
         >
           ${sort_templates}
         </form>
-        <button
-          type="submit"
-          class="umd-lib button secondary"
-          aria-describedby="${statusId}"
-          @click=${(e: Event) => {
-            e.preventDefault();
-            const sort_value =
-              (
-                document.getElementById(
-                  `sort_by-${this.uid}`
-                ) as HTMLSelectElement
-              )?.value ?? '';
-            const order_value =
-              (
-                document.getElementById(
-                  `order-${this.uid}`
-                ) as HTMLSelectElement
-              )?.value ?? '';
-            const results_value =
-              (
-                document.getElementById(
-                  `results-${this.uid}`
-                ) as HTMLSelectElement
-              )?.value ?? '';
-            this._querySort(sort_value, order_value, results_value);
-
-            // Update status for screen readers
-            const statusElement = document.getElementById(statusId);
-            if (statusElement) {
-              statusElement.textContent = `Applied sort: ${sort_value} in ${order_value} order, showing ${results_value} results per page`;
-            }
-          }}
-          @keydown=${(e: KeyboardEvent) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+        <div class="button-group">
+          <button
+            type="submit"
+            class="umd-lib button secondary"
+            aria-describedby="${statusId}"
+            @click=${(e: Event) => {
               e.preventDefault();
-              (e.target as HTMLButtonElement).click();
-            }
-          }}
-        >
-          Apply
-        </button>
+              const sort_value =
+                (
+                  document.getElementById(
+                    `sort_by-${this.uid}`
+                  ) as HTMLSelectElement
+                )?.value ?? '';
+              const order_value =
+                (
+                  document.getElementById(
+                    `order-${this.uid}`
+                  ) as HTMLSelectElement
+                )?.value ?? '';
+              const results_value =
+                (
+                  document.getElementById(
+                    `results-${this.uid}`
+                  ) as HTMLSelectElement
+                )?.value ?? '';
+              this._querySort(sort_value, order_value, results_value);
+
+              // Update status for screen readers
+              const statusElement = document.getElementById(statusId);
+              if (statusElement) {
+                statusElement.textContent = `Applied sort: ${sort_value} in ${order_value} order, showing ${results_value} results per page`;
+              }
+            }}
+            @keydown=${(e: KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                (e.target as HTMLButtonElement).click();
+              }
+            }}
+          >
+            Apply
+          </button>
+        </div>
       </div>
     `;
   }
