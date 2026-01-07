@@ -187,9 +187,16 @@ export class StandAloneSearchResults extends LitElement {
     const loadingAnimation = document.getElementById(
       'bento-search-loading-animation'
     );
+    const resultsList = document.getElementById('bento-search-result-section');
+
     if (loadingAnimation != undefined) {
       loadingAnimation.classList.add('is-loading');
     }
+
+    if (resultsList != undefined) {
+      resultsList.classList.add('is-loading');
+    }
+
     try {
       [context.response] = await Promise.all([
         StandAloneSearchResults.doSearch(this.searchEndpoint, searchQuery),
@@ -200,6 +207,10 @@ export class StandAloneSearchResults extends LitElement {
     } finally {
       if (loadingAnimation != undefined) {
         loadingAnimation.classList.remove('is-loading');
+      }
+
+      if (resultsList != undefined) {
+        resultsList.classList.remove('is-loading');
       }
     }
   }
@@ -393,7 +404,7 @@ export class StandAloneSearchResults extends LitElement {
           </p>
           ${loading_animation}
           ${records.length > 0
-            ? html` <ul>
+            ? html` <ul id="bento-search-result-section">
                   ${records}
                 </ul>
                 <div class="bento-search-footer">
@@ -412,6 +423,7 @@ export class StandAloneSearchResults extends LitElement {
                 </div>`
             : html` <div
                   class="bento-search-no-results s-box-small-v s-box-small-h"
+                  id="bento-search-result-section"
                 >
                   <p class="t-body-medium">No records found</p>
                 </div>

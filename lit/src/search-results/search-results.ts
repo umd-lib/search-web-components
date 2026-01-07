@@ -46,42 +46,40 @@ export class SearchResults extends BaseSearchElement {
    * Ensure the focusElement is focused when the dropdown is opened.
    */
   override updated(_changedProperties: Map<string, any>) {
-    if (this.configLoaded || !this.context?.responseReady) {
-      return;
-    }
+    if (this.configLoaded && this.context?.responseReady) {
+      if (!this.resultField) {
+        this.resultField = this.context.response?.swc_results.field ?? '';
+      }
 
-    if (!this.resultField) {
-      this.resultField = this.context.response?.swc_results.field ?? '';
-    }
+      if (this.mappings.length === 0) {
+        this.mappings = this.context.response?.swc_results.mappings ?? [];
+      }
 
-    if (this.mappings.length === 0) {
-      this.mappings = this.context.response?.swc_results.mappings ?? [];
-    }
-
-    this.mappings.forEach((mapping) => {
-      mapping.keys.forEach((key) => {
-        this.processedMappings[key] = {
-          element: mapping.element,
-          settings: mapping.settings,
-        };
-        if (mapping.settings['is_standalone']) {
-          let standalone_str = mapping.settings['is_standalone'];
-          if (standalone_str == 'true') {
-            this.is_standalone = true;
+      this.mappings.forEach((mapping) => {
+        mapping.keys.forEach((key) => {
+          this.processedMappings[key] = {
+            element: mapping.element,
+            settings: mapping.settings,
+          };
+          if (mapping.settings['is_standalone']) {
+            let standalone_str = mapping.settings['is_standalone'];
+            if (standalone_str == 'true') {
+              this.is_standalone = true;
+            }
           }
-        }
-        if (mapping.settings['standalone_icon']) {
-          let icon = mapping.settings['standalone_icon'];
-          if (icon != undefined && icon != '') {
-            this.standalone_icon = icon;
+          if (mapping.settings['standalone_icon']) {
+            let icon = mapping.settings['standalone_icon'];
+            if (icon != undefined && icon != '') {
+              this.standalone_icon = icon;
+            }
           }
-        }
+        });
       });
-    });
 
-    this.configLoaded = true;
+      this.configLoaded = true;
+    }
 
-    // Initialize Lucide icons after rendering
+    // always re-run Lucide icons after DOM update
     requestAnimationFrame(() => {
       if (typeof (window as any).lucide !== 'undefined') {
         (window as any).lucide.createIcons();
