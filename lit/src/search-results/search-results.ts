@@ -46,7 +46,7 @@ export class SearchResults extends BaseSearchElement {
    * Ensure the focusElement is focused when the dropdown is opened.
    */
   override updated(_changedProperties: Map<string, any>) {
-    if (this.configLoaded && this.context?.responseReady) {
+    if (!this.configLoaded && this.context?.responseReady) {
       if (!this.resultField) {
         this.resultField = this.context.response?.swc_results.field ?? '';
       }
