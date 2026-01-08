@@ -3,6 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import BaseFacetElement from '../BaseFacetElement';
 import {ResultsType, SearchFacetsType} from '../types';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 /**
  * A facet checkbox element.
@@ -284,7 +285,7 @@ export class FacetCheckbox extends BaseFacetElement {
           aria-label="${value.label}"
         />
         <label for="${id}" aria-hidden="true">
-          ${value.label}
+          ${value.label ? unsafeHTML(value.label) : undefined}
           ${this.showCount
             ? html`
                 <span
