@@ -202,7 +202,6 @@ export class SearchResults extends BaseSearchElement {
       this.context?.query.get('q')?.trim != undefined
     ) {
       let curr = this.context?.query.get('q') ?? '';
-      console.log(curr);
       if (curr != undefined) {
         current_query = curr;
       }

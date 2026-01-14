@@ -52,6 +52,9 @@ export class SearchRoot extends LitElement {
   @property()
   defaultResultDisplay: 'list' | 'grid' | string = 'list';
 
+  @property()
+  dateWidgetFacetField = "date";
+
   /**
    * When set the page url is not updated with search query parameters.
    */
@@ -100,6 +103,7 @@ export class SearchRoot extends LitElement {
     context.defaultPerPage = this.defaultPerPage;
     context.resultDisplay = this.defaultResultDisplay;
     context.dialogBreakpoint = this.dialogBreakpoint;
+    const dateFacet = this.dateWidgetFacetField ? 'f[' + this.dateWidgetFacetField + ']' : undefined;
 
     if (this.noPageUrlUpdate) {
       context.updateUrl = false;
@@ -134,6 +138,22 @@ export class SearchRoot extends LitElement {
           '&' +
           searchQuery.toString()
       );
+    }
+
+    // Pluck date facet for date widget.
+    if (dateFacet != undefined) {
+      const date_check = context.query;
+      date_check.forEach((value, key) => {
+        if (value != undefined && value != '' && key.includes(dateFacet)) {
+          if (value.includes(" TO ")) {
+            let date_array = value.split(" TO ", 2);
+            context.dateFrom = date_array[0].replace('[', '');
+            context.dateTo = date_array[1].replace(']', '');
+          } else {
+            context.dateFrom = value;
+          }
+        }
+      })
     }
 
     context.response = await BaseSearchElement.doSearch(

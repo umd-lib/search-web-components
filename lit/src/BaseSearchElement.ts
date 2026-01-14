@@ -112,7 +112,6 @@ export class BaseSearchElement extends LitElement {
     // to support it in the url and convert the user visible url to one that
     // Drupal supports.
     for (const [key, value] of query.entries()) {
-      console.log(key);
       if (!key.startsWith('f[')) {
         continue;
       }

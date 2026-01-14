@@ -7768,6 +7768,16 @@
             },
             {
               "kind": "field",
+              "name": "dateWidgetFacetField",
+              "type": {
+                "text": "string"
+              },
+              "default": "'date'",
+              "description": "Configured facet for ranged date.",
+              "attribute": "dateWidgetFacetField"
+            },
+            {
+              "kind": "field",
               "name": "noPageUrlUpdate",
               "type": {
                 "text": "boolean"

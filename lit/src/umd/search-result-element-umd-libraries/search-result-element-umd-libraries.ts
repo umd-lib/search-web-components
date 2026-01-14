@@ -88,7 +88,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
             if (matches) {
               page = matches[1] as number;
             }
-            console.log(value);
             value = value.replace(/\|n[^\s]*/g, ' ');
           }
           if (page > 0) {

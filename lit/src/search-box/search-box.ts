@@ -55,7 +55,6 @@ export class SearchBox extends BaseSearchElement {
       this.context?.query.get('q')?.trim != undefined
     ) {
       let curr = this.context?.query.get('q') ?? '';
-      console.log(curr);
       if (curr != undefined) {
         this.current_query = curr;
       }
@@ -69,8 +68,6 @@ export class SearchBox extends BaseSearchElement {
    */
   _submit(e: SubmitEvent): void {
     e.preventDefault();
-    const curr = this.context?.query;
-    console.log(curr);
 
     if (e.currentTarget instanceof Element) {
       const value = e?.currentTarget?.querySelector('input')?.value?.trim();
