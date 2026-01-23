@@ -13,6 +13,13 @@ interface Field {
   is_boolean?: string;
   boolean_true?: string;
   boolean_false?: string;
+  linked_field?: string;
+  prefix_field?: string;
+  suffix_field?: string;
+  is_hidden?: string;
+  is_link?: string;
+  link_text?: string;
+  icon?: string;
 }
 
 /**
@@ -53,6 +60,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
       .map(([label, field], idx) => {
         let value = this.data[field.key];
         let is_bool = field.is_boolean == 'true' ? true : false;
+
         if (
           value === undefined ||
           value === null ||
@@ -100,71 +108,128 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         }
 
         const displayLabel = field.show_label == 'true' ? label : labelText;
+        const link_text = field.link_text != undefined ? field.link_text : undefined;
+
+        // Hidden fields not intended for display can be used as values for other fields
+        const is_hidden = field.is_hidden == 'true' ? true : false;
+
+        let content = undefined;
+
+        if (field.is_link) {
+          if (field.linked_field != undefined && this.data[field.linked_field] != undefined) {
+            const linked_field = this.data[field.linked_field]
+            if (Array.isArray(value) && Array.isArray(linked_field)) {
+              console.log("A");
+              // I think we can assume that the field indexes match, so 0 = 0, etc.
+              content = html`
+                ${repeat(
+                  value,
+                  (val) => val,
+                  (val, index) =>
+                    html  `<a href="${linked_field[index]}">
+                            ${link_text != undefined ? link_text : val}
+                          </a>${index < value.length - 1 ? ', ' : ''}`
+                )}`;
+            } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
+              console.log("B");
+              content = html  `<a href="${linked_field}">
+                              ${link_text != undefined ? link_text : value}
+                            </a>`;
+            }
+          } else if (field.facet_link_pattern != undefined) {
+              console.log("C");
+            if (Array.isArray(value)) {
+              content = html` ${repeat(
+                            value,
+                            (val) => val,
+                            (val, index) =>
+                              html  `<a href="${field.facet_link_pattern}${val}">
+                                      ${link_text != undefined ? link_text : val}
+                                    </a>${index < value.length - 1 ? ', ' : ''}`
+                            )}`;
+            } else {
+              console.log("D");
+              content = html  `<a href="${field.facet_link_pattern}${value}">
+                              ${link_text != undefined ? link_text : value}
+                            </a>`;
+            }
+          } else if (field.linked_field == undefined) {
+              console.log("E");
+            content = html  `<a href="${value}">
+                            ${link_text != undefined ? link_text : value}
+                          </a>`;
+          }
+        } else {
+              console.log("F");
+          if (Array.isArray(value)) {
+              console.log("G");
+            content = html  `${repeat(
+                            value,
+                            (val) => val,
+                            (val, index) =>
+                              html`${val}${index < value.length - 1 ? ', ' : ''}`
+                          )}` 
+          } else {
+              console.log("H");
+          }
+        }
+
+        if (field.prefix_field != undefined &&
+            this.data[field.prefix_field] != undefined &&
+            !Array.isArray(this.data[field.prefix_field])
+          ) {
+          content = this.data[field.prefix_field] + " / " + content != undefined ? content : value;
+        }
+
+        if (field.suffix_field != undefined &&
+            this.data[field.suffix_field] != undefined &&
+            !Array.isArray(this.data[field.suffix_field])
+          ) {
+          content = content != undefined ? content : value + " / " + this.data[field.suffix_field];
+        }
+
+        // Create icon markup for field
+        let icon = undefined;
+        if (field.icon != undefined) {
+          icon = html`
+              <i
+                style="display: block;"
+                data-lucide="${field.icon}"
+                class="bento-search-header-icon"
+              ></i>`
+        }
 
         return {
           label: displayLabel,
           value,
           field,
           template:
-            field.show_label == 'true'
-              ? Array.isArray(value) && field.facet_link_pattern != undefined
-                ? html` <div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>
-                      ${repeat(
-                        value,
-                        (val) => val,
-                        (val, index) =>
-                          html`<a href="${field.facet_link_pattern}${val}"
-                              >${val}</a
-                            >${index < value.length - 1 ? ', ' : ''}`
-                      )}
-                    </dd>
-                  </div>`
-                : Array.isArray(value)
-                ? html`<div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>
-                      ${repeat(
-                        value,
-                        (val) => val,
-                        (val, index) =>
-                          html`${val}${index < value.length - 1 ? ', ' : ''}`
-                      )}
-                    </dd>
-                  </div>`
+            is_hidden == true ? html `<span class="hidden">${value}</span>` :
+              field.show_label == 'true'
+                ? html  `<div class="t-label">
+                          <dt class="t-bold">${labelText}:</dt>
+                          <dd>
+                            ${icon}
+                            ${is_bool
+                              ? html`${has_value == true
+                                ? field.boolean_true
+                                : field.boolean_false}`
+                              : content != undefined ? content : unsafeHTML(value)
+                            }
+                          </dd>
+                        </div>`
                 : html`<div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
+                    <dt class="t-bold"></dt>
                     <dd>
+                      ${icon}
                       ${is_bool
                         ? html`${has_value == true
-                            ? field.boolean_true
-                            : field.boolean_false}`
-                        : unsafeHTML(value)}
-                    </dd>
-                  </div>`
-              : Array.isArray(value)
-              ? html`<div class="t-label">
-                  <dt class="t-bold">${labelText}</dt>
-                  <dd>
-                    ${repeat(
-                      value,
-                      (val) => val,
-                      (val, index) =>
-                        html`${val}${index < value.length - 1 ? ', ' : ''}`
-                    )}
-                  </dd>
-                </div>`
-              : html`<div class="t-label">
-                  <dt class="t-bold">${label}:</dt>
-                  <dd>
-                    ${is_bool
-                      ? html`${has_value == true
                           ? field.boolean_true
                           : field.boolean_false}`
-                      : unsafeHTML(value)}
-                  </dd>
-                </div>`,
+                        : content != undefined ? content : unsafeHTML(value)
+                      }
+                    </dd>
+                  </div>`
         };
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
@@ -234,7 +299,9 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                               ? ': '
                               : ''}${val}`
                         )
-                    : unsafeHTML(firstField.value)}
+                    : firstField.field.facet_link_pattern != undefined ?
+                          html`<a href="${firstField.field.facet_link_pattern}${firstField.value}">${firstField.value}^^8</a>`
+                          : unsafeHTML(firstField.value)}
                 </h2>
               `
             : ''}
