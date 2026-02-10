@@ -18,7 +18,8 @@ export class SearchShare extends BaseSearchElement {
 
     document.addEventListener('update-context', (e) => {
       //@ts-expect-error
-      this.queryText = decodeURIComponent(e.context.query.toString());
+      this.queryText = decodeURIComponent(e.context.query.toString().replace(/%/g,'%25'));
+      console.log(this.queryText);
       if (this.queryText === 'q=') this.queryText = '';
       if (this.queryText.startsWith('q=&'))
         this.queryText = this.queryText.replace('q=&', '');
