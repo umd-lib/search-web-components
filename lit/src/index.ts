@@ -24,6 +24,7 @@ import {SearchShare} from './umd/search-share/search-share.js';
 import {StandAloneSearchResults} from './umd/standalone-search-results/standalone-search-results.js';
 import {SearchResultToolbar} from './umd/search-result-toolbar/search-result-toolbar.js';
 import {DateRanger} from './umd/date-ranger/date-ranger.js'
+import { MoreSearchers } from './umd/more-searchers/more-searchers.js';
 
 export default {
   BaseSearchElement,
@@ -50,5 +51,6 @@ export default {
   SearchShare,
   SearchResultToolbar,
   StandAloneSearchResults,
-  DateRanger
+  DateRanger,
+  MoreSearchers
 };
