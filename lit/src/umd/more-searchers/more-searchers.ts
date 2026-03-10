@@ -24,6 +24,12 @@ export class MoreSearchers extends BaseSearchElement {
   blockIcon = '';
 
   /**
+   * The decoupled search api endpoint to query for results. Search query params added to this url will be used for the initial search if no search query params are present in the page url, they will also be added to the page url on search load, and can be removed by components.
+   */
+  @property()
+  localQuery = '';
+
+  /**
    * Override the base Lit render root to disable shadow dom.
    *
    * @protected
@@ -31,6 +37,22 @@ export class MoreSearchers extends BaseSearchElement {
   protected override createRenderRoot(): HTMLElement | DocumentFragment {
     this.style.display = 'block';
     return this;
+  }
+
+  override async connectedCallback() {
+    super.connectedCallback();
+
+    const context = {...this.context};
+
+    if (!context?.query || !context?.query.has('q') || context?.query.get('q')?.trim == undefined) {
+      const rawQuery = new URLSearchParams(window.location.search);
+      if (rawQuery.has('q') && rawQuery.get('q')?.trim() != undefined) {
+        this.localQuery = rawQuery.get('q') ?? '';
+      }
+    } else if (context?.query && context?.query.has('q') && context?.query.get('q')?.trim() != undefined) {
+      this.localQuery = context.query.get('q') ?? '';
+    }
+
   }
 
   override render() {
@@ -44,6 +66,10 @@ export class MoreSearchers extends BaseSearchElement {
       if (curr != undefined) {
         current_query = curr;
       }
+    }
+
+    if (current_query == undefined && this.localQuery != undefined) {
+      current_query = this.localQuery; 
     }
 
     const urls: TemplateResult[] = [];
