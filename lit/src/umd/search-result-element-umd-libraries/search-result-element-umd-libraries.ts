@@ -88,6 +88,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
             if (matches) {
               page = matches[1] as number;
             }
+            value = value.replace(/\[HIGHLIGHT\]/g, '<em>');
+            value = value.replace(/\[\/HIGHLIGHT\]/g, ' </em>');
             value = value.replace(/\|n[^\s]*/g, ' ');
           }
           if (page > 0) {
