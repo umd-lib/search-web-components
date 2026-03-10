@@ -95,7 +95,6 @@ export class SearchRoot extends LitElement {
       } else {
         context.url = url;
       }
-
       if (query) {
         initialQuery = new URLSearchParams(query);
       }
@@ -113,7 +112,6 @@ export class SearchRoot extends LitElement {
     if (!context.query || this.noPageUrlUpdate) {
       context.query = new URLSearchParams();
     }
-
     // Only use the initial query if the current page doesn't have any search query parameters present.
     if (initialQuery) {
       let useInitial = true;
@@ -132,6 +130,13 @@ export class SearchRoot extends LitElement {
     // Merge the current query with additional params.
     context.additionalParams = this.additionalParams;
     let searchQuery = context.query;
+    if (searchQuery == undefined || searchQuery.get('q') == undefined || searchQuery.get('q')?.trim() == '') {
+      const rawQuery = new URLSearchParams(window.location.search);
+      if (rawQuery != undefined && rawQuery.has('q') && rawQuery.get('q')?.trim() != '') {
+        searchQuery = rawQuery;
+        context.query = rawQuery;
+      }
+    }
     if (this.additionalParams) {
       searchQuery = new URLSearchParams(
         new URLSearchParams(this.additionalParams).toString() +
