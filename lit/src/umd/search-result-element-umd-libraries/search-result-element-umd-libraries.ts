@@ -18,6 +18,7 @@ interface Field {
   suffix_field?: string;
   is_hidden?: string;
   is_link?: string;
+  is_body?: string;
   link_text?: string;
   icon?: string;
 }
@@ -47,6 +48,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const id_field = this.settings['id'] as string;
     const title_field = this.settings['title'] as string;
     const thumbnail_field = this.settings['thumbnail'] as string;
+    let orientation = this.settings['orientation'] as string;
+    const item_class = this.settings['item_class'] as string;
     const fields: Record<string, Field> = this.settings['fields'];
     const base_path: string = this.settings['base_path'];
     const query_string = this?.context?.query?.get('q');
@@ -54,6 +57,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
     let id = undefined;
+
+    if (orientation === undefined || orientation === null || orientation != 'right') {
+      orientation = 'left';
+    }
 
     let has_value = true;
     const field_entries = Object.entries(fields)
@@ -117,9 +124,12 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
         let content = undefined;
 
-        if (field.is_link) {
+        // Handle linked fields for URLs. If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL. If neither is present, we assume the value itself is the URL.
+        if (field.is_body && field.is_body == 'true') {
+          content = html`<div class="body">${unsafeHTML(value)}</div>`;
+        } else if (field.is_link && field.is_link == 'true') {
           if (field.linked_field != undefined && this.data[field.linked_field] != undefined) {
-            const linked_field = this.data[field.linked_field]
+            const linked_field = this.data[field.linked_field];
             if (Array.isArray(value) && Array.isArray(linked_field)) {
               console.log("A");
               // I think we can assume that the field indexes match, so 0 = 0, etc.
@@ -135,8 +145,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
             } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
               console.log("B");
               content = html  `<a href="${linked_field}">
-                              ${link_text != undefined ? link_text : value}
-                            </a>`;
+                                ${link_text != undefined ? link_text : value}
+                              </a>`;
             }
           } else if (field.facet_link_pattern != undefined) {
               console.log("C");
@@ -165,7 +175,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
               console.log("F");
           if (Array.isArray(value)) {
               console.log("G");
-            content = html  `${repeat(
+            content = html`${repeat(
                             value,
                             (val) => val,
                             (val, index) =>
@@ -263,7 +273,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
     return html`
       <article>
-        <div class="item-detail">
+        <div class="item-detail orientation-${orientation} ${item_class || ''}">
           ${base_path && id
             ? html`
                 <h3 class="item-title t-title-small s-stack-small">
