@@ -58,13 +58,17 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let thumbnail = this.data[thumbnail_field];
     let id = undefined;
 
+    let img_class = '';
+    let item_detail_class = 's-inline-small';
     if (orientation === undefined || orientation === null || orientation != 'right') {
       orientation = 'left';
+      item_detail_class = '';
+      img_class = 's-inline-small';
     }
 
     let has_value = true;
     const field_entries = Object.entries(fields)
-      .map(([label, field], idx) => {
+      .map(([label, field]) => {
         let value = this.data[field.key];
         let is_bool = field.is_boolean == 'true' ? true : false;
 
@@ -86,11 +90,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           (field && (field as any).label) ||
           '';
         let labelText = rawLabel.trim();
-
-        if (!labelText) {
-          const fallback = ['Item type:', 'Collection:', 'Date:'];
-          labelText = fallback[idx] || '';
-        }
 
         let page = 0;
         if (id_field in this.data) {
@@ -116,7 +115,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           }
         }
 
-        const displayLabel = field.show_label == 'true' ? label : labelText;
+        const displayLabel = field.show_label != undefined && field.show_label == 'true' ? labelText : undefined;
         const link_text = field.link_text != undefined ? field.link_text : undefined;
 
         // Hidden fields not intended for display can be used as values for other fields
@@ -217,31 +216,18 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           field,
           template:
             is_hidden == true ? html `<span class="hidden">${value}</span>` :
-              field.show_label == 'true'
-                ? html  `<div class="t-label">
-                          <dt class="t-bold">${labelText}:</dt>
-                          <dd>
-                            ${icon}
-                            ${is_bool
-                              ? html`${has_value == true
-                                ? field.boolean_true
-                                : field.boolean_false}`
-                              : content != undefined ? content : unsafeHTML(value)
-                            }
-                          </dd>
-                        </div>`
-                : html`<div class="t-label">
-                    <dt class="t-bold"></dt>
-                    <dd>
-                      ${icon}
-                      ${is_bool
-                        ? html`${has_value == true
-                          ? field.boolean_true
-                          : field.boolean_false}`
-                        : content != undefined ? content : unsafeHTML(value)
-                      }
-                    </dd>
-                  </div>`
+              html  `<div class="t-label">
+                      ${displayLabel ? html`<dt class="t-bold">${displayLabel}:</dt>` : undefined}
+                      <dd>
+                        ${icon ? icon : undefined}
+                        ${is_bool
+                          ? html`${has_value == true
+                            ? field.boolean_true
+                            : field.boolean_false}`
+                          : content != undefined ? content : unsafeHTML(value)
+                        }
+                      </dd>
+                    </div>`
         };
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
@@ -272,8 +258,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const altText = firstFieldKey ? this.data[firstFieldKey] : '';
 
     return html`
-      <article>
-        <div class="item-detail orientation-${orientation} ${item_class || ''}">
+      <article class="orientation-${orientation} ${item_class || ''}">
+        <div class="item-detail ${item_detail_class}">
           ${base_path && id
             ? html`
                 <h3 class="item-title t-title-small s-stack-small">
@@ -324,7 +310,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           : html`<img
               src="${thumbnail}"
               alt="${altText}"
-              class="s-inline-small"
+              class="${img_class}"
               onerror="
               this.onerror=null;
               this.src='/assets/placeholder-image.svg';
