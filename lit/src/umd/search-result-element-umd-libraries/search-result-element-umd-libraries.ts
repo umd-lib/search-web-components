@@ -123,6 +123,9 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
         let content = undefined;
 
+        // Prefix one field onto the displayed value, if prefix_field is specified.
+        // If prefix_field is an array and value is an array, we assume the values correspond by index.
+        // Similar logic applies for suffix_field.
         let combined_value = undefined;
         if (field.prefix_field != undefined &&
             this.data[field.prefix_field] != undefined) {
@@ -152,15 +155,17 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           value = combined_value;
         }
 
-        // Handle linked fields for URLs. If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL. If neither is present, we assume the value itself is the URL.
+        // Handle linked fields for URLs.
+        // If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL.
+        // If neither is present, we assume the value itself is the URL.
         if (field.is_body && field.is_body == 'true') {
+          // Intended for description content.
           content = html`<div class="body">${unsafeHTML(value)}</div>`;
         } else if (field.is_link && field.is_link == 'true') {
           if (field.linked_field != undefined && this.data[field.linked_field] != undefined) {
             const linked_field = this.data[field.linked_field];
             if (Array.isArray(value) && Array.isArray(linked_field)) {
-              console.log("A");
-              // I think we can assume that the field indexes match, so 0 = 0, etc.
+              // Based on the data structure, I think we can assume that the field indexes match, so 0 = 0, etc.
               content = html`
                 ${repeat(
                   value,
@@ -171,13 +176,11 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                           </a>${index < value.length - 1 ? ', ' : ''}`
                 )}`;
             } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
-              console.log("B");
               content = html  `<a href="${linked_field}">
                                 ${link_text != undefined ? link_text : value}
                               </a>`;
             }
           } else if (field.facet_link_pattern != undefined) {
-              console.log("C");
             if (Array.isArray(value)) {
               content = html` ${repeat(
                             value,
@@ -188,29 +191,23 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                                     </a>${index < value.length - 1 ? ', ' : ''}`
                             )}`;
             } else {
-              console.log("D");
               content = html  `<a href="${field.facet_link_pattern}${value}">
                               ${link_text != undefined ? link_text : value}
                             </a>`;
             }
           } else if (field.linked_field == undefined) {
-              console.log("E");
             content = html  `<a href="${value}">
                             ${link_text != undefined ? link_text : value}
                           </a>`;
           }
         } else {
-              console.log("F");
           if (Array.isArray(value)) {
-              console.log("G");
             content = html`${repeat(
                             value,
                             (val) => val,
                             (val, index) =>
                               html`${val}${index < value.length - 1 ? ', ' : ''}`
                           )}` 
-          } else {
-              console.log("H");
           }
         }
 
