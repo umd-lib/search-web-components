@@ -1,0 +1,35 @@
+Equipment:
+
+{"thumbnail":"thumbnail","orientation":"right","item_class":"equipment","fields":{"Title":{"key":"title","show_label":"false"},"Description":{"key":"description","is_body":"true","show_label":"false"},"Location":{"key":"location_parent","show_label":"false","is_hidden":"true"},"Floor":{"key":"location","show_label":"true","linked_field":"location_url","is_link":"true","prefix_field":"location_parent"},"LocationURL":{"key":"location_url","show_label":"false","is_hidden":"true"},"Category":{"key":"category","show_label":"true"},"Check Availability":{"key":"mms_id","show_label":"false","link_text":"Check Availability","facet_link_pattern":"https:\/\/usmai-umcp.primo.exlibrisgroup.com\/discovery\/fulldisplay?vid=01USMAI_UMCP%3AUMCP\u0026tab=LibraryCatalog\u0026context=PC\u0026lang=en\u0026adaptor=Primo%20Central\u0026offset=0\u0026docid=alma","is_link":"true"},"Excerpt":{"key":"excerpt","show_label":"true"}}}
+
+Spaces:
+
+{"thumbnail":"thumbnail","orientation":"right","item_class":"spaces","fields":{"Title":{"key":"title","show_label":"false"},"Description":{"key":"description","show_label":"false","is_body":"true"},"LocationURL":{"key":"location_url","show_label":"false","is_hidden":"true"},"Library":{"key":"location_parent","show_label":"false","is_hidden":"true"},"Location":{"key":"location","show_label":"true","prefix_field":"location_parent","is_link":"true","linked_field":"location_url"},"Features":{"key":"features","show_label":"true"},"Activity":{"key":"activity","show_label":"true"},"Capacity":{"key":"capacity","show_label":"true"},"Reservation":{"key":"reservation_url","show_label":"false","is_link":"true","link_text":"Reserve"},"Excerpt":{"key":"excerpt","show_label":"true"}}}
+
+FCRepo Searcher:
+
+{"title":"object__title__display","thumbnail":"iiif_thumbnail_sequence__uris","fields":{"Format":{"key":"object__format__label__display","show_label":"true"},"Digital Collection":{"key":"presentation_set__facet","show_label":"true"},"Archival Collection":{"key":"object__archival_collection__label__display","show_label":"true"},"Date":{"key":"object__date__edtf","show_label":"false"},"Excerpt":{"key":"excerpt","show_label":"true"}},"base_path":"\/search\/id\/","id":"iiif_manifest__id"}
+
+FCRepo Standalone Searcher:
+
+{"title":"object__title__display","fields":{"Format":{"key":"object__format__label__display","show_label":"false"},"Collection":{"key":"object__archival_collection__label__display","show_label":"false"},"Date":{"key":"object__date__edtf","show_label":"false"}},"base_path":"\/search\/id\/","id":"iiif_manifest__id","is_standalone":"true","standalone_icon":"images"}
+
+MD Newspapers:
+
+{"title":"title","fields":{"City":{"key":"city_facet","show_label":"false"},"Years Published":{"key":"range_pub","show_label":"true"},"Years Available":{"key":"range_avail","show_label":"true"}},"base_path":"\/newspapergateway\/search\/id\/","id":"id"}
+
+MDHC:
+
+{"fields":{"Authors":{"key":"authors","show_label":"true"},"Citation":{"key":"citation","show_label":"true"},"Categories":{"key":"categories","show_label":"true","link_to_facet":"true","facet_link_pattern":"?f[categories]="}}}
+
+MDMaps:
+
+{"title":"title","fields":{"Title":{"key":"title","show_label":"false"},"Date":{"key":"display_date","show_label":"true"},"Access":{"key":"handle_link","show_label":"true","is_boolean":"true","boolean_true":"Available Online","boolean_false":"Request Required"}},"base_path":"\/mdmap\/search\/id\/","id":"id"}
+
+Plant Patents:
+
+{"title":"display_title","fields":{"Inventor":{"key":"inventor","show_label":"true"},"Patent Number":{"key":"patent_number","show_label":"true"}},"base_path":"\/plantpatents\/search\/id\/","id":"patent_number"}
+
+Scores:
+
+{"title":"title","fields":{"Composer":{"key":"composer","show_label":"true"},"Instrumentation":{"key":"instrumentation_dictionary","show_label":"true"}},"base_path":"\/scores\/search\/id\/","id":"id"}
