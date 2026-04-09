@@ -123,6 +123,35 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
         let content = undefined;
 
+        let combined_value = undefined;
+        if (field.prefix_field != undefined &&
+            this.data[field.prefix_field] != undefined) {
+            if (Array.isArray(value) && !Array.isArray(this.data[field.prefix_field])) {
+              combined_value = value.map((v: string) => this.data[field.prefix_field!] + " — " + v);
+            } else if (!Array.isArray(value) && !Array.isArray(this.data[field.prefix_field])) {
+              combined_value = this.data[field.prefix_field!] + " — " + value;
+            } else if(Array.isArray(value) && Array.isArray(this.data[field.prefix_field]) && value.length === this.data[field.prefix_field].length) {
+              // This takes some trust in the data, that the prefix and value arrays are in the correct order,
+              // but without some sort of unique identifier there's not much else we can do.
+              combined_value = value.map((v: string, index: number) => this.data[field.prefix_field!][index] + " — " + v);
+            }
+        }
+
+        if (field.suffix_field != undefined &&
+            this.data[field.suffix_field] != undefined) {
+            if (Array.isArray(value) && !Array.isArray(this.data[field.suffix_field])) {
+              combined_value = value.map((v: string) => v + " — " + this.data[field.suffix_field!]);
+            } else if (!Array.isArray(value) && !Array.isArray(this.data[field.suffix_field])) {
+              combined_value = value + " — " + this.data[field.suffix_field!];
+            } else if (Array.isArray(value) && Array.isArray(this.data[field.suffix_field]) && value.length === this.data[field.suffix_field].length) {
+              combined_value = value.map((v: string, index: number) => v + " — " + this.data[field.suffix_field!][index]);
+            }
+          }
+
+        if (combined_value != undefined) {
+          value = combined_value;
+        }
+
         // Handle linked fields for URLs. If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL. If neither is present, we assume the value itself is the URL.
         if (field.is_body && field.is_body == 'true') {
           content = html`<div class="body">${unsafeHTML(value)}</div>`;
@@ -183,20 +212,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           } else {
               console.log("H");
           }
-        }
-
-        if (field.prefix_field != undefined &&
-            this.data[field.prefix_field] != undefined &&
-            !Array.isArray(this.data[field.prefix_field])
-          ) {
-          content = this.data[field.prefix_field] + " / " + content != undefined ? content : value;
-        }
-
-        if (field.suffix_field != undefined &&
-            this.data[field.suffix_field] != undefined &&
-            !Array.isArray(this.data[field.suffix_field])
-          ) {
-          content = content != undefined ? content : value + " / " + this.data[field.suffix_field];
         }
 
         // Create icon markup for field
