@@ -373,10 +373,7 @@ export class StandAloneSearchResults extends LitElement {
 
     return html`
       <div>
-        <section
-          class="bento-search c-border-tertiary s-margin-general-medium"
-          id="${this.blockID}"
-        >
+        <section class="bento-search c-border-tertiary" id="${this.blockID}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
           >

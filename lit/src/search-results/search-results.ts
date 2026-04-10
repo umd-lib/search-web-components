@@ -210,9 +210,7 @@ export class SearchResults extends BaseSearchElement {
     if (results.length === 0 || current_query == undefined) {
       return html`
         <div>
-          <section
-            class="bento-search c-border-tertiary s-margin-general-medium"
-          >
+          <section class="bento-search c-border-tertiary">
             <div
               class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
             >

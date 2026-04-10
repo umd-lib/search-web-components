@@ -13,6 +13,14 @@ interface Field {
   is_boolean?: string;
   boolean_true?: string;
   boolean_false?: string;
+  linked_field?: string;
+  prefix_field?: string;
+  suffix_field?: string;
+  is_hidden?: string;
+  is_link?: string;
+  is_body?: string;
+  link_text?: string;
+  icon?: string;
 }
 
 /**
@@ -40,6 +48,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const id_field = this.settings['id'] as string;
     const title_field = this.settings['title'] as string;
     const thumbnail_field = this.settings['thumbnail'] as string;
+    let orientation = this.settings['orientation'] as string;
+    const item_class = this.settings['item_class'] as string;
     const fields: Record<string, Field> = this.settings['fields'];
     const base_path: string = this.settings['base_path'];
     const query_string = this?.context?.query?.get('q');
@@ -48,11 +58,24 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let thumbnail = this.data[thumbnail_field];
     let id = undefined;
 
+    let img_class = '';
+    let item_detail_class = 's-inline-small';
+    if (
+      orientation === undefined ||
+      orientation === null ||
+      orientation != 'right'
+    ) {
+      orientation = 'left';
+      item_detail_class = '';
+      img_class = 's-inline-small';
+    }
+
     let has_value = true;
     const field_entries = Object.entries(fields)
-      .map(([label, field], idx) => {
+      .map(([label, field]) => {
         let value = this.data[field.key];
         let is_bool = field.is_boolean == 'true' ? true : false;
+
         if (
           value === undefined ||
           value === null ||
@@ -71,11 +94,6 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           (field && (field as any).label) ||
           '';
         let labelText = rawLabel.trim();
-
-        if (!labelText) {
-          const fallback = ['Item type:', 'Collection:', 'Date:'];
-          labelText = fallback[idx] || '';
-        }
 
         let page = 0;
         if (id_field in this.data) {
@@ -101,69 +119,178 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           }
         }
 
-        const displayLabel = field.show_label == 'true' ? label : labelText;
+        const displayLabel =
+          field.show_label != undefined && field.show_label == 'true'
+            ? labelText
+            : undefined;
+        const link_text =
+          field.link_text != undefined ? field.link_text : undefined;
+
+        // Hidden fields not intended for display can be used as values for other fields
+        const is_hidden = field.is_hidden == 'true' ? true : false;
+
+        let content = undefined;
+
+        // Prefix one field onto the displayed value, if prefix_field is specified.
+        // If prefix_field is an array and value is an array, we assume the values correspond by index.
+        // Similar logic applies for suffix_field.
+        let combined_value = undefined;
+        if (
+          field.prefix_field != undefined &&
+          this.data[field.prefix_field] != undefined
+        ) {
+          if (
+            Array.isArray(value) &&
+            !Array.isArray(this.data[field.prefix_field])
+          ) {
+            combined_value = value.map(
+              (v: string) => this.data[field.prefix_field!] + ' — ' + v
+            );
+          } else if (
+            !Array.isArray(value) &&
+            !Array.isArray(this.data[field.prefix_field])
+          ) {
+            combined_value = this.data[field.prefix_field!] + ' — ' + value;
+          } else if (
+            Array.isArray(value) &&
+            Array.isArray(this.data[field.prefix_field]) &&
+            value.length === this.data[field.prefix_field].length
+          ) {
+            // This takes some trust in the data, that the prefix and value arrays are in the correct order,
+            // but without some sort of unique identifier there's not much else we can do.
+            combined_value = value.map(
+              (v: string, index: number) =>
+                this.data[field.prefix_field!][index] + ' — ' + v
+            );
+          }
+        }
+
+        if (
+          field.suffix_field != undefined &&
+          this.data[field.suffix_field] != undefined
+        ) {
+          if (
+            Array.isArray(value) &&
+            !Array.isArray(this.data[field.suffix_field])
+          ) {
+            combined_value = value.map(
+              (v: string) => v + ' — ' + this.data[field.suffix_field!]
+            );
+          } else if (
+            !Array.isArray(value) &&
+            !Array.isArray(this.data[field.suffix_field])
+          ) {
+            combined_value = value + ' — ' + this.data[field.suffix_field!];
+          } else if (
+            Array.isArray(value) &&
+            Array.isArray(this.data[field.suffix_field]) &&
+            value.length === this.data[field.suffix_field].length
+          ) {
+            combined_value = value.map(
+              (v: string, index: number) =>
+                v + ' — ' + this.data[field.suffix_field!][index]
+            );
+          }
+        }
+
+        if (combined_value != undefined) {
+          value = combined_value;
+        }
+
+        // Handle linked fields for URLs.
+        // If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL.
+        // If neither is present, we assume the value itself is the URL.
+        if (field.is_body && field.is_body == 'true') {
+          // Intended for description content.
+          content = html`<div class="body">${unsafeHTML(value)}</div>`;
+        } else if (field.is_link && field.is_link == 'true') {
+          if (
+            field.linked_field != undefined &&
+            this.data[field.linked_field] != undefined
+          ) {
+            const linked_field = this.data[field.linked_field];
+            if (Array.isArray(value) && Array.isArray(linked_field)) {
+              // Based on the data structure, I think we can assume that the field indexes match, so 0 = 0, etc.
+              content = html` ${repeat(
+                value,
+                (val) => val,
+                (val, index) =>
+                  html`<a href="${linked_field[index]}">
+                      ${link_text != undefined ? link_text : val} </a
+                    >${index < value.length - 1 ? ', ' : ''}`
+              )}`;
+            } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
+              content = html`<a href="${linked_field}">
+                ${link_text != undefined ? link_text : value}
+              </a>`;
+            }
+          } else if (field.facet_link_pattern != undefined) {
+            if (Array.isArray(value)) {
+              content = html` ${repeat(
+                value,
+                (val) => val,
+                (val, index) =>
+                  html`<a href="${field.facet_link_pattern}${val}">
+                      ${link_text != undefined ? link_text : val} </a
+                    >${index < value.length - 1 ? ', ' : ''}`
+              )}`;
+            } else {
+              content = html`<a href="${field.facet_link_pattern}${value}">
+                ${link_text != undefined ? link_text : value}
+              </a>`;
+            }
+          } else if (field.linked_field == undefined) {
+            content = html`<a href="${value}">
+              ${link_text != undefined ? link_text : value}
+            </a>`;
+          }
+        } else {
+          if (Array.isArray(value)) {
+            content = html`${repeat(
+              value,
+              (val) => val,
+              (val, index) =>
+                html`${val}${index < value.length - 1 ? ', ' : ''}`
+            )}`;
+          }
+        }
+
+        // Create icon markup for field
+        let icon = undefined;
+        if (field.icon != undefined) {
+          icon = html` <i
+            style="display: block;"
+            data-lucide="${field.icon}"
+            class="bento-search-header-icon"
+          ></i>`;
+        }
 
         return {
           label: displayLabel,
           value,
           field,
-          template:
-            field.show_label == 'true'
-              ? Array.isArray(value) && field.facet_link_pattern != undefined
-                ? html` <div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>
-                      ${repeat(
-                        value,
-                        (val) => val,
-                        (val, index) =>
-                          html`<a href="${field.facet_link_pattern}${val}"
-                              >${val}</a
-                            >${index < value.length - 1 ? ', ' : ''}`
-                      )}
-                    </dd>
-                  </div>`
-                : Array.isArray(value)
-                ? html`<div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>
-                      ${repeat(
-                        value,
-                        (val) => val,
-                        (val, index) =>
-                          html`${val}${index < value.length - 1 ? ', ' : ''}`
-                      )}
-                    </dd>
-                  </div>`
-                : html`<div class="t-label">
-                    <dt class="t-bold">${label}:</dt>
-                    <dd>
-                      ${is_bool
-                        ? html`${has_value == true
-                            ? field.boolean_true
-                            : field.boolean_false}`
-                        : unsafeHTML(value)}
-                    </dd>
-                  </div>`
-              : Array.isArray(value)
-              ? html`<div class="t-label">
-                  <dt class="t-bold">${labelText}</dt>
-                  <dd>
-                    ${repeat(
-                      value,
-                      (val) => val,
-                      (val, index) =>
-                        html`${val}${index < value.length - 1 ? ', ' : ''}`
-                    )}
-                  </dd>
+          is_body: field.is_body == 'true',
+          body_content:
+            field.is_body == 'true' && !is_hidden
+              ? html`<div class="body t-label s-stack-small">
+                  ${unsafeHTML(value)}
                 </div>`
+              : undefined,
+          template:
+            is_hidden == true
+              ? html`<span class="hidden">${value}</span>`
               : html`<div class="t-label">
-                  <dt class="t-bold">${label}:</dt>
+                  ${displayLabel
+                    ? html`<dt class="t-bold">${displayLabel}:</dt>`
+                    : undefined}
                   <dd>
+                    ${icon ? icon : undefined}
                     ${is_bool
                       ? html`${has_value == true
                           ? field.boolean_true
                           : field.boolean_false}`
+                      : content != undefined
+                      ? content
                       : unsafeHTML(value)}
                   </dd>
                 </div>`,
@@ -171,14 +298,29 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
 
-    // Extract first field for use in h2 when base_path && id is false
-    const firstField = field_entries[0];
-    const remainingFields = field_entries.slice(1);
+    // Separate body fields (to be hoisted above the dl) from everything else.
+    // Hidden body fields stay in the dl as <span class="hidden">.
+    const bodyEntries = field_entries.filter(
+      (entry) => entry.is_body && entry.field.is_hidden != 'true'
+    );
+    const nonBodyEntries = field_entries.filter(
+      (entry) => !entry.is_body || entry.field.is_hidden == 'true'
+    );
 
-    // Create field list based on whether we're using first field in h2
+    // Body content rendered between the title and the dl.
+    const body_content =
+      bodyEntries.length > 0
+        ? html`${bodyEntries.map((entry) => entry.body_content)}`
+        : nothing;
+
+    // Extract first non-body field for equipmenet & space results when title is not linked, and use remaining non-body fields for the field list.
+    const firstField = nonBodyEntries[0];
+    const remainingFields = nonBodyEntries.slice(1);
+
+    // Create field list using only non-body fields
     const field_list =
       base_path && id
-        ? field_entries.map((entry) => entry.template)
+        ? nonBodyEntries.map((entry) => entry.template)
         : remainingFields.map((entry) => entry.template);
 
     if (Array.isArray(title)) {
@@ -197,8 +339,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const altText = firstFieldKey ? this.data[firstFieldKey] : '';
 
     return html`
-      <article>
-        <div class="item-detail">
+      <article class="orientation-${orientation} ${item_class || ''}">
+        <div class="item-detail ${item_detail_class}">
           ${base_path && id
             ? html`
                 <h3 class="item-title t-title-small s-stack-small">
@@ -209,7 +351,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
               `
             : firstField
             ? html`
-                <h2 class="item-title t-title-small s-stack-small">
+                <h3 class="item-title t-title-small s-stack-small">
                   ${Array.isArray(firstField.value)
                     ? firstField.field.facet_link_pattern
                       ? repeat(
@@ -236,18 +378,27 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                               ? ': '
                               : ''}${val}`
                         )
+                    : firstField.field.facet_link_pattern != undefined
+                    ? html`<a
+                        href="${firstField.field
+                          .facet_link_pattern}${firstField.value}"
+                        >${firstField.value}^^8</a
+                      >`
                     : unsafeHTML(firstField.value)}
-                </h2>
+                </h3>
               `
             : ''}
-          ${html`<dl class="item-fields">${field_list}</dl>`}
+          ${body_content}
+          ${field_list.length > 0
+            ? html`<dl class="item-fields">${field_list}</dl>`
+            : nothing}
         </div>
         ${!thumbnail_field || !thumbnail || thumbnail === 'static:unavailable'
           ? nothing
           : html`<img
               src="${thumbnail}"
               alt="${altText}"
-              class="s-inline-small"
+              class="${img_class}"
               onerror="
               this.onerror=null;
               this.src='/assets/placeholder-image.svg';
