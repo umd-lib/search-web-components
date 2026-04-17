@@ -251,10 +251,10 @@ export class HomepageSearch extends LitElement {
               >
                 <div class="hero-search-dropdown-content">
                   <div class="quick-action">
-                    <h3 class="drop-down-subtitle t-title-small s-stack-small">
+                    <h3 class="drop-down-subtitle t-body-small s-stack-small">
                       Quick Actions
                     </h3>
-                    <ul class="quick-action-options" role="list">
+                    <ul class="quick-action-options t-label" role="list">
                       ${this.quickActions.map(
                         (action) => html`
                           <li class="s-stack-small">
