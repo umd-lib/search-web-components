@@ -41,5 +41,6 @@ function search_web_components_block_theme() {
     'swc_standalone_search_results' => $default,
     'swc_date_ranger' => $default,
     'swc_more_searchers' => $default,
+    'swc_homepage_search' => $default,
   ];
 }
