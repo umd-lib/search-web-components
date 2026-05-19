@@ -74,14 +74,6 @@ export class SearchSort extends DropdownMixin(BaseSearchElement) {
       query.set('limit', resultsPerPage);
     }
 
-    if (sortKey === this.context?.response?.default_sort) {
-      query.delete('sort');
-    }
-
-    if (sortOrder === this.context?.response?.default_sort_order) {
-      query.delete('order');
-    }
-
     this.getResults(query);
   }
 
