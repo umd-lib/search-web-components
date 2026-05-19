@@ -20,6 +20,7 @@ interface Field {
   is_link?: string;
   is_body?: string;
   link_text?: string;
+  link_prefix?: string;
   icon?: string;
 }
 
@@ -44,8 +45,83 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
   @property({attribute: true, type: Object})
   data: Record<string, any> = {};
 
+  private renderTitle(
+    base_path: string,
+    id: any,
+    title: any,
+    firstField: any,
+    content_link: any
+  ): any {
+    if (base_path && id) {
+      return html`
+        <h3 class="item-title t-title-small s-stack-small">
+          <a href="${base_path + id}"
+            ><span class="sr-only">Title:</span>${title}
+          </a>
+        </h3>
+      `;
+    }
+
+    if (firstField && content_link) {
+      return html`
+        <h3 class="item-title t-title-small s-stack-small">
+          <a href="${content_link}"
+            ><span class="sr-only">Title:</span>${firstField.value}</a
+          >
+        </h3>
+      `;
+    } else if (firstField) {
+      return html`
+        <h3 class="item-title t-title-small s-stack-small">
+          ${this.renderFirstFieldTitle(firstField)}
+        </h3>
+      `;
+    }
+
+    return '';
+  }
+
+  private renderFirstFieldTitle(firstField: any): any {
+    if (Array.isArray(firstField.value)) {
+      if (firstField.field.facet_link_pattern) {
+        return repeat(
+          firstField.value,
+          (val: any) => val,
+          (val: any) =>
+            html`
+              <a
+                href="${firstField.field.facet_link_pattern}${val}"
+              >
+                ${firstField.label}${firstField.label ? ': ' : ''}
+                ${val}</a
+              >
+            `
+        );
+      } else {
+        return repeat(
+          firstField.value,
+          (val: any) => val,
+          (val: any) =>
+            html`${firstField.label}${firstField.label
+              ? ': '
+              : ''}${val}`
+        );
+      }
+    }
+
+    if (firstField.field.facet_link_pattern !== undefined) {
+      return html`<a
+        href="${firstField.field.facet_link_pattern}${firstField.value}"
+        >${firstField.value}^^8</a
+      >`;
+    }
+
+    return unsafeHTML(firstField.value);
+  }
+
   override render() {
     const id_field = this.settings['id'] as string;
+    const link_field = this.settings['link_field'] as string;
     const title_field = this.settings['title'] as string;
     const thumbnail_field = this.settings['thumbnail'] as string;
     let orientation = this.settings['orientation'] as string;
@@ -57,6 +133,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     let title = this.data[title_field];
     let thumbnail = this.data[thumbnail_field];
     let id = undefined;
+    let content_link = undefined;
 
     let img_class = '';
     let item_detail_class = 's-inline-small';
@@ -94,6 +171,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           (field && (field as any).label) ||
           '';
         let labelText = rawLabel.trim();
+
+        if (link_field in this.data) {
+          content_link = this.data[link_field].trim();
+        }
 
         let page = 0;
         if (id_field in this.data) {
@@ -204,6 +285,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           // Intended for description content.
           content = html`<div class="body">${unsafeHTML(value)}</div>`;
         } else if (field.is_link && field.is_link == 'true') {
+          let link_prefix: string | undefined = undefined;
+          if (field.link_prefix != undefined) {
+            link_prefix = field.link_prefix;
+          }
           if (
             field.linked_field != undefined &&
             this.data[field.linked_field] != undefined
@@ -215,12 +300,12 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                 value,
                 (val) => val,
                 (val, index) =>
-                  html`<a href="${linked_field[index]}">
+                  html`<a href="${link_prefix}${linked_field[index]}" class="field-link">
                       ${link_text != undefined ? link_text : val} </a
                     >${index < value.length - 1 ? ', ' : ''}`
               )}`;
             } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
-              content = html`<a href="${linked_field}">
+              content = html`<a href="${link_prefix}${linked_field}" class="field-link">
                 ${link_text != undefined ? link_text : value}
               </a>`;
             }
@@ -230,17 +315,17 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                 value,
                 (val) => val,
                 (val, index) =>
-                  html`<a href="${field.facet_link_pattern}${val}">
+                  html`<a href="${link_prefix}${field.facet_link_pattern}${val}" class="facet-link">
                       ${link_text != undefined ? link_text : val} </a
                     >${index < value.length - 1 ? ', ' : ''}`
               )}`;
             } else {
-              content = html`<a href="${field.facet_link_pattern}${value}">
+              content = html`<a href="${link_prefix}${field.facet_link_pattern}${value}" class="facet-link">
                 ${link_text != undefined ? link_text : value}
               </a>`;
             }
           } else if (field.linked_field == undefined) {
-            content = html`<a href="${value}">
+            content = html`<a href="${link_prefix}${value}" class="self-link">
               ${link_text != undefined ? link_text : value}
             </a>`;
           }
@@ -341,53 +426,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article class="orientation-${orientation} ${item_class || ''}">
         <div class="item-detail ${item_detail_class}">
-          ${base_path && id
-            ? html`
-                <h3 class="item-title t-title-small s-stack-small">
-                  <a href="${base_path + id}"
-                    ><span class="sr-only">Title:</span>${title}
-                  </a>
-                </h3>
-              `
-            : firstField
-            ? html`
-                <h3 class="item-title t-title-small s-stack-small">
-                  ${Array.isArray(firstField.value)
-                    ? firstField.field.facet_link_pattern
-                      ? repeat(
-                          firstField.value,
-                          (val) => val,
-                          (val) =>
-                            html`
-                              <a
-                                href="${firstField.field
-                                  .facet_link_pattern}${val}"
-                              >
-                                ${firstField.label}${firstField.label
-                                  ? ': '
-                                  : ''}
-                                ${val}</a
-                              >
-                            `
-                        )
-                      : repeat(
-                          firstField.value,
-                          (val) => val,
-                          (val) =>
-                            html`${firstField.label}${firstField.label
-                              ? ': '
-                              : ''}${val}`
-                        )
-                    : firstField.field.facet_link_pattern != undefined
-                    ? html`<a
-                        href="${firstField.field
-                          .facet_link_pattern}${firstField.value}"
-                        >${firstField.value}^^8</a
-                      >`
-                    : unsafeHTML(firstField.value)}
-                </h3>
-              `
-            : ''}
+          ${this.renderTitle(base_path, id, title, firstField, content_link)}
           ${body_content}
           ${field_list.length > 0
             ? html`<dl class="item-fields">${field_list}</dl>`
