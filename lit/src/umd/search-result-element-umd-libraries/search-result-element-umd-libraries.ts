@@ -135,6 +135,15 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     }
   }
 
+  private formatEyebrow(eyebrowValue: any): string {
+    // Replace underscores with spaces and capitalize all words
+    return String(eyebrowValue)
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
   private renderFirstFieldTitle(firstField: any): any {
     if (Array.isArray(firstField.value)) {
       if (firstField.field.facet_link_pattern) {
@@ -504,7 +513,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article class="orientation-${orientation} ${item_class || ''}">
         <div class="item-detail ${item_detail_class}">
-          ${eyebrow_value ? html`<div class="is-eyebrow">${eyebrow_value}</div>` : nothing}
+          ${eyebrow_value ? html`<div class="is-eyebrow">${this.formatEyebrow(eyebrow_value)}</div>` : nothing}
           ${this.renderTitle(base_path, id, title, firstField, content_link)}
           ${body_content}
           ${field_list.length > 0
