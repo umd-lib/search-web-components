@@ -19,9 +19,11 @@ interface Field {
   is_hidden?: string;
   is_link?: string;
   is_body?: string;
+  is_date?: string;
   link_text?: string;
   link_prefix?: string;
   icon?: string;
+  is_eyebrow?: string;
 }
 
 /**
@@ -79,6 +81,58 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     }
 
     return '';
+  }
+
+  private trimAndCloseTags(htmlContent: string, maxLength: number = 800): string {
+    // Strip all HTML tags
+    const plainText = htmlContent.replace(/<[^>]*>/g, '');
+
+    // Truncate to maxLength and add ellipsis if longer
+    if (plainText.length > maxLength) {
+      return plainText.substring(0, maxLength) + ' ...';
+    }
+
+    return plainText;
+  }
+
+  private formatDate(dateValue: any): string {
+    if (Array.isArray(dateValue)) {
+      return dateValue.map(d => this.formatDate(d)).join(', ');
+    }
+
+    try {
+      let date: Date;
+      let numValue = dateValue;
+
+      // Convert string numbers to actual numbers
+      if (typeof dateValue === 'string') {
+        const parsed = Number(dateValue);
+        if (!isNaN(parsed)) {
+          numValue = parsed;
+        }
+      }
+
+      // Handle numeric timestamps (Unix seconds or JavaScript milliseconds)
+      if (typeof numValue === 'number') {
+        // If it's less than 100 billion, assume it's seconds; otherwise milliseconds
+        const timestamp = numValue < 100000000000 ? numValue * 1000 : numValue;
+        date = new Date(timestamp);
+      } else {
+        date = new Date(dateValue);
+      }
+
+      if (isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateValue;
+    }
   }
 
   private renderFirstFieldTitle(firstField: any): any {
@@ -148,6 +202,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     }
 
     let has_value = true;
+    let eyebrow_value = undefined;
     const field_entries = Object.entries(fields)
       .map(([label, field]) => {
         let value = this.data[field.key];
@@ -278,12 +333,18 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           value = combined_value;
         }
 
+        // Handle date formatting
+        if (field.is_date != undefined && field.is_date == 'true') {
+          value = this.formatDate(value);
+        }
+
         // Handle linked fields for URLs.
         // If field is marked as a link, we check for linked_field or facet_link_pattern to construct the URL.
         // If neither is present, we assume the value itself is the URL.
         if (field.is_body && field.is_body == 'true') {
           // Intended for description content.
-          content = html`<div class="body">${unsafeHTML(value)}</div>`;
+          const trimmedValue = this.trimAndCloseTags(value);
+          content = html`<div class="body">${unsafeHTML(trimmedValue)}</div>`;
         } else if (field.is_link && field.is_link == 'true') {
           let link_prefix: string | undefined = undefined;
           if (field.link_prefix != undefined) {
@@ -350,6 +411,23 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           ></i>`;
         }
 
+        // Extract eyebrow field if present
+        let is_eyebrow = false;
+        if (field.is_eyebrow === 'true' && value != undefined) {
+          eyebrow_value = value;
+          is_eyebrow = true;
+        }
+
+        // Build dynamic classes based on field types
+        let fieldClasses = '';
+        if (field.is_link && field.is_link == 'true') {
+          fieldClasses += 'has-link ';
+        }
+        if (field.is_date && field.is_date == 'true') {
+          fieldClasses += 'has-date ';
+        }
+        fieldClasses = fieldClasses.trim();
+
         return {
           label: displayLabel,
           value,
@@ -358,13 +436,13 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           body_content:
             field.is_body == 'true' && !is_hidden
               ? html`<div class="body t-label s-stack-small">
-                  ${unsafeHTML(value)}
+                  ${unsafeHTML(this.trimAndCloseTags(value))}
                 </div>`
               : undefined,
           template:
-            is_hidden == true
+            is_hidden == true || is_eyebrow == true
               ? html`<span class="hidden">${value}</span>`
-              : html`<div class="t-label">
+              : html`<div class="t-label ${fieldClasses ? `class="${fieldClasses}"` : ''}">
                   ${displayLabel
                     ? html`<dt class="t-bold">${displayLabel}:</dt>`
                     : undefined}
@@ -426,6 +504,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article class="orientation-${orientation} ${item_class || ''}">
         <div class="item-detail ${item_detail_class}">
+          ${eyebrow_value ? html`<div class="is-eyebrow">${eyebrow_value}</div>` : nothing}
           ${this.renderTitle(base_path, id, title, firstField, content_link)}
           ${body_content}
           ${field_list.length > 0
