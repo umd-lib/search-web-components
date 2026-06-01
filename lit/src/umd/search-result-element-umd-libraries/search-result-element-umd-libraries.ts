@@ -83,7 +83,10 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return '';
   }
 
-  private trimAndCloseTags(htmlContent: string, maxLength: number = 800): string {
+  private trimAndCloseTags(
+    htmlContent: string,
+    maxLength: number = 800
+  ): string {
     // Strip all HTML tags
     const plainText = htmlContent.replace(/<[^>]*>/g, '');
 
@@ -97,7 +100,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
   private formatDate(dateValue: any): string {
     if (Array.isArray(dateValue)) {
-      return dateValue.map(d => this.formatDate(d)).join(', ');
+      return dateValue.map((d) => this.formatDate(d)).join(', ');
     }
 
     try {
@@ -140,7 +143,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return String(eyebrowValue)
       .replace(/_/g, ' ')
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   }
 
@@ -150,24 +153,18 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
         return repeat(
           firstField.value,
           (val: any) => val,
-          (val: any) =>
-            html`
-              <a
-                href="${firstField.field.facet_link_pattern}${val}"
-              >
-                ${firstField.label}${firstField.label ? ': ' : ''}
-                ${val}</a
-              >
-            `
+          (val: any) => html`
+            <a href="${firstField.field.facet_link_pattern}${val}">
+              ${firstField.label}${firstField.label ? ': ' : ''} ${val}</a
+            >
+          `
         );
       } else {
         return repeat(
           firstField.value,
           (val: any) => val,
           (val: any) =>
-            html`${firstField.label}${firstField.label
-              ? ': '
-              : ''}${val}`
+            html`${firstField.label}${firstField.label ? ': ' : ''}${val}`
         );
       }
     }
@@ -370,12 +367,18 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                 value,
                 (val) => val,
                 (val, index) =>
-                  html`<a href="${link_prefix}${linked_field[index]}" class="field-link">
+                  html`<a
+                      href="${link_prefix}${linked_field[index]}"
+                      class="field-link"
+                    >
                       ${link_text != undefined ? link_text : val} </a
                     >${index < value.length - 1 ? ', ' : ''}`
               )}`;
             } else if (!Array.isArray(value) && !Array.isArray(linked_field)) {
-              content = html`<a href="${link_prefix}${linked_field}" class="field-link">
+              content = html`<a
+                href="${link_prefix}${linked_field}"
+                class="field-link"
+              >
                 ${link_text != undefined ? link_text : value}
               </a>`;
             }
@@ -385,12 +388,18 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                 value,
                 (val) => val,
                 (val, index) =>
-                  html`<a href="${link_prefix}${field.facet_link_pattern}${val}" class="facet-link">
+                  html`<a
+                      href="${link_prefix}${field.facet_link_pattern}${val}"
+                      class="facet-link"
+                    >
                       ${link_text != undefined ? link_text : val} </a
                     >${index < value.length - 1 ? ', ' : ''}`
               )}`;
             } else {
-              content = html`<a href="${link_prefix}${field.facet_link_pattern}${value}" class="facet-link">
+              content = html`<a
+                href="${link_prefix}${field.facet_link_pattern}${value}"
+                class="facet-link"
+              >
                 ${link_text != undefined ? link_text : value}
               </a>`;
             }
@@ -433,7 +442,7 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           fieldClasses += 'has-link ';
         }
         if (field.is_date && field.is_date == 'true') {
-          fieldClasses += 'has-date ';
+          fieldClasses += 'has-date c-content-tertiary ';
         }
         fieldClasses = fieldClasses.trim();
 
@@ -451,10 +460,12 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
           template:
             is_hidden == true || is_eyebrow == true
               ? html`<span class="hidden">${value}</span>`
-              : html`<div class="t-label ${fieldClasses ? `class="${fieldClasses}"` : ''}">
+              : html`<div class="t-label ${fieldClasses}">
                   ${displayLabel
                     ? html`<dt class="t-bold">${displayLabel}:</dt>`
-                    : undefined}
+                    : field.is_date == 'true'
+                      ? html`<dt class="sr-only">Date:</dt>`
+                      : undefined}
                   <dd>
                     ${icon ? icon : undefined}
                     ${is_bool
@@ -462,8 +473,8 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
                           ? field.boolean_true
                           : field.boolean_false}`
                       : content != undefined
-                      ? content
-                      : unsafeHTML(value)}
+                        ? content
+                        : unsafeHTML(value)}
                   </dd>
                 </div>`,
         };
@@ -513,7 +524,11 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     return html`
       <article class="orientation-${orientation} ${item_class || ''}">
         <div class="item-detail ${item_detail_class}">
-          ${eyebrow_value ? html`<div class="is-eyebrow">${this.formatEyebrow(eyebrow_value)}</div>` : nothing}
+          ${eyebrow_value
+            ? html`<div class="is-eyebrow t-eyebrow">
+                ${this.formatEyebrow(eyebrow_value)}
+              </div>`
+            : nothing}
           ${this.renderTitle(base_path, id, title, firstField, content_link)}
           ${body_content}
           ${field_list.length > 0
