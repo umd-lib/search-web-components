@@ -45,6 +45,12 @@ final class SearchResultsBlock extends BlockBase {
       '#description' => $this->t("A JSON array of object mappings An array of objects that contain the element, keys, and settings for results. I.e. [{\"element\":\"search-result-element-rendered\",\"keys\":[\"article\",\"page\"],\"settings\":{\"key\":\"rendered_result\"}}]. 'default' can be used as a fallback for unmapped results. When using the display switcher keys can be appended with the display id i.e `-grid` to make mapping specific to a display type. Tools like <a href='https://jsonformatter.org/' target='_blank'>https://jsonformatter.org/</a>a can help validate your JSON."),
       '#default_value' => $this->configuration['mappings'],
     ];
+    $form['resultsClass'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Results Class'),
+      '#description' => $this->t("A class to add to the search results wrapper."),
+      '#default_value' => $this->configuration['resultsClass'] ?? '',
+    ];
     return $form;
   }
 
@@ -54,6 +60,7 @@ final class SearchResultsBlock extends BlockBase {
   public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['resultField'] = $form_state->getValue('resultField');
     $this->configuration['mappings'] = $form_state->getValue('mappings');
+    $this->configuration['resultsClass'] = $form_state->getValue('resultsClass');
   }
 
   /**
@@ -68,6 +75,9 @@ final class SearchResultsBlock extends BlockBase {
     }
     if ($config['mappings']) {
       $searchAttributes->setAttribute('mappings', $config['mappings']);
+    }
+    if ($config['resultsClass']) {
+      $searchAttributes->addClass($config['resultsClass']);
     }
 
     return [
