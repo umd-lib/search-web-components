@@ -41,6 +41,7 @@ export class SearchResults extends BaseSearchElement {
 
   is_standalone = false;
   standalone_icon = '';
+  standalone_title = 'Image & Text Repository';
 
   /**
    * Ensure the focusElement is focused when the dropdown is opened.
@@ -71,6 +72,12 @@ export class SearchResults extends BaseSearchElement {
             let icon = mapping.settings['standalone_icon'];
             if (icon != undefined && icon != '') {
               this.standalone_icon = icon;
+            }
+          }
+          if (mapping.settings['standalone_title']) {
+            let title = mapping.settings['standalone_title'];
+            if (title != undefined && title != '') {
+              this.standalone_title = title;
             }
           }
         });
@@ -226,14 +233,14 @@ export class SearchResults extends BaseSearchElement {
               </div>
               <h2 class="t-title-medium">
                 <a id="primary-search" href="/search"
-                  >Image & Text Repository</a
+                  >${this.standalone_title || 'Image & Text Repository'}</a
                 >
               </h2>
             </div>
             <p
               class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
             >
-              Results from our Image and Text Repository
+              Results from our ${this.standalone_title || 'Image and Text Repository'} 
             </p>
             <div class="bento-search-no-results s-box-small-v s-box-small-h">
               <p class="t-body-medium">No records found</p>
@@ -275,7 +282,7 @@ export class SearchResults extends BaseSearchElement {
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
           >
-            Results from our Image and Text Repository
+            Results from our ${this.standalone_title || 'Image and Text Repository'} for "${current_query}"
           </p>
           <ul class="${this.context?.resultDisplay}">
             ${repeat(
