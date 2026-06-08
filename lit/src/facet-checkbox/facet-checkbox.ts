@@ -31,6 +31,23 @@ export class FacetCheckbox extends BaseFacetElement {
   // the number of facets to show before hiding the rest behind a "Show More" button, and providing a search box to filter the options.
   readonly FACET_LIMIT = 10;
 
+  /**
+   * Formats a facet label by replacing underscores with spaces and capitalizing all words.
+   * Special case: "umd" is uppercase to "UMD" if it's a complete word.
+   */
+  private _formatFacetLabel(label: string): string {
+    return label
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => {
+        if (word.toLowerCase() === 'umd') {
+          return 'UMD';
+        }
+        return word;
+      })
+      .join(' ');
+  }
+
   override updated(changedProperties: Map<string, any>) {
     if (this.facetConfigLoaded || !this.context?.responseReady) {
       return;
@@ -285,7 +302,7 @@ export class FacetCheckbox extends BaseFacetElement {
           aria-label="${value.label}"
         />
         <label for="${id}" aria-hidden="true">
-          ${value.label ? unsafeHTML(value.label) : undefined}
+          ${value.label ? unsafeHTML(this._formatFacetLabel(value.label)) : undefined}
           ${this.showCount
             ? html`
                 <span

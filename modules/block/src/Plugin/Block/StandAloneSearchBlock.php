@@ -53,14 +53,13 @@ final class StandAloneSearchBlock extends BlockBase {
       '#default_value' => $this->configuration['blockTitle'],
     ];
     $form['blockDescription'] = [
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#required' => TRUE,
       '#title' => $this->t('Block Description'),
       '#default_value' => $this->configuration['blockDescription'],
     ];
     $form['bottomLinkText'] = [
       '#type' => 'textfield',
-      '#required' => TRUE,
       '#title' => $this->t('Bottom Link Text'),
       '#description' => $this->t('Use %total% as a placeholder for a results count.'),
       '#default_value' => $this->configuration['bottomLinkText'],
@@ -97,6 +96,11 @@ final class StandAloneSearchBlock extends BlockBase {
       '#description' => $this->t('How the block will be referenced internally. Single, lowercase word or lc words seperated by dashes.'),
       '#default_value' => $this->configuration['blockID'],
     ];
+    $form['blockSuppressIfEmpty'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Suppress block if there are no results'),
+      '#default_value' => !empty($this->configuration['blockSuppressIfEmpty']) ? $this->configuration['blockSuppressIfEmpty'] : FALSE,
+    ];
     return $form;
   }
 
@@ -112,6 +116,7 @@ final class StandAloneSearchBlock extends BlockBase {
     $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
     $this->configuration['bottomLinkText'] = $form_state->getValue('bottomLinkText');
     $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
+    $this->configuration['blockSuppressIfEmpty'] = $form_state->getValue('blockSuppressIfEmpty');
     $blockID = $form_state->getValue('blockID');
     $this->configuration['blockID'] = strtolower(trim($blockID));
   }
@@ -150,6 +155,9 @@ final class StandAloneSearchBlock extends BlockBase {
     }
     if (!empty($config['blockIcon'])) {
       $searchAttributes->setAttribute('blockIcon', $config['blockIcon']);
+    }
+    if (!empty($config['blockSuppressIfEmpty'])) {
+      $searchAttributes->setAttribute('suppressIfEmpty', 'empty-suppress-' . $config['blockSuppressIfEmpty']);
     }
 
     return [

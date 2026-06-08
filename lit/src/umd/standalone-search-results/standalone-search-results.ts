@@ -269,8 +269,8 @@ export class StandAloneSearchResults extends LitElement {
   }
 
   override render() {
-    const results = this.context.response.results;
     const total = this.context.response.total;
+    const results = this.context.response.results;
     const footer = this.bottomLinkText.replace('%total%', total.toString());
 
     const loading_animation = html` <div
@@ -372,7 +372,7 @@ export class StandAloneSearchResults extends LitElement {
     });
 
     return html`
-      <div>
+      <div class="${this.blockID}-${this.context.response.total}">
         <section class="bento-search c-border-tertiary" id="${this.blockID}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"

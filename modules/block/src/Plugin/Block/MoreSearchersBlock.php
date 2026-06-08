@@ -49,15 +49,20 @@ final class MoreSearchersBlock extends BlockBase {
     ];
     $form['blockDescription'] = [
       '#type' => 'textfield',
-      '#required' => TRUE,
       '#title' => $this->t('Block Description'),
       '#default_value' => $this->configuration['blockDescription'],
     ];
     $form['blockUrls'] = [
       '#type' => 'textarea',
+      '#required' => TRUE,
       '#title' => $this->t('Block Urls'),
       '#description' => $this->t('This should include a list of URLs with the format "title" => "url"'),
       '#default_value' => $this->configuration['blockUrls'],
+    ];
+    $form['isCollapsible'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Make block collapsible'),
+      '#default_value' => !empty($this->configuration['isCollapsible']) ? $this->configuration['isCollapsible'] : FALSE,
     ];
     return $form;
   }
@@ -67,9 +72,10 @@ final class MoreSearchersBlock extends BlockBase {
    */
   public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['blockTitle'] = $form_state->getValue('blockTitle');
-    $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
+    $this->configuration['blockDescription'] = !empty($form_state->getValue('blockDescription')) ? $form_state->getValue('blockDescription') : '';
     $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
     $this->configuration['blockUrls'] = $form_state->getValue('blockUrls');
+    $this->configuration['isCollapsible'] = $form_state->getValue('isCollapsible');
   }
 
   /**
@@ -90,6 +96,9 @@ final class MoreSearchersBlock extends BlockBase {
     }
     if (!empty($config['blockIcon'])) {
       $searchAttributes->setAttribute('blockIcon', $config['blockIcon']);
+    }
+    if (!empty($config['isCollapsible'])) {
+      $searchAttributes->setAttribute('isCollapsible', $config['isCollapsible']);
     }
 
     return [

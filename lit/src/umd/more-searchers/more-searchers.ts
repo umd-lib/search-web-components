@@ -29,6 +29,9 @@ export class MoreSearchers extends BaseSearchElement {
   @property()
   localQuery = '';
 
+  @property()
+  isCollapsible = false;
+
   /**
    * Override the base Lit render root to disable shadow dom.
    *
@@ -75,19 +78,20 @@ export class MoreSearchers extends BaseSearchElement {
     const urls: TemplateResult[] = [];
     Object.entries(this.blockUrls)
       .map(([title, url]) => {
+        const finalUrl = url.includes('%placeholder%') ? url.replace('%placeholder%', current_query) : url + current_query;
         urls.push(
         html`
           <li class="bento-search-result-item s-box-small-v s-box-small-h
                            result-default">
             <h3 class="item-title t-title-small s-stack-small">
-              <a href="${url}${current_query}">${title}</a>
+              <a href="${finalUrl}">${title}</a>
             </h3>
           </li>`);
       });
 
     return html`
       <div>
-        <section class="bento-search c-border-tertiary s-margin-general-medium">
+        <section class="bento-search c-border-tertiary s-margin-general-medium ${this.isCollapsible ? 'collapsible' : ''}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
           >
@@ -101,11 +105,12 @@ export class MoreSearchers extends BaseSearchElement {
               ${this.blockTitle}
             </h2>
           </div>
+          ${this.blockDescription && this.blockDescription.trim() != '' ? html`
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
           >
             ${this.blockDescription} 
-          </p>
+          </p>` : ''}
           <ul id="block-more-searchers">
             ${urls}
           </ul>

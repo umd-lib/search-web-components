@@ -40,6 +40,12 @@ export class SearchBox extends BaseSearchElement {
   @property({attribute: true})
   componentLabelText = '';
 
+  /**
+   * The description text for the search box.
+   */
+  @property({attribute: true})
+  blockDescription = '';
+
   protected override createRenderRoot(): HTMLElement | DocumentFragment {
     this.style.display = 'block';
     return this;
@@ -109,6 +115,12 @@ export class SearchBox extends BaseSearchElement {
               <div class="sr-only">${this.submitText}</div>
             </button>
           </div>
+          ${this.blockDescription && this.blockDescription.trim() != '' ? html`
+            <p
+              class="description t-label c-content-secondary s-box-small-h"
+            >
+              ${this.blockDescription} 
+            </p>` : ''}
         </form>
       </search>
     `;

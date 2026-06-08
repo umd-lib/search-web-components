@@ -275,7 +275,7 @@ export class SearchResults extends BaseSearchElement {
             </div>
             <h2 class="t-title-medium">
               <a id="primary-search" href="/search?q=${current_query}"
-                >Image and Text Search</a
+                >${this.standalone_title || 'Image & Text Repository'}</a
               >
             </h2>
           </div>
