@@ -1,6 +1,7 @@
 import {customElement, property} from 'lit/decorators.js';
 import { BaseSearchElement } from '../../BaseSearchElement';
 import {html, TemplateResult} from 'lit';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 /**
  * The root container for a component based search experience. All search components on the search page must be a child of this component to work correctly.
@@ -20,8 +21,21 @@ export class MoreSearchers extends BaseSearchElement {
     [key: string]: any;
   } = {};
 
+  @property({type: Object})
+  Urls: {
+    [title: string]: {
+      url: string;
+      no_query?: string;
+      description?: string;
+      format?: string;
+    }
+  } = {};
+
   @property()
   blockIcon = '';
+
+  @property()
+  blockID = '';
 
   /**
    * The decoupled search api endpoint to query for results. Search query params added to this url will be used for the initial search if no search query params are present in the page url, they will also be added to the page url on search load, and can be removed by components.
@@ -31,6 +45,9 @@ export class MoreSearchers extends BaseSearchElement {
 
   @property()
   isCollapsible = false;
+
+  @property()
+  startsCollapsed = false;
 
   /**
    * Override the base Lit render root to disable shadow dom.
@@ -75,10 +92,37 @@ export class MoreSearchers extends BaseSearchElement {
       current_query = this.localQuery; 
     }
 
+    // Determine which URLs to use: prefer Urls, fallback to blockUrls
+    const urlsToUse = Object.keys(this.Urls).length > 0 ? this.Urls : this.blockUrls;
+    const isNewFormat = Object.keys(this.Urls).length > 0;
+
     const urls: TemplateResult[] = [];
-    Object.entries(this.blockUrls)
-      .map(([title, url]) => {
-        const finalUrl = url.includes('%placeholder%') ? url.replace('%placeholder%', current_query) : url + current_query;
+    Object.entries(urlsToUse)
+      .map(([title, urlData]) => {
+        let url: string;
+        let no_query: string | undefined;
+        let description: string | undefined;
+        let format: string | undefined;
+
+        if (isNewFormat) {
+          // New format: urlData is {url, no_query?, description?, format?}
+          url = (urlData as any).url || '';
+          no_query = (urlData as any).no_query;
+          description = (urlData as any).description;
+          format = (urlData as any).format;
+        } else {
+          // Old format: urlData is just the URL string
+          url = urlData;
+        }
+
+        // Determine finalUrl: if no query, use no_query URL if available, otherwise use regular url logic
+        let finalUrl: string;
+        if (!current_query || current_query.trim() === '') {
+          finalUrl = no_query || url;
+        } else {
+          finalUrl = url.includes('%placeholder%') ? url.replace('%placeholder%', current_query) : url + current_query;
+        }
+
         urls.push(
         html`
           <li class="bento-search-result-item s-box-small-v s-box-small-h
@@ -86,20 +130,32 @@ export class MoreSearchers extends BaseSearchElement {
             <h3 class="item-title t-title-small s-stack-small">
               <a href="${finalUrl}">${title}</a>
             </h3>
+            ${description ? html`
+              <p class="sr-only">description</p>
+              <p class="t-body-small s-stack-small">${description}</p>` : ''}
+            ${format ? html`
+              <dl class="item-fields">
+                <div class="t-label">
+                  <dt class="t-bold">Item format:</dt>
+                  <dd>${format}</dd>
+                </div>
+              </dl>` : ''}
           </li>`);
       });
 
     return html`
       <div>
-        <section class="bento-search c-border-tertiary s-margin-general-medium ${this.isCollapsible ? 'collapsible' : ''}">
+        <section id="${this.blockID}" class="bento-search c-border-tertiary s-margin-general-medium ${this.isCollapsible ? 'collapsible' : ''} ${this.startsCollapsed ? 'collapsed' : ''}" aria-label="${this.blockTitle}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
           >
             <div class="bento-search-header-icon-container" aria-hidden="true">
-              <i
-                data-lucide="${this.blockIcon}"
-                class="bento-search-header-icon"
-              ></i>
+              ${this.blockIcon && this.blockIcon.trim() != '' ? html`
+                <i
+                  data-lucide="${this.blockIcon}"
+                  class="bento-search-header-icon"
+                ></i>
+                ` : html``}
             </div>
             <h2 class="t-title-medium">
               ${this.blockTitle}
@@ -109,7 +165,7 @@ export class MoreSearchers extends BaseSearchElement {
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
           >
-            ${this.blockDescription} 
+            ${unsafeHTML(this.blockDescription)} 
           </p>` : ''}
           <ul id="block-more-searchers">
             ${urls}
