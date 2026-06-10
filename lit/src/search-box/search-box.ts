@@ -115,12 +115,13 @@ export class SearchBox extends BaseSearchElement {
               <div class="sr-only">${this.submitText}</div>
             </button>
           </div>
-          ${this.blockDescription && this.blockDescription.trim() != '' ? html`
-            <p
-              class="description t-label c-content-secondary s-box-small-h"
-            >
-              ${this.blockDescription} 
-            </p>` : ''}
+          ${
+            this.blockDescription && this.blockDescription.trim() != ''
+              ? html` <p class="description t-label c-content-secondary">
+                  ${this.blockDescription}
+                </p>`
+              : ''
+          }
         </form>
       </search>
     `;
