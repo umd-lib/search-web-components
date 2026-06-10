@@ -6,6 +6,7 @@ import {
 } from '../../types';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElement, html, TemplateResult} from 'lit';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 interface resultCollection {
   collection?: string;
@@ -394,10 +395,15 @@ export class StandAloneSearchResults extends LitElement {
               >
             </h2>
           </div>
+          ${this.blockDescription && this.blockDescription.trim() != '' ? html`
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
           >
-            ${this.blockDescription}
+            ${unsafeHTML(this.blockDescription)} 
+          </p>` : ''}
+          <p
+            class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
+          >
           </p>
           ${loading_animation}
           ${records.length > 0
@@ -418,11 +424,12 @@ export class StandAloneSearchResults extends LitElement {
                       </div>`
                     : ''}
                 </div>`
-            : html` <div
+            : html`
+                <div
                   class="bento-search-no-results s-box-small-v s-box-small-h"
                   id="bento-search-result-section"
                 >
-                  <p class="t-body-medium">No records found</p>
+                  <p class="t-body-medium">${!this.context.query?.has('q') || this.context.query.get('q')?.trim() === '' ? 'Please enter search terms' : 'No records found'}</p>
                 </div>
                 <div class="bento-search-footer">
                   ${this.noResultsMessage
@@ -433,8 +440,7 @@ export class StandAloneSearchResults extends LitElement {
                             this.context.response.no_results_link}"
                             class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
                           >
-                            <span class="i-chevron"></span>${this
-                              .noResultsMessage}
+                            <span class="i-chevron"></span>${this.noResultsMessage}
                           </a>
                         </div>
                       </div>`

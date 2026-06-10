@@ -1,7 +1,6 @@
 import {customElement, property} from 'lit/decorators.js';
 import { BaseSearchElement } from '../../BaseSearchElement';
 import {html, TemplateResult} from 'lit';
-import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 /**
  * The root container for a component based search experience. All search components on the search page must be a child of this component to work correctly.
@@ -165,7 +164,7 @@ export class MoreSearchers extends BaseSearchElement {
           <p
             class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
           >
-            ${unsafeHTML(this.blockDescription)} 
+            ${this.blockDescription} 
           </p>` : ''}
           <ul id="block-more-searchers">
             ${urls}

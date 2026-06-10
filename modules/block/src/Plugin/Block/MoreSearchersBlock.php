@@ -95,6 +95,7 @@ final class MoreSearchersBlock extends BlockBase {
    */
   public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['blockTitle'] = $form_state->getValue('blockTitle');
+    dsm($form_state->getValue('blockDescription'));
     $this->configuration['blockDescription'] = !empty($form_state->getValue('blockDescription')) ? $form_state->getValue('blockDescription') : '';
     $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
     $this->configuration['blockUrls'] = $form_state->getValue('blockUrls');
