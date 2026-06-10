@@ -277,7 +277,7 @@ export class StandAloneSearchResults extends LitElement {
     return label
       .replace(/_/g, ' ')
       .split(' ')
-      .map(word => {
+      .map((word) => {
         if (word.toLowerCase() === 'umd') {
           return 'UMD';
         }
@@ -323,7 +323,7 @@ export class StandAloneSearchResults extends LitElement {
     </div>`;
 
     const records: TemplateResult[] = [];
-    results.forEach( (result) => {
+    results.forEach((result) => {
       const record = result as StandAloneSearchResultType;
       const collection = record.extra as resultCollection;
       const title = record.title;
@@ -349,7 +349,7 @@ export class StandAloneSearchResults extends LitElement {
                 : ''}
               ${description
                 ? html`<p class="sr-only">description</p>
-                    <p class="t-body-small s-stack-small">${description}</p>`
+                    <p class="t-label s-stack-small">${description}</p>`
                 : ''}
               <dl class="item-fields">
                 ${item_format

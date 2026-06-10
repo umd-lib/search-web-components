@@ -156,7 +156,7 @@ export class MoreSearchers extends BaseSearchElement {
               </h3>
               ${description
                 ? html` <p class="sr-only">description</p>
-                    <p class="t-body-small s-stack-small">${description}</p>`
+                    <p class="t-label s-stack-small">${description}</p>`
                 : ''}
               ${format
                 ? html` <dl class="item-fields">
