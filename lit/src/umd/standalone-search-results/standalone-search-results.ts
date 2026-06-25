@@ -6,6 +6,7 @@ import {
 } from '../../types';
 import {customElement, property, state} from 'lit/decorators.js';
 import {LitElement, html, TemplateResult} from 'lit';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 interface resultCollection {
   collection?: string;
@@ -268,9 +269,26 @@ export class StandAloneSearchResults extends LitElement {
       .catch((error) => console.error('Error in fetching:', error));
   }
 
+  /**
+   * Formats a facet label by replacing underscores with spaces and capitalizing all words.
+   * Special case: "umd" is uppercase to "UMD" if it's a complete word.
+   */
+  protected _formatField(label: string): string {
+    return label
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map((word) => {
+        if (word.toLowerCase() === 'umd') {
+          return 'UMD';
+        }
+        return word;
+      })
+      .join(' ');
+  }
+
   override render() {
-    const results = this.context.response.results;
     const total = this.context.response.total;
+    const results = this.context.response.results;
     const footer = this.bottomLinkText.replace('%total%', total.toString());
 
     const loading_animation = html` <div
@@ -305,7 +323,7 @@ export class StandAloneSearchResults extends LitElement {
     </div>`;
 
     const records: TemplateResult[] = [];
-    results.forEach(function (result) {
+    results.forEach((result) => {
       const record = result as StandAloneSearchResultType;
       const collection = record.extra as resultCollection;
       const title = record.title;
@@ -331,13 +349,13 @@ export class StandAloneSearchResults extends LitElement {
                 : ''}
               ${description
                 ? html`<p class="sr-only">description</p>
-                    <p class="t-body-small s-stack-small">${description}</p>`
+                    <p class="t-label s-stack-small">${description}</p>`
                 : ''}
               <dl class="item-fields">
                 ${item_format
                   ? html`<div class="t-label">
                       <dt class="t-bold">Item format:</dt>
-                      <dd>${item_format}</dd>
+                      <dd>${this._formatField(item_format)}</dd>
                     </div>`
                   : ''}
                 ${author
@@ -372,7 +390,7 @@ export class StandAloneSearchResults extends LitElement {
     });
 
     return html`
-      <div>
+      <div class="${this.blockID}-${this.context.response.total}">
         <section class="bento-search c-border-tertiary" id="${this.blockID}">
           <div
             class="bento-search-header dark-theme c-content-primary c-bg-primary s-box-small-v s-box-small-h"
@@ -394,11 +412,13 @@ export class StandAloneSearchResults extends LitElement {
               >
             </h2>
           </div>
-          <p
-            class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
-          >
-            ${this.blockDescription}
-          </p>
+          ${this.blockDescription && this.blockDescription.trim() != ''
+            ? html` <p
+                class="description t-label c-content-secondary c-bg-tertiary s-box-small-h"
+              >
+                ${unsafeHTML(this.blockDescription)}
+              </p>`
+            : ''}
           ${loading_animation}
           ${records.length > 0
             ? html` <ul id="bento-search-result-section">
@@ -422,7 +442,12 @@ export class StandAloneSearchResults extends LitElement {
                   class="bento-search-no-results s-box-small-v s-box-small-h"
                   id="bento-search-result-section"
                 >
-                  <p class="t-body-medium">No records found</p>
+                  <p class="t-body-medium">
+                    ${!this.context.query?.has('q') ||
+                    this.context.query.get('q')?.trim() === ''
+                      ? 'Please enter search terms'
+                      : 'No records found'}
+                  </p>
                 </div>
                 <div class="bento-search-footer">
                   ${this.noResultsMessage

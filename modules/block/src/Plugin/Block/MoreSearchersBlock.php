@@ -28,6 +28,8 @@ final class MoreSearchersBlock extends BlockBase {
       'blockDescription' => '',
       'blockUrls' => '',
       'blockIcon' => '',
+      'Urls' => '',
+      'isCollapsible' => FALSE,
     ];
   }
 
@@ -37,7 +39,6 @@ final class MoreSearchersBlock extends BlockBase {
   public function blockForm($form, FormStateInterface $form_state): array {
     $form['blockIcon'] = [
       '#type' => 'textfield',
-      '#required' => TRUE,
       '#title' => $this->t('Block Icon'),
       '#default_value' => $this->configuration['blockIcon'],
     ];
@@ -48,16 +49,43 @@ final class MoreSearchersBlock extends BlockBase {
       '#default_value' => $this->configuration['blockTitle'],
     ];
     $form['blockDescription'] = [
-      '#type' => 'textfield',
-      '#required' => TRUE,
+      '#type' => 'textarea',
       '#title' => $this->t('Block Description'),
       '#default_value' => $this->configuration['blockDescription'],
     ];
     $form['blockUrls'] = [
       '#type' => 'textarea',
-      '#title' => $this->t('Block Urls'),
-      '#description' => $this->t('This should include a list of URLs with the format "title" => "url"'),
+      '#title' => $this->t('Block Urls (deprecated)'),
+      '#description' => $this->t('Deprecated. Use Urls field instead.'),
       '#default_value' => $this->configuration['blockUrls'],
+    ];
+    $form['Urls'] = [
+      '#type' => 'textarea',
+      '#required' => TRUE,
+      '#title' => $this->t('Urls'),
+      '#description' => $this->t('A list of URLs with the format: {"title": {"url": "http://example.com?q=%placeholder%", "no_query": "http://example.com/default", "description": "Optional description text", "format": "optional format"}}. The %placeholder% string will be replaced with the user\'s search query. The no_query URL will be used when there is no search query.'),
+      '#default_value' => $this->configuration['Urls'],
+    ];
+    $form['isCollapsible'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Make block collapsible'),
+      '#default_value' => !empty($this->configuration['isCollapsible']) ? $this->configuration['isCollapsible'] : FALSE,
+    ];
+    $form['startsCollapsed'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Start with block collapsed'),
+      '#default_value' => !empty($this->configuration['startsCollapsed']) ? $this->configuration['startsCollapsed'] : FALSE,
+      '#states' => [
+        'visible' => [
+          ':input[name="isCollapsible"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['blockID'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Block ID'),
+      '#description' => $this->t('An optional ID to add to the block wrapper element. This can be used for targeting the block with custom CSS or JavaScript.'),
+      '#default_value' => $this->configuration['blockID'] ?? '',
     ];
     return $form;
   }
@@ -67,9 +95,14 @@ final class MoreSearchersBlock extends BlockBase {
    */
   public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['blockTitle'] = $form_state->getValue('blockTitle');
-    $this->configuration['blockDescription'] = $form_state->getValue('blockDescription');
+    dsm($form_state->getValue('blockDescription'));
+    $this->configuration['blockDescription'] = !empty($form_state->getValue('blockDescription')) ? $form_state->getValue('blockDescription') : '';
     $this->configuration['blockIcon'] = $form_state->getValue('blockIcon');
     $this->configuration['blockUrls'] = $form_state->getValue('blockUrls');
+    $this->configuration['isCollapsible'] = $form_state->getValue('isCollapsible');
+    $this->configuration['startsCollapsed'] = $form_state->getValue('startsCollapsed');
+    $this->configuration['Urls'] = $form_state->getValue('Urls');
+    $this->configuration['blockID'] = $form_state->getValue('blockID');
   }
 
   /**
@@ -90,6 +123,18 @@ final class MoreSearchersBlock extends BlockBase {
     }
     if (!empty($config['blockIcon'])) {
       $searchAttributes->setAttribute('blockIcon', $config['blockIcon']);
+    }
+    if (!empty($config['isCollapsible'])) {
+      $searchAttributes->setAttribute('isCollapsible', $config['isCollapsible']);
+    }
+    if (!empty($config['Urls'])) {
+      $searchAttributes->setAttribute('Urls', $config['Urls']);
+    }
+    if (!empty($config['startsCollapsed'])) {
+      $searchAttributes->setAttribute('startsCollapsed', $config['startsCollapsed']);
+    }
+    if (!empty($config['blockID'])) {
+      $searchAttributes->setAttribute('id', $config['blockID']);
     }
 
     return [
