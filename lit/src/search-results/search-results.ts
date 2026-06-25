@@ -42,6 +42,7 @@ export class SearchResults extends BaseSearchElement {
   is_standalone = false;
   standalone_icon = '';
   standalone_title = 'Image & Text Repository';
+  standalone_search_url = '/search';
 
   /**
    * Ensure the focusElement is focused when the dropdown is opened.
@@ -78,6 +79,12 @@ export class SearchResults extends BaseSearchElement {
             let title = mapping.settings['standalone_title'];
             if (title != undefined && title != '') {
               this.standalone_title = title;
+            }
+          }
+          if (mapping.settings['standalone_search_url']) {
+            let sa_url = mapping.settings['standalone_search_url'];
+            if (sa_url != undefined && sa_url != '') {
+              this.standalone_search_url = sa_url;
             }
           }
         });
@@ -232,7 +239,7 @@ export class SearchResults extends BaseSearchElement {
                 ></i>
               </div>
               <h2 class="t-title-medium">
-                <a id="primary-search" href="/search"
+                <a id="primary-search" href="${this.standalone_search_url}"
                   >${this.standalone_title || 'Image & Text Repository'}</a
                 >
               </h2>
@@ -243,13 +250,13 @@ export class SearchResults extends BaseSearchElement {
               Results from our ${this.standalone_title || 'Image and Text Repository'} 
             </p>
             <div class="bento-search-no-results s-box-small-v s-box-small-h">
-              <p class="t-body-medium">No records found</p>
+              <p class="t-body-medium">${current_query ? 'No records found' : 'Please enter search terms'}</p>
             </div>
             <div class="bento-search-footer">
               <div class="s-box-small-v s-box-small-h">
                 <div class="umd-lib emphasized-link">
                   <a
-                    href="/search"
+                    href="${this.standalone_search_url}"
                     class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
                   >
                     <span class="i-chevron"></span>Try a different search
@@ -274,7 +281,7 @@ export class SearchResults extends BaseSearchElement {
               ></i>
             </div>
             <h2 class="t-title-medium">
-              <a id="primary-search" href="/search?q=${current_query}"
+              <a id="primary-search" href="${this.standalone_search_url}?q=${current_query}"
                 >${this.standalone_title || 'Image & Text Repository'}</a
               >
             </h2>
@@ -322,7 +329,7 @@ export class SearchResults extends BaseSearchElement {
             <div class="s-box-small-v s-box-small-h">
               <div class="umd-lib emphasized-link">
                 <a
-                  href="/search?q=${current_query}"
+                  href="${this.standalone_search_url}?q=${current_query}"
                   class="emphasized-link--text t-body-small t-interactive-sub c-content-primary c-underline-primary ani-underline"
                 >
                   <span class="i-chevron"></span>See all ${total} results

@@ -130,12 +130,16 @@ export class MoreSearchers extends BaseSearchElement {
 
       // Determine finalUrl: if no query, use no_query URL if available, otherwise use regular url logic
       let finalUrl: string;
-      if (!current_query || current_query.trim() === '') {
-        finalUrl = no_query || url;
+      if (no_query?.trim() != '' && url?.trim() == '') {
+        finalUrl = no_query!;
       } else {
-        finalUrl = url.includes('%placeholder%')
-          ? url.replace('%placeholder%', current_query)
-          : url + current_query;
+        if (!current_query || current_query.trim() === '') {
+          finalUrl = no_query || url;
+        } else {
+          finalUrl = url.includes('%placeholder%')
+            ? url.replace('%placeholder%', current_query)
+            : url + current_query;
+        }
       }
 
       if (this.isCollapsible) {
