@@ -22,7 +22,6 @@ function search_web_components_widget_plugin_info_alter(&$definitions) {
   // Reset the classes for the default link and checkbox facet widgets to avoid
   // confusion.
   if (!\Drupal::moduleHandler()->moduleExists('search_api_decoupled_ui')) {
-    \Drupal::logger('test')->info('here');
     $definitions['links']['class'] = LinksWidget::class;
     $definitions['checkbox']['class'] = CheckboxWidget::class;
   }

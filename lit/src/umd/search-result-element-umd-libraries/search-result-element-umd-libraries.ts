@@ -140,11 +140,16 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
 
   private formatEyebrow(eyebrowValue: any): string {
     // Replace underscores with spaces and capitalize all words
-    return String(eyebrowValue)
+    // If eyebrowValue is an array, join with " / " separator
+    let valueToFormat = Array.isArray(eyebrowValue) 
+      ? eyebrowValue.join(' / ')
+      : String(eyebrowValue);
+    let formattedEyebrow = valueToFormat
       .replace(/_/g, ' ')
       .split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+    return formattedEyebrow;
   }
 
   private renderFirstFieldTitle(firstField: any): any {

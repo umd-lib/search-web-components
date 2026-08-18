@@ -58,9 +58,9 @@ final class SearchResultsBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state): void {
-    $this->configuration['resultField'] = $form_state->getValue('resultField');
-    $this->configuration['mappings'] = $form_state->getValue('mappings');
-    $this->configuration['resultsClass'] = $form_state->getValue('resultsClass');
+    $this->configuration['resultField'] = !empty($form_state->getValue('resultField')) ? $form_state->getValue('resultField') : '';
+    $this->configuration['mappings'] = !empty($form_state->getValue('mappings')) ? $form_state->getValue('mappings') : '';
+    $this->configuration['resultsClass'] = !empty($form_state->getValue('resultsClass')) ? $form_state->getValue('resultsClass') : '';
   }
 
   /**
