@@ -99,7 +99,7 @@ export class SearchShare extends BaseSearchElement {
           Share this search results?
           <button
             class="share-button umd-lib button secondary"
-            aria-label="Share search results"
+            aria-label="Copy Link to share search results"
             data-clipboard-text="${this.getShareUrl()}"
           >
             Copy Link
