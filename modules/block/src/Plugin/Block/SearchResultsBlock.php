@@ -70,13 +70,13 @@ final class SearchResultsBlock extends BlockBase {
     $config = $this->configuration;
     $searchAttributes = new Attribute();
 
-    if ($config['resultField']) {
+    if (!empty($config['resultField'])) {
       $searchAttributes->setAttribute('resultField', $config['resultField']);
     }
-    if ($config['mappings']) {
+    if (!empty($config['mappings'])) {
       $searchAttributes->setAttribute('mappings', $config['mappings']);
     }
-    if ($config['resultsClass']) {
+    if (!empty($config['resultsClass'])) {
       $searchAttributes->addClass($config['resultsClass']);
     }
 
