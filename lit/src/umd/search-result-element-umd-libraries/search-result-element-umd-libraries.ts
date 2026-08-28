@@ -486,6 +486,15 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry != null);
 
+    const isFeatured = [true, 'true', 1, '1'].includes(this.data.featured);
+    if (isFeatured) {
+      eyebrow_value = Array.isArray(eyebrow_value)
+        ? [...eyebrow_value, 'Featured']
+        : eyebrow_value
+          ? [eyebrow_value, 'Featured']
+          : 'Featured';
+    }
+
     // Separate body fields (to be hoisted above the dl) from everything else.
     // Hidden body fields stay in the dl as <span class="hidden">.
     const bodyEntries = field_entries.filter(
@@ -527,7 +536,11 @@ export class SearchResultElementUMDLibraries extends BaseSearchElement {
     const altText = firstFieldKey ? this.data[firstFieldKey] : '';
 
     return html`
-      <article class="orientation-${orientation} ${item_class || ''}">
+      <article
+        class="orientation-${orientation} ${item_class || ''}${
+          isFeatured ? ' is-featured' : ''
+        }"
+      >
         <div class="item-detail ${item_detail_class}">
           ${eyebrow_value
             ? html`<div class="is-eyebrow t-eyebrow">
