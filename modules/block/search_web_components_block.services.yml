@@ -1,0 +1,5 @@
+services:
+  search_web_components_block.search_query_subscriber:
+    class: Drupal\search_web_components_block\EventSubscriber\SearchQueryEventSubscriber
+    tags:
+      - { name: event_subscriber }

@@ -86,10 +86,16 @@ export class SearchShare extends BaseSearchElement {
 
   private getShareUrl(): string {
     const baseUrl = window.location.href.replace(/(\?.*)$/, '');
-    let qs = this.queryText ? this.queryText : this.initialQuery;
-    return (
-      baseUrl + (qs ? '?' + decodeURIComponent(qs) : '')
-    );
+    const qs = this.queryText ? this.queryText : this.initialQuery;
+
+    if (!qs) {
+      return baseUrl;
+    }
+
+    const safeQuery = qs.replace(/%26/gi, '|||');
+    const decodedQuery = decodeURIComponent(safeQuery).replace(/\|\|\|/g, '%26');
+
+    return baseUrl + '?' + decodedQuery;
   }
 
   override render() {
